@@ -75,15 +75,17 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
              return;
         }
 
-        if (!process.env.JWT_SECRET) {
-                res.status(500).json({ message: "JWT secret is not defined" });
+        if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
+                res.status(500).json({ message: "JWT secret is not defined",success:false });
                 return;
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.cookie('token', token, { httpOnly: true, secure: true });
+        const accessToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_SECRET, { expiresIn: '15m' });
+
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict',path:'/refresh-token' });
         
-        res.status(200).json({ data: user, success: true });
+        res.status(200).json({accessToken, data: user, success: true });
     } catch (error) {
         next(error);
     }
