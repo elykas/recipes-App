@@ -7,7 +7,7 @@ interface Ingredient {
 
 export interface IRecipe extends Document {
   name: string;
-  category: 'Meat' | 'Chicken' | 'Fish' | 'Dessert' | 'Snack' | 'Soup' ;
+  category: string[];
   ingredients: Ingredient[];
   steps: string[];
   prepTime: string;
@@ -27,7 +27,7 @@ const recipeSchema = new Schema<IRecipe>({
     trim: true
   },
   category: {
-    type: String,
+    type: [String],
     required: true,
     enum: ['Meat' , 'Chicken' , 'Fish' , 'Dessert' , 'Snack' , 'Soup']
   },
