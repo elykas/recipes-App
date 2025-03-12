@@ -14,11 +14,11 @@ router.post('/refresh-token', (req: Request, res: Response) => {
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET!) as jwt.JwtPayload;
 
-    // Create new access token
+    
     const accessToken = jwt.sign(
       { id: decoded.id },
       process.env.JWT_SECRET!,
-      { expiresIn: '15m' }
+      { expiresIn: '7d' }
     );
 
     res.status(200).json({ accessToken, success: true });

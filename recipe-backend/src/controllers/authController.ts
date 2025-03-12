@@ -15,14 +15,26 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
             req.logIn(user, (err) => {
                 if (err) return next(err);
 
-                if (!process.env.JWT_SECRET) {
+                if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
                     return res.status(500).json({ message: "JWT secret is not defined" });
                 }
 
-                const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                const accessToken = jwt.sign(
+                    { id: user.id },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '1h' }
+                );
 
-                // Store token securely in a cookie instead of query params
-                res.cookie('token', token, { httpOnly: true, secure: true });
+                // Refresh Token
+                const refreshToken = jwt.sign(
+                    { id: user.id },
+                    process.env.REFRESH_SECRET,
+                    { expiresIn: '7d' }
+                );
+
+                // שומרים את ה-Tokens ב-Cookie
+                res.cookie('token', accessToken, { httpOnly: true, secure: true });
+                res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, path: '/refresh-token' });
 
                 res.redirect('/dashboard');
             });
@@ -31,6 +43,7 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
         }
     })(req, res, next);
 };
+
 
 export const handleGoogleCallback = async (accessToken: string, refreshToken: string, profile: any, done: Function) => {
     try {
@@ -43,9 +56,9 @@ export const handleGoogleCallback = async (accessToken: string, refreshToken: st
 
 export const logout = async (req: Request, res: Response) => {
     try {
-        await logoutUserService(req);
-        res.clearCookie('token');
-        res.redirect('/');
+        res.clearCookiegit ('token')
+        res.clearCookie('refreshToken',{path:"/refresh-token"});
+        res.status(200).json({message:'Logged out successfully', success: true})
     } catch (error) {
         res.status(500).json({ message: error });
     }
