@@ -1,16 +1,15 @@
-import { Route, Routes } from 'react-router-dom'
-import './App.css'
-import Login from './pages/LoginPage'
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
-
   return (
     <>
-     <Routes>
-      <Route path='/' element={<Login/>}></Route>
-     </Routes>
+      <Routes>
+        <Route path="/" element={<LoginPage/>}></Route>
+      </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,64 +1,49 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GoogleLoginButton from "../components/GoogleLogin/GoogleLogin";
+import LoginForm from "../components/LoginForm/LoginForm";
 
-const Login = () => {
-  const [username, setUsername] = useState("");
+const LoginPage = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [invalidLogin, setInvalidLogin] = useState(false);
 
- 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-  
     } catch (error) {
       console.error("cannot login");
       setInvalidLogin(true);
     } finally {
-      setUsername("");
+      setEmail("");
       setPassword("");
     }
   };
 
   return (
-    <div className="login-form">
-        <h2>Login</h2>
-      <form  onSubmit={handleLogin}>
-        <div className="input-box">
-          <label>Username :</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Password :</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <input type="submit" />
-      </form>
-      <p style={{ color: "red" }}>
-        {invalidLogin && "login not valid try again"}
-      </p>
-       <p>Or login with:</p>
-      <GoogleLoginButton />
+  <div className=" rounded-xl shadow-[0_0_px_rgba(0,0,0,0.2)] w-full max-w-md text-center border border-gray-200">
+      <LoginForm
+        email={email}
+        password={password}
+        invalidLogin={invalidLogin}
+        onEmailChange={(e) => setEmail(e.target.value)}
+        onPasswordChange={(e) => setPassword(e.target.value)}
+        onSubmit={handleLogin}
+      />
 
-      <p className="go-register">
-        Don't have an account
-        {
-          <Link to={"/register"}>
-            <button className="button-register"> Register</button>
+      <div className="mt-6 w-full max-w-sm">
+        <p className="text-center text-gray-500">Or login with:</p>
+        <GoogleLoginButton />
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-blue-600 hover:underline">
+            Register
           </Link>
-        }
-      </p>
+        </p>
+      </div>
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;
