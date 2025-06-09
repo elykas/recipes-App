@@ -3,7 +3,6 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IUser extends Document {
   username: string;
   email?: string;
-  password: string;
   googleId?:string
   favoriteRecipes: mongoose.Types.ObjectId[]; // Reference to Recipe IDs
 }
@@ -21,11 +20,6 @@ const userSchema = new Schema<IUser>({
     unique: true,
     lowercase: true,
     match: /^\S+@\S+\.\S+$/ // Basic email format validation
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
   },
   favoriteRecipes: [
     {

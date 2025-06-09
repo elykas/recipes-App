@@ -2,11 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 import { IUser } from "../models/userModel";
 import {
+  checkUserExist,
+  createNewUserService,
   findOrCreateUserGoogleAuthService,
-  loginUserService,
-  registerUserService,
+  sendLoginLinkService,
 } from "../services/authService";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyTempToken,
+} from "../utils/jwt";
 import { setAuthCookies } from "../utils/setAuthCookies";
 
 export const googleAuth = passport.authenticate("google", {
@@ -82,51 +87,77 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
-export const registerUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const user: IUser = req.body;
-
-    const registeredUser = await registerUserService(user);
-    if (!registeredUser) {
-      res.status(404).json({ message: "Can't register user", success: false });
-      return;
-    }
-    res.status(201).json({ data: registeredUser, success: true });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const loginUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { email, password } = req.body;
-    const user = await loginUserService(email, password);
-    if (!user) {
-      res.status(404).json({ message: "Can't login user", success: false });
+    const { email } = req.body;
+    const user = await checkUserExist(email);
+
+    if (user) {
+      if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
+        res .status(500) .json({ message: "JWT secret is not defined", success: false });
+        return;
+      }
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+      setAuthCookies(res, accessToken, refreshToken);
+      res.status(200).json({ data: user, success: true });
+      return;
+    }
+    
+    await sendLoginLinkService(email);
+    res.status(200).json({ message: "Verification email sent", success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { token } = req.query;
+    if (typeof token !== "string") {
+      res.status(400).json({ error: "Token is missing or invalid" });
       return;
     }
 
-    if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-      res
-        .status(500)
-        .json({ message: "JWT secret is not defined", success: false });
-      return;
+    const email = verifyTempToken(token); 
+
+    if (!email) {
+       res.status(400) .json({ message: "Invalid or expired token", success: false });
+       return
+    }
+    res.status(200).json({ email, success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const completeRegister = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email, username } = req.body;
+    const existingUser = await checkUserExist(email);
+    if (existingUser) {
+      res.status(409).json({ message: "User already exists", success: false });
+      return
     }
 
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
-
+    const newUser = await createNewUserService(email, username);
+    const accessToken = generateAccessToken(newUser.id);
+    const refreshToken = generateRefreshToken(newUser.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(200).json({ data: user, success: true });
+    res.status(201).json({ data: newUser, success: true });
   } catch (error) {
     next(error);
   }

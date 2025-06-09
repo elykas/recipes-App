@@ -1,40 +1,30 @@
-import bycrpt from "bcrypt";
 import {
+  mongoCheckUserExist,
+  mongoCreateUser,
   mongoFindOrCreateUserToGoogleAuth,
-  mongoLoginUser,
-  mongoRegisterUser,
 } from "../DAL/authDAL";
-import { IUser } from "../models/userModel";
+import { generateTempToken } from "../utils/jwt";
+import { sendLoginEmail } from "../utils/sendLoginEmail"
 
-export const registerUserService = async (user: IUser) => {
-  const { username, email, password } = user;
-  if (!username || !email || !password) {
-    throw new Error("Missing required fields");
-  }
-
-  const hashedPassword = await bycrpt.hash(password, 10);
-  const registeredUser = await mongoRegisterUser(
-    email,
-    hashedPassword,
-    username
-  );
-
-  return registeredUser;
-};
-
-export const loginUserService = async (email: string, password: string) => {
-  const user = await mongoLoginUser(email, password);
+export const checkUserExist = async (email: string) => {
+  const user = await mongoCheckUserExist(email);
   if (!user) {
-    throw new Error("User not found");
+    return null;
   }
-
-  const isPasswordValid = await bycrpt.compare(password, user.password);
-  if (!isPasswordValid) {
-    throw new Error("Invalid password");
-  }
-
   return user;
 };
+
+export const createNewUserService = async(email: string, username: string) => {
+    const newUser = await mongoCreateUser(email, username)
+    return newUser
+}
+
+export const sendLoginLinkService = async (email: string) => {
+  const token = generateTempToken(email); 
+  const link = `https://localhost:5173/auth/verify?token=${token}`;
+  await sendLoginEmail(email, link);
+};
+
 
 export const findOrCreateUserGoogleAuthService = async (
   googleId: string,
