@@ -94,20 +94,6 @@ export const loginUser = async (
 ) => {
   try {
     const { email } = req.body;
-    const user = await checkUserExist(email);
-
-    if (user) {
-      if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-        res .status(500) .json({ message: "JWT secret is not defined", success: false });
-        return;
-      }
-      const accessToken = generateAccessToken(user.id);
-      const refreshToken = generateRefreshToken(user.id);
-      setAuthCookies(res, accessToken, refreshToken);
-      res.status(200).json({ data: user, success: true });
-      return;
-    }
-    
     await sendLoginLinkService(email);
     res.status(200).json({ message: "Verification email sent", success: true });
   } catch (error) {
@@ -127,13 +113,20 @@ export const verifyToken = async (
       return;
     }
 
-    const email = verifyTempToken(token); 
+    const decoded = verifyTempToken(token);
 
-    if (!email) {
-       res.status(400) .json({ message: "Invalid or expired token", success: false });
-       return
+    if (!decoded) {
+      res .status(400).json({ message: "Invalid or expired token", success: false });
+      return;
     }
-    res.status(200).json({ email, success: true });
+
+    const user = await checkUserExist(decoded.email)
+    if (user) {
+      res.status(200).json({ data:user, exist:true, success: true });
+    
+    }else{
+      res.status(200).json({data:decoded, exist: false, success: true})
+    }
   } catch (error) {
     next(error);
   }
@@ -146,18 +139,17 @@ export const completeRegister = async (
 ) => {
   try {
     const { email, username } = req.body;
-    const existingUser = await checkUserExist(email);
-    if (existingUser) {
-      res.status(409).json({ message: "User already exists", success: false });
-      return
-    }
 
-    const newUser = await createNewUserService(email, username);
-    const accessToken = generateAccessToken(newUser.id);
-    const refreshToken = generateRefreshToken(newUser.id);
+    const user = await (async () => {
+      const existingUser = await checkUserExist(email);
+      return existingUser ?? await createNewUserService(email, username);
+    })();
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(201).json({ data: newUser, success: true });
+    res.status(201).json({ data: user, success: true });
   } catch (error) {
     next(error);
   }
