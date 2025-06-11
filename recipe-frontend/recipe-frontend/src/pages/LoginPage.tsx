@@ -1,19 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GoogleLoginButton from "../components/GoogleLogin/GoogleLogin";
 import LoginForm from "../components/LoginForm/LoginForm";
+import { useAuthContext } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const {emailSent, login, isLoading} = useAuthContext();
   const [email, setEmail] = useState("");
+  const navigate = useNavigate()
 
-
+useEffect(() => {
+  if (emailSent) {
+    navigate("/sentEmail")
+  }
+},[emailSent])
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-    } catch (error) {
-      console.error("cannot login");
-    } finally {
-      setEmail("");
-    }
+    await login(email)
+    setEmail("")
   };
 
   return (

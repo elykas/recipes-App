@@ -121,12 +121,12 @@ export const verifyToken = async (
     }
 
     const user = await checkUserExist(decoded.email)
-    if (user) {
-      res.status(200).json({ data:user, exist:true, success: true });
-    
-    }else{
-      res.status(200).json({data:decoded, exist: false, success: true})
-    }
+    res.status(200).json({
+      success: true,
+      exist: !!user,
+      data: user ?? decoded
+    })
+
   } catch (error) {
     next(error);
   }
