@@ -1,15 +1,18 @@
 import { Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
-import EmailSentPage from "./pages/EmailSentPage";
-import VerifyTokenPage from "./pages/verifyTokenPage";
+import EmailSentPage from "./pages/authPages/EmailSentPage";
+import LoginPage from "./pages/authPages/LoginPage";
+import VerifyTokenPage from "./pages/authPages/verifyTokenPage";
+import CompleteRegistrationPage from "./pages/authPages/CompleteRegisterPage";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LoginPage/>}></Route>
-        <Route path="/sentEmail" element={<EmailSentPage/>}></Route>
-        <Route path="/verifyToken" element={<VerifyTokenPage/>}></Route>
+        <Route path="/" element={<LoginPage />}></Route>
+        <Route path="/sent-email" element={<EmailSentPage />}></Route>
+        <Route path="/verify-token" element={<VerifyTokenPage />}></Route>
+        <Route path="/complete-register" element={<CompleteRegistrationPage/>}></Route>
+        <Route path="/dashboard" element={<CompleteRegistrationPage/>}></Route>
       </Routes>
     </>
   );

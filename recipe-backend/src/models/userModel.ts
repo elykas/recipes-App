@@ -4,7 +4,8 @@ export interface IUser extends Document {
   username: string;
   email?: string;
   googleId?:string
-  favoriteRecipes: mongoose.Types.ObjectId[]; // Reference to Recipe IDs
+  favoriteRecipes: mongoose.Types.ObjectId[];
+  phone?: string
 }
 
 const userSchema = new Schema<IUser>({
@@ -19,12 +20,12 @@ const userSchema = new Schema<IUser>({
     required: true,
     unique: true,
     lowercase: true,
-    match: /^\S+@\S+\.\S+$/ // Basic email format validation
+    match: /^\S+@\S+\.\S+$/
   },
   favoriteRecipes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Recipe' // Reference to Recipe model
+      ref: 'Recipe'
     }
   ],
   googleId: {
@@ -33,10 +34,9 @@ const userSchema = new Schema<IUser>({
     sparse:true
   }
 }, {
-  timestamps: true // createdAt, updatedAt
+  timestamps: true 
 });
 
-userSchema.index({ email: 1 });
 
 userSchema.statics.findByEmail = function(email: string) {
   return this.findOne({ email }).populate('favoriteRecipes'); // Populates the recipe details

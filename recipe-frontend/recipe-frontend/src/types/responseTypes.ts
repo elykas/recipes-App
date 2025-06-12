@@ -6,8 +6,11 @@ export interface LoginResponse {
 }
 
 
-export interface VerifyTokenResponse {
+export type VerifyTokenResponse =
+  | { success: true; exist: true; data: IUser }
+  | { success: true; exist: false; data: { email: string } };
+
+export interface RegisterResponse {
   success: boolean;
-  exist: boolean;
-  data: IUser | { email: string }; // Or a more complete decoded shape
+  data: IUser;
 }

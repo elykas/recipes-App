@@ -21,7 +21,7 @@ export const createNewUserService = async(email: string, username: string) => {
 
 export const sendLoginLinkService = async (email: string) => {
   const token = generateTempToken(email); 
-  const link = `https://localhost:5173/auth/verify?token=${token}`;
+  const link = `http://localhost:5173/verify-token?token=${token}`;
   await sendLoginEmail(email, link);
 };
 

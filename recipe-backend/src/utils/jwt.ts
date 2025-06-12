@@ -25,7 +25,7 @@ export const generateRefreshToken = (id: string): string => {
 };
 
 export const generateTempToken = (email: string): string => {
-  if (TEMP_SECRET) {
+  if (!TEMP_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }
 

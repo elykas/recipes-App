@@ -50,7 +50,7 @@ const recipeSchema = new Schema<IRecipe>({
 });
 
 // 👉 Indexes to improve search performance
-recipeSchema.index({ name: 1 });
+
 recipeSchema.index({ category: 1 });
 recipeSchema.index({ 'ingredients.name': 1 });
 

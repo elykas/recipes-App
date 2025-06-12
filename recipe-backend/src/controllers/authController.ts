@@ -13,6 +13,7 @@ import {
   verifyTempToken,
 } from "../utils/jwt";
 import { setAuthCookies } from "../utils/setAuthCookies";
+import { console } from "inspector";
 
 export const googleAuth = passport.authenticate("google", {
   scope: ["email", "profile"],
@@ -108,13 +109,14 @@ export const verifyToken = async (
 ) => {
   try {
     const { token } = req.query;
+    console.log(token)
     if (typeof token !== "string") {
       res.status(400).json({ error: "Token is missing or invalid" });
       return;
     }
 
     const decoded = verifyTempToken(token);
-
+    console.log(decoded)
     if (!decoded) {
       res .status(400).json({ message: "Invalid or expired token", success: false });
       return;
