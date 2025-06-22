@@ -1,20 +1,23 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/authContext";
 
 const CompleteRegistrationPage: React.FC = () => {
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { completeRegistration, userEmail} = useAuthContext();
+  const { completeRegistration} = useAuthContext();
   const navigate = useNavigate();
-
+  const location = useLocation();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       setError("Name is required");
       return;
     }
+    
+    const userEmail = location.state?.email;
     if (!userEmail) {
         setError("Email is missing. Please verify your email again.");
         return;

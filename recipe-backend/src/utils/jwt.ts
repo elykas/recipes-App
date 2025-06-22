@@ -5,7 +5,7 @@ const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
 const TEMP_SECRET: string = process.env.TEMP_SECRET as string;
 
 export const generateAccessToken = (id: string): string => {
-  if (JWT_SECRET) {
+  if (!JWT_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }
   const accessToken = jwt.sign({ id }, JWT_SECRET, {
@@ -15,7 +15,7 @@ export const generateAccessToken = (id: string): string => {
 };
 
 export const generateRefreshToken = (id: string): string => {
-  if (REFRESH_SECRET) {
+  if (!REFRESH_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }
   const refreshToken = jwt.sign({ id }, REFRESH_SECRET, {
@@ -29,16 +29,20 @@ export const generateTempToken = (email: string): string => {
     throw new Error("TEMP_SECRET is not defined");
   }
 
-  const tempToken = jwt.sign( { email },TEMP_SECRET, { expiresIn: "15m" } 
-  );
+  const tempToken = jwt.sign({ email }, TEMP_SECRET, { expiresIn: "15m" });
 
   return tempToken;
 };
 
-export const verifyTempToken = (token: string): { email: string } => {
-  if (!process.env.TEMP_SECRET) {
-    throw new Error("TEMP_SECRET is not defined");
-  }
+export const verifyTempToken = (token: string): { email: string } | null => {
+  try {
+    if (!TEMP_SECRET) {
+      throw new Error("TEMP_SECRET is not defined");
+    }
 
-  return jwt.verify(token, process.env.TEMP_SECRET) as { email: string };
+    return jwt.verify(token, TEMP_SECRET) as { email: string };
+  } catch (error) {
+    console.log("failed to verify temp token", error);
+    return null;
+  }
 };

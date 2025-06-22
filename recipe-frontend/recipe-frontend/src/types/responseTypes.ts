@@ -7,8 +7,8 @@ export interface LoginResponse {
 
 
 export type VerifyTokenResponse =
-  | { success: true; exist: true; data: IUser }
-  | { success: true; exist: false; data: { email: string } };
+  | { success: true; exist: true;}
+  | { success: true; exist: false; data:{email: string}};
 
 export interface RegisterResponse {
   success: boolean;

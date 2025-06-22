@@ -24,7 +24,7 @@ interface AuthContextProps {
   userEmail : string | null
   isLoading: boolean;
   emailSent: boolean;
-  verifyToken: (token: string) => Promise<{ exist: boolean;}>;
+  verifyToken: (token: string) => Promise<{ exist: boolean; email?: string}>;
   login: (email: string) => Promise<void>;
   completeRegistration: (username: string, email: string) => Promise<void>;
 }
@@ -61,19 +61,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const verifyToken = async (token: string) => {
+  const verifyToken = async (token: string): Promise<
+  | { exist: true }
+  | { exist: false;  email: string }
+> => {
     setIsLoading(true)
     try {
       const response = await axios.post(`${BASE_URL}/verify-token`, { token });
-      console.log("lllllllllll")
       const responseData = response.data as VerifyTokenResponse;
-      const { data, exist } = responseData;
-      if (exist) {
-      setUser(data); 
+      if (responseData.exist) {
+      return {exist: true};
     } else {
-      setUserEmail(data.email); 
+      return {exist:false, email: responseData.data.email};
     }
-    return {exist};
     } catch {
       throw new Error("failed to verify your email");
     }finally{

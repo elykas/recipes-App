@@ -13,7 +13,9 @@ import {
   verifyTempToken,
 } from "../utils/jwt";
 import { setAuthCookies } from "../utils/setAuthCookies";
-import { console } from "inspector";
+
+
+const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export const googleAuth = passport.authenticate("google", {
   scope: ["email", "profile"],
@@ -26,19 +28,14 @@ export const googleAuthCallback = (
 ) => {
   passport.authenticate(
     "google",
-    { failureRedirect: "/login" },
+    { failureRedirect: "/login",session: false },
     async (err: Error, user: IUser) => {
       if (err) return next(err);
       if (!user) return res.redirect("/login");
 
       try {
-        req.logIn(user, (err) => {
-          if (err) return next(err);
-
           if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-            return res
-              .status(500)
-              .json({ message: "JWT secret is not defined" });
+            return res.status(500).json({ message: "JWT secret is not defined" });
           }
 
           const accessToken = generateAccessToken(user.id);
@@ -46,8 +43,7 @@ export const googleAuthCallback = (
 
           setAuthCookies(res, accessToken, refreshToken);
 
-          res.redirect("/dashboard");
-        });
+          res.redirect(`${CLIENT_URL}/dashboard`);
       } catch (error) {
         next(error);
       }
@@ -109,26 +105,36 @@ export const verifyToken = async (
 ) => {
   try {
     const { token } = req.query;
-    console.log(token)
-    if (typeof token !== "string") {
-      res.status(400).json({ error: "Token is missing or invalid" });
+    if (typeof token !== "string" || !token) {
+      res.status(401).json({ error: "Token is missing or invalid" });
       return;
     }
 
     const decoded = verifyTempToken(token);
-    console.log(decoded)
     if (!decoded) {
-      res .status(400).json({ message: "Invalid or expired token", success: false });
+      res.status(403).json({ message: "Invalid or expired token", success: false });
       return;
     }
 
-    const user = await checkUserExist(decoded.email)
+     const user = await checkUserExist(decoded.email);
+
+  if (user) {
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+    setAuthCookies(res, accessToken, refreshToken);
+
     res.status(200).json({
       success: true,
-      exist: !!user,
-      data: user ?? decoded
-    })
+      exist: true
+    });
+    return
+  }
 
+  res.status(200).json({
+    success: true,
+    exist: false,
+    data: { email: decoded.email }
+  });
   } catch (error) {
     next(error);
   }
@@ -144,14 +150,14 @@ export const completeRegister = async (
 
     const user = await (async () => {
       const existingUser = await checkUserExist(email);
-      return existingUser ?? await createNewUserService(email, username);
+      return existingUser ?? (await createNewUserService(email, username));
     })();
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(201).json({ data: user, success: true });
+    res.status(201).json({success: true });
   } catch (error) {
     next(error);
   }

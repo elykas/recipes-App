@@ -12,7 +12,6 @@ export const sendLoginEmail = async (email: string, link: string) => {
       subject: 'Login to your account',
       html: `<p>Click <a href="${link}">here</a> to log in.</p>`,
     });
-    console.log("Email sent:", response);
   } catch (error) {
     console.error("Failed to send email:", error);
   }

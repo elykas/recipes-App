@@ -16,11 +16,15 @@ const VerifyTokenPage = () => {
     }
     const callVerifyToken = async () => {
       const response = await verifyToken(token);
-      const { exist } = response;
+      const { exist, email} = response;
       if (exist) {
         navigate("/dashboard");
       } else {
-        navigate("/complete-register");
+        if(!email){
+          navigate("/");
+          return
+        }
+        navigate("/complete-register",{state: {email}});
       }
     };
     callVerifyToken();
