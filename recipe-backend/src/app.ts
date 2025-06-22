@@ -7,6 +7,7 @@ import {errorHandler} from './middleware/errorHandler';
 import recipeRouter from './routes/crudRecipesRouter';
 import authRouter from './routes/authRouter';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 
 const environment = process.env.NODE_ENV || 'development';
 if (environment === 'production') {
@@ -24,6 +25,7 @@ const PORT = process.env.PORT || 3000;
 connectDB();
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
     origin: true,

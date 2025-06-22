@@ -12,8 +12,8 @@ import {
   generateRefreshToken,
   verifyTempToken,
 } from "../utils/jwt";
-import { setAuthCookies } from "../utils/setAuthCookies";
-
+import { setAuthCookies, setTempTokenCookie } from "../utils/setAuthCookies";
+import { set } from "mongoose";
 
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
@@ -28,22 +28,22 @@ export const googleAuthCallback = (
 ) => {
   passport.authenticate(
     "google",
-    { failureRedirect: "/login",session: false },
+    { failureRedirect: "/login", session: false },
     async (err: Error, user: IUser) => {
       if (err) return next(err);
       if (!user) return res.redirect("/login");
 
       try {
-          if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-            return res.status(500).json({ message: "JWT secret is not defined" });
-          }
+        if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
+          return res.status(500).json({ message: "JWT secret is not defined" });
+        }
 
-          const accessToken = generateAccessToken(user.id);
-          const refreshToken = generateRefreshToken(user.id);
+        const accessToken = generateAccessToken(user.id);
+        const refreshToken = generateRefreshToken(user.id);
 
-          setAuthCookies(res, accessToken, refreshToken);
+        setAuthCookies(res, accessToken, refreshToken);
 
-          res.redirect(`${CLIENT_URL}/dashboard`);
+        res.redirect(`${CLIENT_URL}/dashboard`);
       } catch (error) {
         next(error);
       }
@@ -106,7 +106,7 @@ export const verifyToken = async (
   try {
     const { token } = req.query;
     if (typeof token !== "string" || !token) {
-      res.status(401).json({ error: "Token is missing or invalid" });
+      res.status(401).json({ message: "Token is missing or invalid", success: false });
       return;
     }
 
@@ -116,25 +116,20 @@ export const verifyToken = async (
       return;
     }
 
-     const user = await checkUserExist(decoded.email);
+    const user = await checkUserExist(decoded.email);
 
-  if (user) {
-    const accessToken = generateAccessToken(user.id);
-    const refreshToken = generateRefreshToken(user.id);
-    setAuthCookies(res, accessToken, refreshToken);
+    if (user) {
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+      setAuthCookies(res, accessToken, refreshToken);
+    } else {
+      setTempTokenCookie(res, token);
+    }
 
     res.status(200).json({
       success: true,
-      exist: true
+      exist: !!user,
     });
-    return
-  }
-
-  res.status(200).json({
-    success: true,
-    exist: false,
-    data: { email: decoded.email }
-  });
   } catch (error) {
     next(error);
   }
@@ -146,7 +141,21 @@ export const completeRegister = async (
   next: NextFunction
 ) => {
   try {
-    const { email, username } = req.body;
+    const {username } = req.body;
+    const token = req.cookies.tempToken;
+
+    if (!token) {
+      res.status(401).json({ message: "Token is missing or invalid", success: false });
+      return;
+    }
+
+    const decoded = verifyTempToken(token);
+    if (!decoded) {
+      res.status(403).json({ message: "Invalid or expired token", success: false });
+      return;
+    }
+
+    const email = decoded.email;
 
     const user = await (async () => {
       const existingUser = await checkUserExist(email);
@@ -157,7 +166,7 @@ export const completeRegister = async (
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(201).json({success: true });
+    res.status(201).json({ success: true });
   } catch (error) {
     next(error);
   }
