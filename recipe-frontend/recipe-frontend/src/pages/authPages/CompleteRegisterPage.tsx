@@ -8,7 +8,6 @@ const CompleteRegistrationPage: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { completeRegistration} = useAuthContext();
   const navigate = useNavigate();
-  const location = useLocation();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,16 +15,10 @@ const CompleteRegistrationPage: React.FC = () => {
       setError("Name is required");
       return;
     }
-    
-    const userEmail = location.state?.email;
-    if (!userEmail) {
-        setError("Email is missing. Please verify your email again.");
-        return;
-    }
 
     setIsSubmitting(true);
     try {
-      await completeRegistration(name, userEmail);
+      await completeRegistration(name);
       navigate("/dashboard");
     } catch (err) {
       setError("Registration failed. Please try again.");

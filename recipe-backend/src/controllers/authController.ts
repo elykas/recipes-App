@@ -13,7 +13,6 @@ import {
   verifyTempToken,
 } from "../utils/jwt";
 import { setAuthCookies, setTempTokenCookie } from "../utils/setAuthCookies";
-import { set } from "mongoose";
 
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
@@ -35,7 +34,7 @@ export const googleAuthCallback = (
 
       try {
         if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-          return res.status(500).json({ message: "JWT secret is not defined" });
+          return res.status(500).json({success: false, message: "JWT secret is not defined" });
         }
 
         const accessToken = generateAccessToken(user.id);
@@ -104,19 +103,10 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    const { token } = req.query;
-    if (typeof token !== "string" || !token) {
-      res.status(401).json({ message: "Token is missing or invalid", success: false });
-      return;
-    }
-
-    const decoded = verifyTempToken(token);
-    if (!decoded) {
-      res.status(403).json({ message: "Invalid or expired token", success: false });
-      return;
-    }
-
-    const user = await checkUserExist(decoded.email);
+    const  email  = (req as any).email;
+    const {token} = req.body;
+   
+    const user = await checkUserExist(email);
 
     if (user) {
       const accessToken = generateAccessToken(user.id);
@@ -128,6 +118,7 @@ export const verifyToken = async (
 
     res.status(200).json({
       success: true,
+      message: "User verified successfully",
       exist: !!user,
     });
   } catch (error) {
@@ -141,33 +132,23 @@ export const completeRegister = async (
   next: NextFunction
 ) => {
   try {
-    const {username } = req.body;
-    const token = req.cookies.tempToken;
+    const {username} = req.body;
+    const {email} = (req as any).email
+    
+    const user = await createNewUserService(email, username);
 
-    if (!token) {
-      res.status(401).json({ message: "Token is missing or invalid", success: false });
-      return;
+    if (!user) {
+      return res.status(400).json({ success: false, message: "User already exists" });
     }
-
-    const decoded = verifyTempToken(token);
-    if (!decoded) {
-      res.status(403).json({ message: "Invalid or expired token", success: false });
-      return;
-    }
-
-    const email = decoded.email;
-
-    const user = await (async () => {
-      const existingUser = await checkUserExist(email);
-      return existingUser ?? (await createNewUserService(email, username));
-    })();
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(201).json({ success: true });
+    res.status(201).json({ success: true, message: "User registered successfully" });
   } catch (error) {
     next(error);
   }
 };
+
+

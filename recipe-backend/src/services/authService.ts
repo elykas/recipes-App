@@ -15,6 +15,10 @@ export const checkUserExist = async (email: string) => {
 };
 
 export const createNewUserService = async(email: string, username: string) => {
+    const user = await mongoCheckUserExist(email);
+    if (user) {
+        return null
+    }
     const newUser = await mongoCreateUser(email, username)
     return newUser
 }

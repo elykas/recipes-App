@@ -1,16 +1,17 @@
-import type { IUser } from "./userModel";
+import type { IUser } from "./userType";
 
 export interface LoginResponse {
   success: boolean;
   message: string;
 }
 
-
-export type VerifyTokenResponse =
-  | { success: true; exist: true;}
-  | { success: true; exist: false; data:{email: string}};
-
-export interface RegisterResponse {
+export type VerifyTokenResponse = {
   success: boolean;
-  data: IUser;
-}
+  exist: boolean;
+};
+
+export type GetUser = {
+  success: boolean;
+  message: string;
+  user: IUser;
+};

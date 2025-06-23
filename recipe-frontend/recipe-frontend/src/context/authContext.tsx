@@ -7,11 +7,8 @@ import React, {
 } from "react";
 import type {
   LoginResponse,
-  RegisterResponse,
   VerifyTokenResponse,
 } from "../types/responseTypes";
-import type { IUser } from "../types/userModel";
-
 
 const BASE_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
@@ -20,27 +17,26 @@ interface AuthProviderProps {
 }
 
 interface AuthContextProps {
-  user: IUser | null;
-  userEmail : string | null
+  userEmail: string | null;
   isLoading: boolean;
   emailSent: boolean;
-  verifyToken: (token: string) => Promise<{ exist: boolean; email?: string}>;
+  verifyToken: (token: string) => Promise<boolean>;
   login: (email: string) => Promise<void>;
-  completeRegistration: (username: string, email: string) => Promise<void>;
+  completeRegistration: (username: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({
-  user: null,
   userEmail: null,
   isLoading: false,
   emailSent: false,
-  verifyToken: async () => ({ exist: false}),
+  verifyToken: async () => false,
   login: async () => {},
-  completeRegistration: async () => {}
+  completeRegistration: async () => {},
+  logout: async() => {},
 });
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<IUser | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [emailSent, setEmailSent] = useState<boolean>(false);
@@ -52,55 +48,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = response.data as LoginResponse;
       if (data.success) {
         setEmailSent(true);
-        setUserEmail(email)
+        setUserEmail(email);
       }
     } catch (err) {
-      throw err;
+        throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const verifyToken = async (token: string): Promise<
-  | { exist: true }
-  | { exist: false;  email: string }
-> => {
-    setIsLoading(true)
+  const verifyToken = async (token: string): Promise<boolean> => {
+    setIsLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/verify-token`, { token });
       const responseData = response.data as VerifyTokenResponse;
-      if (responseData.exist) {
-      return {exist: true};
-    } else {
-      return {exist:false, email: responseData.data.email};
-    }
+      return responseData.exist;
     } catch {
       throw new Error("failed to verify your email");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const completeRegistration = async (username: string) => {
+    setIsLoading(true);
+    try {
+      await axios.post(`${BASE_URL}/complete-registration`,
+        { username },
+        { withCredentials: true }
+      );
+    } catch (error) {
+      throw new Error("failed to verify your email");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async() => {
+    setIsLoading(true)
+    try {
+      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      throw new Error("failed to logout");
     }finally{
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
 
-  const completeRegistration = async(username: string, email: string) => {
-    setIsLoading(true)
-    try {
-      const response = await axios.post(`${BASE_URL}/complete-registration`, 
-        {username, email});
-      const {data} = response.data as RegisterResponse
-      if (data) {
-        setUser(data)
-      }
-    } catch (error) {
-        throw new Error("failed to verify your email")
-    }finally{
-      setIsLoading(false)
-    }
-  }
-
   return (
     <AuthContext.Provider
-      value={{ user, userEmail, isLoading, emailSent, verifyToken, login, completeRegistration }}
+      value={{
+        userEmail,
+        isLoading,
+        emailSent,
+        verifyToken,
+        login,
+        completeRegistration,
+        logout
+      }}
     >
       {children}
     </AuthContext.Provider>
