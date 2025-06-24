@@ -45,7 +45,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const updateUser = async (user: IUser) => {
     setIsLoading(true);
     try {
-      await axios.put(`${BASE_URL}/update-user`, user, {
+      await axios.put(`${BASE_URL}`, user, {
         withCredentials: true,
       });
     } catch (error) {

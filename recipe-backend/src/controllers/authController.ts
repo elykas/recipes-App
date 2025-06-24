@@ -11,8 +11,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
   verifyTempToken,
-} from "../utils/jwt";
-import { setAuthCookies, setTempTokenCookie } from "../utils/setAuthCookies";
+} from "../utils/authUtils/jwt";
+import { setAuthCookies, setTempTokenCookie } from "../utils/authUtils/setAuthCookies";
 
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
@@ -34,7 +34,9 @@ export const googleAuthCallback = (
 
       try {
         if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
-          return res.status(500).json({success: false, message: "JWT secret is not defined" });
+          return res
+            .status(500)
+            .json({ success: false, message: "JWT secret is not defined" });
         }
 
         const accessToken = generateAccessToken(user.id);
@@ -103,9 +105,9 @@ export const verifyToken = async (
   next: NextFunction
 ) => {
   try {
-    const  email  = (req as any).email;
-    const {token} = req.body;
-   
+    const email = (req as any).email;
+    const { token } = req.body;
+
     const user = await checkUserExist(email);
 
     if (user) {
@@ -132,23 +134,26 @@ export const completeRegister = async (
   next: NextFunction
 ) => {
   try {
-    const {username} = req.body;
-    const {email} = (req as any).email
-    
+    const { username } = req.body;
+    const { email } = (req as any).email;
+
     const user = await createNewUserService(email, username);
 
     if (!user) {
-      return res.status(400).json({ success: false, message: "User already exists" });
+      res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
+      return;
     }
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
 
-    res.status(201).json({ success: true, message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
     next(error);
   }
 };
-
-

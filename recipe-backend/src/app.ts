@@ -6,6 +6,8 @@ import cors from 'cors';
 import {errorHandler} from './middleware/errorHandler';   
 import recipeRouter from './routes/crudRecipesRouter';
 import authRouter from './routes/authRouter';
+import userRouter from './routes/userRouter';
+import aiRouter from './routes/aiRouter';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
@@ -45,7 +47,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/crudRecipes',recipeRouter);
-app.use('/api/auth',authRouter)
+app.use('/api/auth',authRouter);
+app.use('/api/user', userRouter)
+app.use("/api/ai", aiRouter)
 
 app.use(errorHandler);
 

@@ -19,7 +19,7 @@ export const getAllRecipes = async (
       res.status(404).json({ message: "No recipes found" });
       return;
     }
-    res.status(200).json({ data: recipes, succsess: true });
+    res.status(200).json({ data: recipes, success: true });
   } catch (error) {
     next(error);
   }
@@ -31,12 +31,13 @@ export const getRecipeById = async (
   next: NextFunction
 ) => {
   try {
-    const recipe = await getRecipeByIdService(req.params.recipeId);
+    const {recipeId} = req.params;
+    const recipe = await getRecipeByIdService(recipeId);
     if (!recipe) {
-      res.status(404).json({ message: "Recipe not found", succsess: false });
+      res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    res.status(200).json({ data: recipe, succsess: true });
+    res.status(200).json({ data: recipe, success: true });
   } catch (error) {
     next(error);
   }
@@ -48,12 +49,13 @@ export const createRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const recipe = await createRecipeService(req.body);
-    if (!recipe) {
-      res.status(404).json({ message: "Can't create recipe", succsess: false });
+    const recipe = req.body;
+    const newRecipe = await createRecipeService(recipe);
+    if (!newRecipe) {
+      res.status(404).json({ message: "Can't create recipe", success: false });
       return;
     }
-    res.status(201).json({ data: recipe, succsess: true });
+    res.status(201).json({ data: newRecipe, success: true, message: "Recipe created successfully" });
   } catch (error) {
     next(error);
   }
@@ -65,16 +67,19 @@ export const editRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const recipe = await Recipe.findByIdAndUpdate(
-      req.params.recipeId,
+    const {recipeId} = req.params;
+    const recipe = req.body;
+
+    const updatedRecipe = await Recipe.findByIdAndUpdate(
+      recipeId,
       req.body,
       { new: true }
     );
-    if (!recipe) {
-      res.status(404).json({ message: "Recipe not found", succsess: false });
+    if (!updatedRecipe) {
+      res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    res.status(200).json({ data: recipe, succsess: true });
+    res.status(200).json({ data: updatedRecipe, success: true , message: "Recipe updated successfully"});
   } catch (error) {
     next(error);
   }
@@ -86,12 +91,13 @@ export const deleteRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const recipe = await Recipe.findByIdAndDelete(req.params.recipeId);
-    if (!recipe) {
-      res.status(404).json({ message: "Recipe not found", succsess: false });
+    const {recipeId} = req.params;
+    const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
+    if (!deletedRecipe) {
+      res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    res.status(200).json({ data: recipe, succsess: true });
+    res.status(200).json({ data: deletedRecipe, success: true });
   } catch (error) {
     next(error);
   }
@@ -103,7 +109,7 @@ export const getByCategory = async (
   next: NextFunction
 ) => {
   try {
-    const category = req.params.category;
+    const {category} = req.params;
 
     if (!category || category.trim().length === 0) {
       res.status(400).json({ message: "Category is required", success: false });
@@ -115,7 +121,7 @@ export const getByCategory = async (
       res.status(404).json({ message: "No recipes found" });
       return;
     }
-    res.status(200).json({ data: recipes, succsess: true });
+    res.status(200).json({ data: recipes, success: true });
   } catch (error) {
     next(error);
   }

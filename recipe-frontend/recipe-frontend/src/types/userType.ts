@@ -1,3 +1,5 @@
+import type { IRecipe } from "./recipeType";
+
 export interface IUser{
     _id: string;
     username: string;
@@ -6,6 +8,3 @@ export interface IUser{
     favoriteRecipes?: IRecipe[]
 }
 
-export interface IRecipe{
-
-}

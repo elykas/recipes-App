@@ -3,7 +3,7 @@ import EmailSentPage from "./pages/authPages/EmailSentPage";
 import LoginPage from "./pages/authPages/LoginPage";
 import VerifyTokenPage from "./pages/authPages/verifyTokenPage";
 import CompleteRegistrationPage from "./pages/authPages/CompleteRegisterPage";
-import DashboardPage from "./pages/recipePages/dashboardPage";
+import DashboardPage from "./pages/recipePages/DashboardPage";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {

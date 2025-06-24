@@ -3,8 +3,8 @@ import {
   mongoCreateUser,
   mongoFindOrCreateUserToGoogleAuth,
 } from "../DAL/authDAL";
-import { generateTempToken } from "../utils/jwt";
-import { sendLoginEmail } from "../utils/sendLoginEmail"
+import { generateTempToken } from "../utils/authUtils/jwt";
+import { sendLoginEmail } from "../utils/authUtils/sendLoginEmail";
 
 export const checkUserExist = async (email: string) => {
   const user = await mongoCheckUserExist(email);
@@ -14,21 +14,20 @@ export const checkUserExist = async (email: string) => {
   return user;
 };
 
-export const createNewUserService = async(email: string, username: string) => {
-    const user = await mongoCheckUserExist(email);
-    if (user) {
-        return null
-    }
-    const newUser = await mongoCreateUser(email, username)
-    return newUser
-}
+export const createNewUserService = async (email: string, username: string) => {
+  const user = await mongoCheckUserExist(email);
+  if (user) {
+    return null;
+  }
+  const newUser = await mongoCreateUser(email, username);
+  return newUser;
+};
 
 export const sendLoginLinkService = async (email: string) => {
-  const token = generateTempToken(email); 
+  const token = generateTempToken(email);
   const link = `http://localhost:5173/verify-token?token=${token}`;
   await sendLoginEmail(email, link);
 };
-
 
 export const findOrCreateUserGoogleAuthService = async (
   googleId: string,
