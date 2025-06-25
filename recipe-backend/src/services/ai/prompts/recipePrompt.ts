@@ -1,42 +1,32 @@
+import { IRecipe } from "../../../models/recipeModel";
+
 interface BuildRecipePromptParams {
   ingredients: string[];
   category?: string[];
   freeText?: string;
+  previousRecipes?: IRecipe[];
 }
 
-export const buildRecipePrompt = ({
-  ingredients,
-  category,
-  freeText,
-}: BuildRecipePromptParams): string => {
-  let prompt = `Please generate a single recipe strictly in JSON format with the following structure:
+export const buildRecipePrompt = (
+  ingredients: string[],
+  category: string[],
+  freeText: string,
+  previousRecipes: IRecipe[]
+) => {
+  let prompt = `Generate a recipe in JSON format with the following details:\n`;
 
-{
-  "name": "string",
-  "category": ["string", "string", ...],
-  "ingredients": [
-    { "name": "string", "quantity": "string" }
-  ],
-  "steps": ["string", "string", ...],
-  "prepTime": "string",
-  "imageUrl": "string (optional)"
-}
+  if (ingredients.length) prompt += `Ingredients: ${ingredients.join(", ")}\n`;
+  if (category.length) prompt += `Categories: ${category.join(", ")}\n`;
+  if (freeText) prompt += `Additional instructions: ${freeText}\n`;
 
-Use the following information to generate the recipe:\n`;
-
-  if (ingredients.length > 0) {
-    prompt += `Ingredients I have: ${ingredients.join(", ")}\n`;
+  if (previousRecipes.length > 0) {
+    prompt += `\nAvoid recipes similar to the following:\n`;
+    previousRecipes.forEach((recipe, idx) => {
+      prompt += `Recipe ${idx + 1} name: ${recipe.name}\nIngredients: ${recipe.ingredients.map(i => i.name).join(", ")}\n`;
+    });
   }
 
-  if (category && category.length > 0) {
-    prompt += `Desired categories: ${category.join(", ")}\n`;
-  }
-
-  if (freeText) {
-    prompt += `Additional instructions: ${freeText}\n`;
-  }
-
-  prompt += `\nPlease respond with only valid JSON. Do not include explanations or extra text.`;
+  prompt += `\nRespond with only valid JSON without extra text.`;
 
   return prompt;
 };

@@ -6,6 +6,7 @@ import "./index.css";
 import { AuthProvider } from "./context/authContext.tsx";
 import { UserProvider } from "./context/userContext.tsx";
 import { RecipesProvider } from "./context/recipesContext.tsx";
+import { GeneratedRecipesProvider } from "./context/aiContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <UserProvider>
           <RecipesProvider>
-            <App />
+            <GeneratedRecipesProvider>
+              <App />
+            </GeneratedRecipesProvider>
           </RecipesProvider>
         </UserProvider>
       </AuthProvider>

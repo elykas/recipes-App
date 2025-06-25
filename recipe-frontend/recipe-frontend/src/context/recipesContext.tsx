@@ -16,6 +16,8 @@ interface RecipesContextProps {
   addRecipe: (recipe: IRecipe) => Promise<void>;
   deleteRecipe: (recipeId: string) => Promise<void>;
   updateRecipe: (recipe: IRecipe) => Promise<void>;
+  getRecipesByCategory: (category: string) => Promise<void>;
+  getRecipeByAi: (ingredients: string[], category: string[],freeText: string) => Promise<void>;
 }
 
 const RecipesContext = createContext<RecipesContextProps>({
@@ -27,6 +29,8 @@ const RecipesContext = createContext<RecipesContextProps>({
   addRecipe: async () => {},
   deleteRecipe: async () => {},
   updateRecipe: async () => {},
+  getRecipesByCategory: async () => {},
+  getRecipeByAi: async () => {},
 });
 
 export const RecipesProvider: React.FC<RecipesProviderProps> = ({
@@ -95,6 +99,26 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
+  const getRecipesByCategory = async (category: string) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/get-by-category/${category}`);
+      const data = response.data as IRecipe[];
+      setRecipes(data);
+    } catch (error) {
+      throw new Error("failed to get recipes by category");
+    }
+  };
+
+  const getRecipeByAi = async (ingredients: string[], category: string[],freeText: string) => {
+    try {
+      const response = await axios.post(`${BASE_URL}/generate-recipe`, { ingredients, category, freeText });
+      const data = response.data as IRecipe;
+      setRecipe(data);
+    } catch (error) {
+      throw new Error("failed to get recipe by AI");
+    }
+  }
+
   return (
     <RecipesContext.Provider
       value={{
@@ -106,6 +130,8 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
         addRecipe,
         deleteRecipe,
         updateRecipe,
+        getRecipesByCategory,
+        getRecipeByAi
       }}
     >
       {children}

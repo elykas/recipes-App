@@ -49,7 +49,7 @@ app.use(passport.session());
 app.use('/api/crudRecipes',recipeRouter);
 app.use('/api/auth',authRouter);
 app.use('/api/user', userRouter)
-app.use("/api/ai", aiRouter)
+app.use("/api/ai-recipes", aiRouter)
 
 app.use(errorHandler);
 

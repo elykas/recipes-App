@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GoogleLoginButton from "../../components/GoogleLogin/GoogleLogin";
-import LoginForm from "../../components/LoginForm/LoginForm";
+import GoogleLoginButton from "../../components/auth/GoogleLogin/GoogleLogin";
+import LoginForm from "../../components/auth/LoginForm/LoginForm";
 import { useAuthContext } from "../../context/authContext";
 
 const LoginPage = () => {

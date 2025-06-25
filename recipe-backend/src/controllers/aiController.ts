@@ -7,8 +7,8 @@ export const generateRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const { ingredients, category, freeText } = req.body;
-    const recipe = await getRecipeAIService(ingredients, category, freeText);
+    const { ingredients, category, freeText,previousRecipes } = req.body;
+    const recipe = await getRecipeAIService(ingredients, category, freeText,previousRecipes);
     res.status(200).json({ success: true, data: recipe });
   } catch (error) {
     next(error);
