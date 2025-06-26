@@ -117,7 +117,6 @@ export const verifyToken = async (
     } else {
       setTempTokenCookie(res, token);
     }
-
     res.status(200).json({
       success: true,
       message: "User verified successfully",
@@ -135,7 +134,7 @@ export const completeRegister = async (
 ) => {
   try {
     const { username } = req.body;
-    const { email } = (req as any).email;
+    const { email } = (req as any);
 
     const user = await createNewUserService(email, username);
 

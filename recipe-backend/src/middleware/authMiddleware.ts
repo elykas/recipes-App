@@ -52,7 +52,7 @@ export const verifyTempTokenMiddleware = (
       res
         .status(403)
         .json({ message: "Invalid or expired token", success: false });
-      return;
+      return; 
     }
 
     (req as any).email = decoded.email;
