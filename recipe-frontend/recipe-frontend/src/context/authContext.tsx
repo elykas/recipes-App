@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const completeRegistration = async (username: string) => {
     setIsLoading(true);
     try {
-      await axios.post(`${BASE_URL}/complete-registration`,
+      await axios.post(`${BASE_URL}/complete-register`,
         { username },
         { withCredentials: true }
       );

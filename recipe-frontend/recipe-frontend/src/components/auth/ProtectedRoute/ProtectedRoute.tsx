@@ -1,6 +1,6 @@
 import { Navigate} from "react-router-dom";
-import { useAuthContext } from "../../context/authContext";
-import { useUserContext } from "../../context/userContext";
+import { useAuthContext } from "../../../context/authContext";
+import { useUserContext } from "../../../context/userContext";
 
 interface ProtectedRouteProps {
     children: React.ReactElement;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/authContext";
 
 const CompleteRegistrationPage: React.FC = () => {
