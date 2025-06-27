@@ -93,6 +93,7 @@ export const loginUser = async (
   try {
     const { email } = req.body;
     await sendLoginLinkService(email);
+    console.log(email);
     res.status(200).json({ message: "Verification email sent", success: true });
   } catch (error) {
     next(error);

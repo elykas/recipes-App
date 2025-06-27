@@ -42,8 +42,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const login = async (email: string) => {
-    console.log(email);
-    console.log(BASE_URL);
     setIsLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/login`, { email });
@@ -63,7 +61,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/verify-token`, { token },{ withCredentials: true });
-      console.log(response);
       const responseData = response.data as VerifyTokenResponse;
       return responseData.exist;
     } catch {

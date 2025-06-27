@@ -6,18 +6,7 @@ const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { getUser, user} = useUserContext();
 
-useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        await getUser();
-      } catch (error) {
-        console.error(error);
-        navigate("/login"); 
-      }
-    };
 
-    fetchUser();
-  }, []);
 
   return (
     <div>

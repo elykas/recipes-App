@@ -14,6 +14,7 @@ const VerifyTokenPage = () => {
       navigate("/");
       return;
     }
+    
     const callVerifyToken = async () => {
       const response = await verifyToken(token);
       const exist: boolean = response;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type { IUser } from "../types/userType";
 import type { GetUser } from "../types/responseTypes";
 
@@ -18,7 +18,7 @@ interface UserContextProps {
 
 const UserContext = createContext<UserContextProps>({
   user: null,
-  isLoading: false,
+  isLoading: true,
   getUser: async () => {},
   updateUser: async () => {},
 });
@@ -41,6 +41,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const updateUser = async (user: IUser) => {
     setIsLoading(true);
