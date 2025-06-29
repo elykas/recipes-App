@@ -18,9 +18,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     };
     fetchUser();
   },[]);
-  if (isLoading || !checked) return <p>Loading...</p>;
+  if (isLoading && !checked) return <p>Loading...</p>;
 
-  if (!user) return <Navigate to="/" />;
+  if (!user) return <Navigate to="/login" />;
 
   return children;
 };

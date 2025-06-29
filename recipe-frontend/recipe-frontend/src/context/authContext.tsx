@@ -19,9 +19,8 @@ interface AuthProviderProps {
 interface AuthContextProps {
   userEmail: string | null;
   isLoading: boolean;
-  emailSent: boolean;
   verifyToken: (token: string) => Promise<boolean>;
-  login: (email: string) => Promise<void>;
+  login: (email: string) => Promise<boolean>;
   completeRegistration: (username: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -29,9 +28,8 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps>({
   userEmail: null,
   isLoading: false,
-  emailSent: false,
   verifyToken: async () => false,
-  login: async () => {},
+  login: async () => false,
   completeRegistration: async () => {},
   logout: async() => {},
 });
@@ -39,17 +37,17 @@ const AuthContext = createContext<AuthContextProps>({
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [emailSent, setEmailSent] = useState<boolean>(false);
 
   const login = async (email: string) => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/login`, { email });
       const data = response.data as LoginResponse;
+      console.log(data);
       if (data.success) {
-        setEmailSent(true);
         setUserEmail(email);
       }
+      return data.success;
     } catch (err) {
         throw err;
     } finally {
@@ -60,7 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const verifyToken = async (token: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BASE_URL}/verify-token`, { token },{ withCredentials: true });
+      const response = await axios.post(`${BASE_URL}/verify-token`, { token }
+        ,{ withCredentials: true });
       const responseData = response.data as VerifyTokenResponse;
       return responseData.exist;
     } catch {
@@ -101,7 +100,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       value={{
         userEmail,
         isLoading,
-        emailSent,
         verifyToken,
         login,
         completeRegistration,

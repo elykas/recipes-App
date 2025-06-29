@@ -10,7 +10,7 @@ const EmailSentPage: React.FC = () => {
   
   const handleResendEmail = async () => {
     if (!userEmail) {
-      navigate("/");
+      navigate("/login");
       return
     }
     try {
@@ -21,7 +21,7 @@ const EmailSentPage: React.FC = () => {
   };
 
   const handleClose = () => {
-    navigate("/")
+    navigate("/login")
   }
   return (
     <div className="text-center mt-10">

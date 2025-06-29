@@ -5,7 +5,7 @@ import LoginForm from "../../components/auth/LoginForm/LoginForm";
 import { useAuthContext } from "../../context/authContext";
 
 const LoginPage = () => {
-  const { emailSent, login, isLoading } = useAuthContext();
+  const { login, isLoading } = useAuthContext();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const LoginPage = () => {
       return;
     }
     try {
-      await login(email);
+      const emailSent = await login(email);
       emailSent && navigate("/sent-email")
       setError("");
       setEmail("");

@@ -11,7 +11,7 @@ const VerifyTokenPage = () => {
   useEffect(() => {
     const token = params.get("token");
     if (!token) {
-      navigate("/");
+      navigate("/login");
       return;
     }
     
@@ -19,7 +19,7 @@ const VerifyTokenPage = () => {
       const response = await verifyToken(token);
       const exist: boolean = response;
       if (exist) {
-        navigate("/dashboard");
+        navigate("/");
       } else {
         navigate("/complete-register");
       }

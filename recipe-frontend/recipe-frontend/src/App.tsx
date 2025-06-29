@@ -10,11 +10,11 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LoginPage />}></Route>
+        <Route path="/login" element={<LoginPage />}></Route>
         <Route path="/sent-email" element={<EmailSentPage />}></Route>
         <Route path="/verify-token" element={<VerifyTokenPage />}></Route>
         <Route path="/complete-register" element={<CompleteRegistrationPage/>}></Route>
-        <Route path="/dashboard" element={<ProtectedRoute><DashboardPage/></ProtectedRoute>}></Route>
+        <Route path="/" element={<ProtectedRoute><DashboardPage/></ProtectedRoute>}></Route>
       </Routes>
     </>
   );

@@ -20,7 +20,7 @@ const CompleteRegistrationPage: React.FC = () => {
     setIsSubmitting(true);
     try {
       await completeRegistration(name);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       setError("Registration failed. Please try again.");
     } finally {
