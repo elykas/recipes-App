@@ -41,13 +41,15 @@ export const GeneratedRecipesProvider: React.FC<
     previousRecipes: IRecipe[]
   ) => {
     setIsLoading(true);
+    console.log(ingredients)
+    console.log(category)
     try {
       const response = await axios.post(`${BASE_URL}/generate-recipe`, {
         ingredients,
         category,
         freeText,
         previousRecipes,
-      });
+      },{withCredentials:true});
       const data = response.data as IRecipe;
       setGeneratedRecipe(data);
     } catch (error) {

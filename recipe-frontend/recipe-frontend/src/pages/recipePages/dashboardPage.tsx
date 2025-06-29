@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import AiRecipeSection from "../../components/AiRecipe/AiRecipeSection/AiRecipeSection";
 import { useUserContext } from "../../context/userContext";
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  const { getUser, user} = useUserContext();
-
-
+  const { user } = useUserContext();
 
   return (
     <div>
-      <p>This is your dashboard.</p>
-      <p>{user?.username}</p>
+      <AiRecipeSection/>
     </div>
   );
 };

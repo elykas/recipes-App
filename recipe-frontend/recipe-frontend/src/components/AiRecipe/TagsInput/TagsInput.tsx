@@ -7,10 +7,12 @@ interface TagsInputProps {
   placeholder: string;
   tags: string[];
   setTags: (tags: string[]) => void;
+   currentInput: string;
+  setCurrentInput: (val: string) => void;
 }
 
-const TagsInput: React.FC<TagsInputProps> = ({ label, placeholder, tags, setTags }) => {
-  const [currentInput, setCurrentInput] = useState<string>("");
+const TagsInput: React.FC<TagsInputProps> = ({ label, placeholder, tags, setTags,currentInput,
+  setCurrentInput}) => {
 
   const handleAdd = () => {
     if (currentInput.trim()) {
@@ -23,6 +25,13 @@ const TagsInput: React.FC<TagsInputProps> = ({ label, placeholder, tags, setTags
     setTags(tags.filter((_, i) => i !== index));
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
+
   return (
     <div>
       <label className="block text-sm font-medium mb-1">{label}</label>
@@ -33,6 +42,7 @@ const TagsInput: React.FC<TagsInputProps> = ({ label, placeholder, tags, setTags
           className="border p-2 rounded w-full"
           value={currentInput}
           onChange={(e) => setCurrentInput(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <Button type="button" onClick={handleAdd}>Add</Button>
       </div>

@@ -1,13 +1,21 @@
 import User from "../models/userModel";
 
 export const mongoCreateUser = async (email: string, username: string) => {
-  const user = await User.create({ email, username });
-  return user;
+  try {
+    const user = await User.create({ email, username });
+    return user;
+  } catch (error) {
+    throw new Error("failed to create a user in the mongo database" + error);
+  }
 };
 
 export const mongoCheckUserExist = async (email: string) => {
-  const user = await User.findOne({ email });
-  return user ? user : null;
+  try {
+    const user = await User.findOne({ email });
+    return user ? user : null;
+  } catch (error) {
+    throw new Error("failed to find a user in the mongo database" + error);
+  }
 };
 
 export const mongoFindOrCreateUserToGoogleAuth = async (
@@ -15,14 +23,19 @@ export const mongoFindOrCreateUserToGoogleAuth = async (
   username: string,
   email: string
 ) => {
-  let user = await User.findOne({ googleId });
+  try {
+    let user = await User.findOne({ googleId });
 
-  if (!user) {
-    user = await User.create({
-      googleId,
-      username,
-      email,
-    });
+    if (!user) {
+      user = await User.create({
+        googleId,
+        username,
+        email,
+      });
+    }
+    return user;
+  } catch (error) {
+    throw new Error("failed to find a user in the mongo database" + error);
+
   }
-  return user;
 };

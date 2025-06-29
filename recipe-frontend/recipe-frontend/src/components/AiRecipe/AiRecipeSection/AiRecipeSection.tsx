@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useGeneratedRecipesContext } from "../../../context/aiContext";
-import type { IRecipe } from "../../../types/recipeType";
-import { Button } from "../../ui/button";
-import { Plus, RefreshCcw, Save } from "lucide-react";
 import { useRecipesContext } from "../../../context/recipesContext";
-import RecipeAiForm from "../AiRecipeFrom/AiRecipeFrom";
+import type { IRecipe } from "../../../types/recipeType";
 import RecipeAiCard from "../AiRecipeCard/AiRecipeCard";
+import RecipeAiForm from "../AiRecipeFrom/AiRecipeFrom";
 
-const AiRecipeComponent: React.FC = () => {
+const AiRecipeSection: React.FC = () => {
   const { getRecipeByAi, generatedRecipe, isLoading } =
     useGeneratedRecipesContext();
   const { addRecipe } = useRecipesContext();
@@ -43,11 +41,7 @@ const AiRecipeComponent: React.FC = () => {
   const handleGenerateAnother = async () => {
     if (generatedRecipe) {
       setGeneratedRecipesHistory((prev) => [...prev, generatedRecipe]);
-      handleGenerateRecipe(
-        ingredients,
-        categories,
-        freeText
-      );
+      handleGenerateRecipe(ingredients, categories, freeText);
     }
   };
 
@@ -88,4 +82,4 @@ const AiRecipeComponent: React.FC = () => {
     </div>
   );
 };
-export default AiRecipeComponent;
+export default AiRecipeSection;

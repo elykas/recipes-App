@@ -13,7 +13,6 @@ const userSchema = new Schema<IUser>(
     username: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     email: {
@@ -37,6 +36,7 @@ const userSchema = new Schema<IUser>(
     phone: {
       type: String,
       unique: true,
+      sparse:true
     },
   },{
     timestamps: true,

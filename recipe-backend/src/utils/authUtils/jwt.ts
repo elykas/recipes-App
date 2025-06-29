@@ -9,7 +9,7 @@ export const generateAccessToken = (id: string): string => {
     throw new Error("TEMP_SECRET is not defined");
   }
   const accessToken = jwt.sign({ id }, JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "7d",
   });
   return accessToken;
 };
@@ -19,7 +19,7 @@ export const generateRefreshToken = (id: string): string => {
     throw new Error("TEMP_SECRET is not defined");
   }
   const refreshToken = jwt.sign({ id }, REFRESH_SECRET, {
-    expiresIn: "15m",
+    expiresIn: "90d",
   });
   return refreshToken;
 };
@@ -39,10 +39,8 @@ export const verifyTempToken = (token: string): { email: string } | null => {
     if (!TEMP_SECRET) {
       throw new Error("TEMP_SECRET is not defined");
     }
-
     return jwt.verify(token, TEMP_SECRET) as { email: string };
   } catch (error) {
-    console.log("failed to verify temp token", error);
-    return null;
+      throw new Error("Failed: token expired" + error)
   }
 };

@@ -18,9 +18,21 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
   const [categories, setCategories] = useState<string[]>([]);
   const [freeText, setFreeText] = useState<string>("");
 
+  const [currentIngredient, setCurrentIngredient] = useState<string>("");
+  const [currentCategory, setCurrentCategory] = useState<string>("");
+
   const handleSubmit = (e: React.FormEvent) => {
+    console.log(ingredients)
+    const finalIngredients = currentIngredient.trim()
+      ? [...ingredients, currentIngredient.trim()]
+      : ingredients;
+
+    const finalCategories = currentCategory.trim()
+      ? [...categories, currentCategory.trim()]
+      : categories;
     e.preventDefault();
-    onGenerateRecipe(ingredients, categories, freeText);
+
+    onGenerateRecipe(finalIngredients, finalCategories, freeText);
   };
 
   return (
@@ -31,6 +43,8 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
           placeholder="e.g. Yellow cheese"
           tags={ingredients}
           setTags={setIngredients}
+          currentInput={currentIngredient}
+          setCurrentInput={setCurrentIngredient}
         />
 
         <TagsInput
@@ -38,6 +52,8 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
           placeholder="e.g. Breakfast"
           tags={categories}
           setTags={setCategories}
+          currentInput={currentCategory}
+          setCurrentInput={setCurrentCategory}
         />
 
         <div>

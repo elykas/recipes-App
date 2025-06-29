@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import { useAuthContext } from "../../context/authContext";
 
 const EmailSentPage: React.FC = () => {
@@ -18,8 +19,19 @@ const EmailSentPage: React.FC = () => {
       setError("Login failed. Please try again.");
     }
   };
+
+  const handleClose = () => {
+    navigate("/")
+  }
   return (
     <div className="text-center mt-10">
+   <button
+        onClick={handleClose}
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+        aria-label="Close"
+      >
+        <X size={24} /> 
+      </button>
       <h2 className="text-2xl font-bold">Check your email</h2>
       <p className="mt-4 text-gray-600">
         We’ve sent you a login link. Click it to sign in.

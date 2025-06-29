@@ -1,8 +1,9 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "../../../components/ui/button";
+import { Card } from "../../../components/ui/Card";
+import { CardContent } from "../../../components/ui/CardContent";
 import { RefreshCcw, Save } from "lucide-react";
-import type { IRecipe } from "../types/recipeType";
+import type { IRecipe } from "../../../types/recipeType";
 
 type RecipeCardProps = {
   recipe: IRecipe;

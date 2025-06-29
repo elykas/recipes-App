@@ -42,9 +42,6 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    getUser();
-  }, []);
 
   const updateUser = async (user: IUser) => {
     setIsLoading(true);

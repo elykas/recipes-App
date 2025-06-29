@@ -10,11 +10,6 @@ const LoginPage = () => {
   const [error, setError] = useState<string>("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (emailSent) {
-      navigate("/sent-email");
-    }
-  },[emailSent]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +17,12 @@ const LoginPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Invalid email format");
+      setEmail("")
       return;
     }
     try {
       await login(email);
+      emailSent && navigate("/sent-email")
       setError("");
       setEmail("");
     } catch (error) {

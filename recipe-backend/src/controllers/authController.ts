@@ -93,7 +93,6 @@ export const loginUser = async (
   try {
     const { email } = req.body;
     await sendLoginLinkService(email);
-    console.log(email);
     res.status(200).json({ message: "Verification email sent", success: true });
   } catch (error) {
     next(error);
@@ -140,19 +139,14 @@ export const completeRegister = async (
     const user = await createNewUserService(email, username);
 
     if (!user) {
-      res
-        .status(400)
-        .json({ success: false, message: "User already exists" });
+      res.status(400).json({ success: false, message: "User already exists" });
       return;
     }
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
-
-    res
-      .status(201)
-      .json({ success: true, message: "User registered successfully" });
+    res.status(201).json({ success: true, message: "User registered successfully" });
   } catch (error) {
     next(error);
   }

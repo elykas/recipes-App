@@ -1,9 +1,11 @@
-export interface IRecipe{
-    _id: string;
-    name: string;
-    category: string[];
-    ingredients: string[];
-    steps: string[];
-    prepTime: string;
-    imageUrl?: string;
+export interface Ingredient {
+  quantity: string;
+  name: string;
+}
+
+export interface IRecipe {
+  name: string;
+  category: string[];
+  ingredients: Ingredient[];
+  steps: string[];
 }

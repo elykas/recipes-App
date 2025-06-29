@@ -41,9 +41,7 @@ export const verifyTempTokenMiddleware = (
   try {
     const token = req.cookies?.tempToken || req.body.token;
     if (typeof token !== "string" || !token) {
-      res
-        .status(401)
-        .json({ message: "Token is missing or invalid", success: false });
+      res.status(401).json({ message: "Token is missing or invalid", success: false });
       return;
     }
 
