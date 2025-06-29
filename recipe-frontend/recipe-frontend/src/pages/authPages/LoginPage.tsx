@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GoogleLoginButton from "../../components/auth/GoogleLogin/GoogleLogin";
 import LoginForm from "../../components/auth/LoginForm/LoginForm";
