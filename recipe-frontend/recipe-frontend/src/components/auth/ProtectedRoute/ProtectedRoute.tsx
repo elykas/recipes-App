@@ -1,24 +1,22 @@
 import { Navigate} from "react-router-dom";
 import { useUserContext } from "../../../context/userContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface ProtectedRouteProps {
     children: React.ReactElement;
   }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const {user, isLoading, getUser} = useUserContext();
-  const [checked, setChecked] = useState<boolean>(false)
+  const {user, isLoading, getUser, isUserChecked} = useUserContext();
   useEffect(() => {
     const fetchUser =  async () => {
       if (!user) {
         await getUser()
       }
-      setChecked(true)
     };
     fetchUser();
   },[]);
-  if (isLoading && !checked) return <p>Loading...</p>;
+  if (isLoading || !isUserChecked ) return <p>Loading...</p>;
 
   if (!user) return <Navigate to="/login" />;
 

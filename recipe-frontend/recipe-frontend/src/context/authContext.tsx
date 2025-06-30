@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from '../api/axiosRefreshToken'
 import React, {
   createContext,
   useContext,
@@ -10,7 +10,6 @@ import type {
   VerifyTokenResponse,
 } from "../types/responseTypes";
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -41,9 +40,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BASE_URL}/login`, { email });
+      const response = await api.post(`/auth/login`, { email });
       const data = response.data as LoginResponse;
-      console.log(data);
       if (data.success) {
         setUserEmail(email);
       }
@@ -58,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const verifyToken = async (token: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BASE_URL}/verify-token`, { token }
+      const response = await api.post(`/auth/verify-token`, { token }
         ,{ withCredentials: true });
       const responseData = response.data as VerifyTokenResponse;
       return responseData.exist;
@@ -72,7 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const completeRegistration = async (username: string) => {
     setIsLoading(true);
     try {
-      await axios.post(`${BASE_URL}/complete-register`,
+      await api.post(`/auth/complete-register`,
         { username },
         { withCredentials: true }
       );
@@ -86,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async() => {
     setIsLoading(true)
     try {
-      await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true });
+      await api.post(`/auth/logout`, {}, { withCredentials: true });
     } catch (error) {
       throw new Error("failed to logout");
     }finally{

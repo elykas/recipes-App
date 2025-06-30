@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import passport from "passport";
 import { IUser } from "../models/userModel";
 import {
@@ -10,9 +11,11 @@ import {
 import {
   generateAccessToken,
   generateRefreshToken,
-  verifyTempToken,
 } from "../utils/authUtils/jwt";
-import { setAuthCookies, setTempTokenCookie } from "../utils/authUtils/setAuthCookies";
+import {
+  setAuthCookies,
+  setTempTokenCookie,
+} from "../utils/authUtils/setAuthCookies";
 
 const CLIENT_URL = process.env.CLIENT_URL as string;
 
@@ -27,10 +30,10 @@ export const googleAuthCallback = (
 ) => {
   passport.authenticate(
     "google",
-    { failureRedirect: "/login", session: false },
+    { failureRedirect:`${CLIENT_URL}/login`, session: false },
     async (err: Error, user: IUser) => {
       if (err) return next(err);
-      if (!user) return res.redirect("/login");
+      if (!user) return res.redirect(`${CLIENT_URL}/login`);
 
       try {
         if (!process.env.JWT_SECRET || !process.env.REFRESH_SECRET) {
@@ -44,7 +47,7 @@ export const googleAuthCallback = (
 
         setAuthCookies(res, accessToken, refreshToken);
 
-        res.redirect(`${CLIENT_URL}/dashboard`);
+        res.redirect(`${CLIENT_URL}`);
       } catch (error) {
         next(error);
       }
@@ -99,7 +102,7 @@ export const loginUser = async (
   }
 };
 
-export const verifyToken = async (
+export const verifyTempToken = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -134,7 +137,7 @@ export const completeRegister = async (
 ) => {
   try {
     const { username } = req.body;
-    const { email } = (req as any);
+    const { email } = req as any;
 
     const user = await createNewUserService(email, username);
 
@@ -146,8 +149,35 @@ export const completeRegister = async (
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
-    res.status(201).json({ success: true, message: "User registered successfully" });
+    res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
     next(error);
+  }
+};
+
+export const refreshToken = (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      res
+        .status(401)
+        .json({ message: "Refresh token not found", success: false });
+      return;
+    }
+
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_SECRET!
+    ) as jwt.JwtPayload;
+
+    const accessToken = generateAccessToken(decoded.id);
+    setAuthCookies(res, accessToken, refreshToken);
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(403).json({ message: "Invalid refresh token", success: false });
   }
 };

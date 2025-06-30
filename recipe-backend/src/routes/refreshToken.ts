@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { generateAccessToken } from "../utils/jwt";
-import { setAuthCookies } from "../utils/setAuthCookies";
+import { generateAccessToken } from "../utils/authUtils/jwt";
+import { setAuthCookies } from "../utils/authUtils/setAuthCookies";
 
 const router = express.Router();
 

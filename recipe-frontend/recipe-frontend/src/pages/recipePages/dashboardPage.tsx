@@ -9,6 +9,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div>
+      <p>hi {user?.username}</p>
       <AiRecipeSection/>
     </div>
   );

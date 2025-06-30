@@ -1,8 +1,7 @@
-import axios from "axios";
+import api from "../api/axiosRefreshToken"
 import React, { createContext, useContext, useState } from "react";
 import type { IRecipe } from "../types/recipeType";
 
-const BASE_URL = `${import.meta.env.VITE_API_URL}/ai-recipes`;
 
 interface GeneratedRecipesProviderProps {
   children: React.ReactNode;
@@ -41,10 +40,8 @@ export const GeneratedRecipesProvider: React.FC<
     previousRecipes: IRecipe[]
   ) => {
     setIsLoading(true);
-    console.log(ingredients)
-    console.log(category)
     try {
-      const response = await axios.post(`${BASE_URL}/generate-recipe`, {
+      const response = await api.post(`/ai-recipes/generate-recipe`, {
         ingredients,
         category,
         freeText,
