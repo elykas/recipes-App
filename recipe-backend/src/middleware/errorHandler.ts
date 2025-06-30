@@ -3,7 +3,7 @@ export const errorHandler = (err: any, req: any, res: any, next: any) => {
         console.error(err.stack);
     }
     const response = {
-        succsess: false,
+        success: false,
         message: err.message,
         data:{}
     }

@@ -24,18 +24,23 @@ export const mongoFindOrCreateUserToGoogleAuth = async (
   email: string
 ) => {
   try {
-    let user = await User.findOne({ googleId });
-
-    if (!user) {
-      user = await User.create({
-        googleId,
-        username,
-        email,
-      });
+    let user = await User.findOne({ email });
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await user.save();
+      }
+      return user;
     }
+
+    user = await User.create({
+      googleId,
+      username,
+      email,
+    });
+
     return user;
   } catch (error) {
     throw new Error("failed to find a user in the mongo database" + error);
-
   }
 };

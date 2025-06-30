@@ -21,6 +21,7 @@ const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export const googleAuth = passport.authenticate("google", {
   scope: ["email", "profile"],
+  prompt: "select_account",  
 });
 
 export const googleAuthCallback = (
@@ -46,7 +47,6 @@ export const googleAuthCallback = (
         const refreshToken = generateRefreshToken(user.id);
 
         setAuthCookies(res, accessToken, refreshToken);
-        console.log(user);
         res.redirect(`${CLIENT_URL}`);
       } catch (error) {
         next(error);
