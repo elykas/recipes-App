@@ -46,7 +46,7 @@ export const googleAuthCallback = (
         const refreshToken = generateRefreshToken(user.id);
 
         setAuthCookies(res, accessToken, refreshToken);
-
+        console.log(user);
         res.redirect(`${CLIENT_URL}`);
       } catch (error) {
         next(error);
