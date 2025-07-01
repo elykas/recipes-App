@@ -1,9 +1,7 @@
-import axios from "axios";
 import Recipe, { IRecipe } from "../../models/recipeModel";
 import { buildRecipePrompt } from "./prompts/recipePrompt";
+import {geminiAgentGenerate} from "./agents/geminiAgent"
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-console.log(!!OPENAI_API_KEY)
 
 export const getRecipeAIService = async (
   ingredients: string[],
@@ -12,28 +10,11 @@ export const getRecipeAIService = async (
   previousRecipes: IRecipe[]
 ) => {
   let prompt = buildRecipePrompt(ingredients, category, freeText, previousRecipes);
-  
   try {
-  const response = await axios.post(
-    "https://api.openai.com/v1/chat/completions",
-    {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: prompt }],
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  const aiResponse: string = response.data.choices[0].message.content;
-    const recipe: IRecipe = JSON.parse(aiResponse);
-    return recipe;
+    const generatedRecipe = await geminiAgentGenerate(prompt)
+    return generatedRecipe
   } catch (error) {
-    console.log( "-------------------------------")
-    console.log( error)
-    throw new Error("failed to get recipe from ai" + error);
+    console.error("Error communicating with Gemini API:", error);
+    throw new Error("failed to generate recipe" + error)
   }
 };

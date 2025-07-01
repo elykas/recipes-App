@@ -1,3 +1,4 @@
+import type { IRecipe } from "./recipeType";
 import type { IUser } from "./userType";
 
 export interface LoginResponse {
@@ -14,4 +15,10 @@ export type GetUser = {
   success: boolean;
   message: string;
   user: IUser;
+};
+
+export type AiRecipeResponse = {
+  success: boolean;
+  message: string;
+  data: IRecipe;
 };

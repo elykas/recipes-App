@@ -4,6 +4,7 @@ import { useRecipesContext } from "../../../context/recipesContext";
 import type { IRecipe } from "../../../types/recipeType";
 import RecipeAiCard from "../AiRecipeCard/AiRecipeCard";
 import RecipeAiForm from "../AiRecipeFrom/AiRecipeFrom";
+import AiRecipesHistory from "../AiRecipeHistory/AiRecipesHistory";
 
 const AiRecipeSection: React.FC = () => {
   const { getRecipeByAi, generatedRecipe, isLoading } =
@@ -16,6 +17,21 @@ const AiRecipeSection: React.FC = () => {
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [freeText, setFreeText] = useState<string>("");
+  const [generatedRecipeLocal, setGeneratedRecipeLocal] = useState<IRecipe| null>(null); 
+  const displayedRecipe = generatedRecipeLocal || generatedRecipe;
+  
+  const handleSelectFromHistory = (recipe: IRecipe) => {
+   if (displayedRecipe) {
+    const alreadyInHistory = generatedRecipesHistory.some(
+      (r) => r.name === displayedRecipe.name
+    );
+
+    if (!alreadyInHistory) {
+      setGeneratedRecipesHistory((prev) => [...prev, displayedRecipe]);
+    }
+  }
+    setGeneratedRecipeLocal(recipe);
+  };
 
   const handleGenerateRecipe = async (
     newIngredients: string[],
@@ -25,7 +41,6 @@ const AiRecipeSection: React.FC = () => {
     setIngredients(newIngredients);
     setCategories(newCategories);
     setFreeText(newFreeText);
-
     try {
       await getRecipeByAi(
         newIngredients,
@@ -33,6 +48,7 @@ const AiRecipeSection: React.FC = () => {
         newFreeText,
         generatedRecipesHistory
       );
+      setGeneratedRecipeLocal(null);
     } finally {
       // Optional cleanup
     }
@@ -51,34 +67,33 @@ const AiRecipeSection: React.FC = () => {
     }
   };
 
+  const handleDeleteFromHistory = (idxToDelete: number) => {
+    setGeneratedRecipesHistory((prev) => prev.filter((_, idx) => idx !== idxToDelete));
+    // אם המתכון שנמחק הוא גם המתכון המוצג, מאפסים אותו
+    if (displayedRecipe === generatedRecipesHistory[idxToDelete]) {
+      setGeneratedRecipeLocal(null);
+    }
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto space-y-4">
       <h1 className="text-2xl font-bold text-center">AI Recipe Generator</h1>
 
       <RecipeAiForm onGenerateRecipe={handleGenerateRecipe} />
 
-      {generatedRecipe && (
+      {displayedRecipe && (
         <RecipeAiCard
-          recipe={generatedRecipe}
+          recipe={displayedRecipe}
           onSave={handleSaveRecipe}
           onGenerateAnother={handleGenerateAnother}
         />
       )}
 
-      {generatedRecipesHistory.length > 0 && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-2">
-            Generated Recipes History
-          </h2>
-          <ul className="space-y-2">
-            {generatedRecipesHistory.map((rec, idx) => (
-              <li key={idx} className="border p-2 rounded shadow-sm">
-                {rec.name} - {rec.category.join(", ")}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <AiRecipesHistory
+        recipes={generatedRecipesHistory}
+        onSelect={handleSelectFromHistory}
+        onDelete={handleDeleteFromHistory}
+      />
     </div>
   );
 };

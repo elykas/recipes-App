@@ -1,6 +1,7 @@
 import api from "../api/axiosRefreshToken"
 import React, { createContext, useContext, useState } from "react";
 import type { IRecipe } from "../types/recipeType";
+import type { AiRecipeResponse } from "../types/responseTypes";
 
 
 interface GeneratedRecipesProviderProps {
@@ -47,8 +48,10 @@ export const GeneratedRecipesProvider: React.FC<
         freeText,
         previousRecipes,
       },{withCredentials:true});
-      const data = response.data as IRecipe;
-      setGeneratedRecipe(data);
+      const data = response.data as AiRecipeResponse;
+      const recipe = data.data;
+      setGeneratedRecipe(recipe);
+     
     } catch (error) {
       throw new Error("failed to get recipe by AI");
     } finally {

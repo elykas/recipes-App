@@ -1,11 +1,12 @@
 export interface Ingredient {
   quantity: string;
   name: string;
+  unit: string;
 }
 
 export interface IRecipe {
   name: string;
-  category: string[];
+  categories: string[];
   ingredients: Ingredient[];
   steps: string[];
 }
