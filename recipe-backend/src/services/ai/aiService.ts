@@ -32,6 +32,8 @@ export const getRecipeAIService = async (
     const recipe: IRecipe = JSON.parse(aiResponse);
     return recipe;
   } catch (error) {
+    console.log( "-------------------------------")
+    console.log( error)
     throw new Error("failed to get recipe from ai" + error);
   }
 };
