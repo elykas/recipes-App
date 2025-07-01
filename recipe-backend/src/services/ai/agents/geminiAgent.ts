@@ -18,7 +18,7 @@ export const geminiAgentGenerate = async (prompt: string) => {
     const aiResponse: string = response.text();
 
     const jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)\s*```/i);
-
+    console.log(jsonMatch)
     if (!jsonMatch) {
       throw new Error("Failed to extract JSON from Gemini response");
     }

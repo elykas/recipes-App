@@ -33,6 +33,7 @@ export const buildRecipePrompt = (
     Use the key "steps" for the recipe instructions instead of "instructions".`;
   prompt += ` Each ingredient should be an object with the keys "quantity", "unit", and "name" 
  representing the amount, unit, and ingredient name respectively.\n`;
+ prompt += 'For any fractional quantity like 1/2, 1/4 etc., wrap the value in quotes, for example: "quantity": "1/2". Do not include markdown, comments or extra text. Respond strictly with clean JSON only.'
 
   return prompt;
 // let prompt = `Generate a recipe in JSON format strictly adhering to the following rules and structure:\n`;
