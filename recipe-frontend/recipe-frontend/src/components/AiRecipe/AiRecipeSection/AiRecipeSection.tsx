@@ -5,19 +5,18 @@ import type { IRecipe } from "../../../types/recipeType";
 import RecipeAiCard from "../AiRecipeCard/AiRecipeCard";
 import RecipeAiForm from "../AiRecipeFrom/AiRecipeFrom";
 import AiRecipesHistory from "../AiRecipeHistory/AiRecipesHistory";
+import RecipeForm from "../../UserRecipes/RecipeForm/RecipeForm";
+import Modal from "../../ui/Modal";
 
 const AiRecipeSection: React.FC = () => {
-  const { getRecipeByAi, generatedRecipe, isLoading } =
-    useGeneratedRecipesContext();
+  const { getRecipeByAi, generatedRecipe } =useGeneratedRecipesContext();
   const { addRecipe } = useRecipesContext();
-
-  const [generatedRecipesHistory, setGeneratedRecipesHistory] = useState<
-    IRecipe[]
-  >([]);
+  const [generatedRecipesHistory, setGeneratedRecipesHistory] = useState<IRecipe[]>([]);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [freeText, setFreeText] = useState<string>("");
   const [generatedRecipeLocal, setGeneratedRecipeLocal] = useState<IRecipe| null>(null); 
+  const [showFormAddRecipe, setShowFormAddRecipe] = useState<boolean>(false); 
   const displayedRecipe = generatedRecipeLocal || generatedRecipe;
   
   const handleSelectFromHistory = (recipe: IRecipe) => {
@@ -61,15 +60,14 @@ const AiRecipeSection: React.FC = () => {
     }
   };
 
-  const handleSaveRecipe = () => {
-    if (generatedRecipe) {
-      addRecipe(generatedRecipe);
+  const handleOpenAddRecipeForm = () => {
+    if (displayedRecipe) {
+      setShowFormAddRecipe(true);
     }
   };
 
   const handleDeleteFromHistory = (idxToDelete: number) => {
     setGeneratedRecipesHistory((prev) => prev.filter((_, idx) => idx !== idxToDelete));
-    // אם המתכון שנמחק הוא גם המתכון המוצג, מאפסים אותו
     if (displayedRecipe === generatedRecipesHistory[idxToDelete]) {
       setGeneratedRecipeLocal(null);
     }
@@ -84,9 +82,22 @@ const AiRecipeSection: React.FC = () => {
       {displayedRecipe && (
         <RecipeAiCard
           recipe={displayedRecipe}
-          onSave={handleSaveRecipe}
+          onSave={handleOpenAddRecipeForm}
           onGenerateAnother={handleGenerateAnother}
         />
+      )}
+
+      {showFormAddRecipe && displayedRecipe && (
+        <Modal onClose={() => setShowFormAddRecipe(false)} isOpen={showFormAddRecipe} title="Add recipe">
+        <RecipeForm
+          initialRecipe={displayedRecipe}
+          onSubmit={(recipe) => {
+            addRecipe(recipe);
+            setShowFormAddRecipe(false);  
+          }}
+          onCancel={() => setShowFormAddRecipe(false)}
+        />
+        </Modal>
       )}
 
       <AiRecipesHistory

@@ -1,6 +1,6 @@
 import api from "../api/axiosRefreshToken"
 import React, { createContext, useContext, useState } from "react";
-import type { IRecipe } from "../types/recipeType";
+import type { IRecipe, NewRecipe } from "../types/recipeType";
 
 
 interface RecipesProviderProps {
@@ -12,7 +12,7 @@ interface RecipesContextProps {
   isLoading: boolean;
   getAllRecipes: () => Promise<void>;
   getRecipe: (recipeId: string) => Promise<void>;
-  addRecipe: (recipe: IRecipe) => Promise<void>;
+  addRecipe: (newRecipe: NewRecipe) => Promise<void>;
   deleteRecipe: (recipeId: string) => Promise<void>;
   updateRecipe: (recipe: IRecipe) => Promise<void>;
   getRecipesByCategory: (category: string) => Promise<void>;
@@ -65,10 +65,10 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
-  const addRecipe = async (recipe: IRecipe) => {
+  const addRecipe = async (newRecipe: NewRecipe) => {
     setIsLoading(true);
     try {
-      await api.post(`/crud-recipes`, recipe);
+      await api.post(`/crud-recipes`, newRecipe);
     } catch (error) {
       throw new Error("failed to add recipe");
     } finally {

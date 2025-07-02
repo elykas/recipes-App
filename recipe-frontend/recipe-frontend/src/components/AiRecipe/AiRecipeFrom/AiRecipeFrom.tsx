@@ -22,7 +22,6 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
   const [currentCategory, setCurrentCategory] = useState<string>("");
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log(ingredients)
     const finalIngredients = currentIngredient.trim()
       ? [...ingredients, currentIngredient.trim()]
       : ingredients;
