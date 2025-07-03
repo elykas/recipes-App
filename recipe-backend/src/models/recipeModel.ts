@@ -1,8 +1,10 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model, Types } from 'mongoose';
+import validator from 'validator';
 
 interface Ingredient {
   name: string;
-  quantity: string;
+  quantity?: string;
+  unit?:string
 }
 
 export interface IRecipe extends Document {
@@ -10,46 +12,55 @@ export interface IRecipe extends Document {
   category: string[];
   ingredients: Ingredient[];
   steps: string[];
-  prepTime: string;
+  prepTime?: Number;
   imageUrl?: string;
+  authorId: Types.ObjectId;
 }
 
 const ingredientSchema = new Schema<Ingredient>({
-  name: { type: String, required: true },
-  quantity: { type: String, required: true }
+  name: { type: String, required: [true,"Ingredient name is required"], trim: true },
+  quantity: { type: String },
+  unit: { type: String }
 });
 
 const recipeSchema = new Schema<IRecipe>({
   name: {
     type: String,
-    required: true,
+    required: [true,"Recipe name is required"],
     unique: true,
     trim: true
   },
   category: {
     type: [String],
-    required: true,
-    enum: ['Meat' , 'Chicken' , 'Fish' , 'Dessert' , 'Snack' , 'Soup']
+    required: [true,"Category is required"],
   },
   ingredients: [ingredientSchema],
   steps: {
     type: [String],
-    required: true
+    required: [true,"Steps are required"]
   },
   prepTime: {
-    type: String,
-    required: true,
-    match: /^[0-9]+ minutes$/ // Format: "30 minutes"
+    type: Number,
+    default: 30
   },
   imageUrl: {
     type: String,
-    match: /^https?:\/\/[^\s]+$/ // URL validation
+    validate: {
+          validator: function (value: string) {
+            return validator.isURL(value);
+          },
+          message: "Please provide a valid  url",
+        },
+  },
+  authorId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
-  timestamps: true // createdAt, updatedAt
+  timestamps: true 
 });
 
-// 👉 Indexes to improve search performance
 
 recipeSchema.index({ category: 1 });
 recipeSchema.index({ 'ingredients.name': 1 });

@@ -9,27 +9,31 @@ import RecipeForm from "../../UserRecipes/RecipeForm/RecipeForm";
 import Modal from "../../ui/Modal";
 
 const AiRecipeSection: React.FC = () => {
-  const { getRecipeByAi, generatedRecipe } =useGeneratedRecipesContext();
+  const { getRecipeByAi, generatedRecipe } = useGeneratedRecipesContext();
   const { addRecipe } = useRecipesContext();
-  const [generatedRecipesHistory, setGeneratedRecipesHistory] = useState<IRecipe[]>([]);
+  const [generatedRecipesHistory, setGeneratedRecipesHistory] = useState<
+    IRecipe[]
+  >([]);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [freeText, setFreeText] = useState<string>("");
-  const [generatedRecipeLocal, setGeneratedRecipeLocal] = useState<IRecipe| null>(null); 
-  const [showFormAddRecipe, setShowFormAddRecipe] = useState<boolean>(false); 
-  const displayedRecipe = generatedRecipeLocal || generatedRecipe;
-  
-  const handleSelectFromHistory = (recipe: IRecipe) => {
-   if (displayedRecipe) {
-    const alreadyInHistory = generatedRecipesHistory.some(
-      (r) => r.name === displayedRecipe.name
-    );
+  const [selectedRecipeFromHistory, setSelectedRecipeFromHistory] =
+    useState<IRecipe | null>(null);
+  const [showFormToAddRecipe, setShowFormToAddRecipe] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+  const displayedRecipe = selectedRecipeFromHistory || generatedRecipe;
 
-    if (!alreadyInHistory) {
-      setGeneratedRecipesHistory((prev) => [...prev, displayedRecipe]);
+  const handleSelectRecipeFromHistory = (recipe: IRecipe) => {
+    if (displayedRecipe) {
+      const alreadyInHistory = generatedRecipesHistory.some(
+        (r) => r.name === displayedRecipe.name
+      );
+
+      if (!alreadyInHistory) {
+        setGeneratedRecipesHistory((prev) => [...prev, displayedRecipe]);
+      }
     }
-  }
-    setGeneratedRecipeLocal(recipe);
+    setSelectedRecipeFromHistory(recipe);
   };
 
   const handleGenerateRecipe = async (
@@ -47,9 +51,11 @@ const AiRecipeSection: React.FC = () => {
         newFreeText,
         generatedRecipesHistory
       );
-      setGeneratedRecipeLocal(null);
-    } finally {
-      // Optional cleanup
+      setSelectedRecipeFromHistory(null);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
     }
   };
 
@@ -62,14 +68,16 @@ const AiRecipeSection: React.FC = () => {
 
   const handleOpenAddRecipeForm = () => {
     if (displayedRecipe) {
-      setShowFormAddRecipe(true);
+      setShowFormToAddRecipe(true);
     }
   };
 
   const handleDeleteFromHistory = (idxToDelete: number) => {
-    setGeneratedRecipesHistory((prev) => prev.filter((_, idx) => idx !== idxToDelete));
+    setGeneratedRecipesHistory((prev) =>
+      prev.filter((_, idx) => idx !== idxToDelete)
+    );
     if (displayedRecipe === generatedRecipesHistory[idxToDelete]) {
-      setGeneratedRecipeLocal(null);
+      setSelectedRecipeFromHistory(null);
     }
   };
 
@@ -87,22 +95,26 @@ const AiRecipeSection: React.FC = () => {
         />
       )}
 
-      {showFormAddRecipe && displayedRecipe && (
-        <Modal onClose={() => setShowFormAddRecipe(false)} isOpen={showFormAddRecipe} title="Add recipe">
-        <RecipeForm
-          initialRecipe={displayedRecipe}
-          onSubmit={(recipe) => {
-            addRecipe(recipe);
-            setShowFormAddRecipe(false);  
-          }}
-          onCancel={() => setShowFormAddRecipe(false)}
-        />
+      {showFormToAddRecipe && displayedRecipe && (
+        <Modal
+          onClose={() => setShowFormToAddRecipe(false)}
+          isOpen={showFormToAddRecipe}
+          title="Add recipe"
+        >
+          <RecipeForm
+            initialRecipe={displayedRecipe}
+            onSubmit={(recipe) => {
+              addRecipe(recipe);
+              setShowFormToAddRecipe(false);
+            }}
+            onCancel={() => setShowFormToAddRecipe(false)}
+          />
         </Modal>
       )}
-
+      {error && <p className="text-red-500">{error}</p>}
       <AiRecipesHistory
         recipes={generatedRecipesHistory}
-        onSelect={handleSelectFromHistory}
+        onSelect={handleSelectRecipeFromHistory}
         onDelete={handleDeleteFromHistory}
       />
     </div>

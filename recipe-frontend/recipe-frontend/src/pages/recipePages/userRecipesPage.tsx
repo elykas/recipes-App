@@ -2,12 +2,22 @@ import { useEffect, useState } from "react";
 import RecipeCard from "../../components/UserRecipes/RecipeCard/RecipeCard";
 import RecipesList from "../../components/UserRecipes/RecipesList/RecipesList";
 import { useRecipesContext } from "../../context/recipesContext";
-import type { IRecipe } from "../../types/recipeType";
+import type { IRecipe, NewRecipe } from "../../types/recipeType";
+import { Button } from "../../components/ui/Button";
+import RecipeForm from "../../components/UserRecipes/RecipeForm/RecipeForm";
+import Modal from "../../components/ui/Modal";
 
 const UserRecipesPage = () => {
-  const { recipes, isLoading, getAllRecipes, deleteRecipe, updateRecipe } =
-    useRecipesContext();
+  const {
+    recipes,
+    isLoading,
+    getAllRecipes,
+    deleteRecipe,
+    updateRecipe,
+    addRecipe,
+  } = useRecipesContext();
   const [selectedCard, setSelectedCard] = useState<IRecipe | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -63,9 +73,21 @@ const UserRecipesPage = () => {
     }
   };
 
+  const handleCreateRecipe = async (recipe: NewRecipe) => {
+    try {
+      await addRecipe(recipe);
+      setShowCreateModal(false);
+    } catch (error) {
+      setError("Failed to create recipe");
+    }
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Recipes</h2>
+      <Button className="mb-4" onClick={() => setShowCreateModal(true)}>
+        Create Recipe
+      </Button>
       <RecipesList recipes={recipes} onRecipeClick={handleDisplayRecipe} />
       {isLoading && (
         <div className="flex justify-center items-center my-4">
@@ -73,15 +95,31 @@ const UserRecipesPage = () => {
         </div>
       )}
       {recipes && selectedCard !== null && (
-        <RecipeCard
-          recipe={selectedCard}
+        <Modal
+          isOpen={true}
           onClose={handleCloseModal}
-          onNext={handleNextRecipe}
-          onPrev={handlePreviousRecipe}
-          onDelete={handleDeleteRecipe}
-          onEdit={handleUpdateRecipe}
-        />
+          title={selectedCard.name}
+        >
+          <RecipeCard
+            recipe={selectedCard}
+            onClose={handleCloseModal}
+            onNext={handleNextRecipe}
+            onPrev={handlePreviousRecipe}
+            onDelete={handleDeleteRecipe}
+            onEdit={handleUpdateRecipe}
+          />
+        </Modal>
       )}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create New Recipe"
+      >
+        <RecipeForm
+          onSubmit={handleCreateRecipe}
+          onCancel={() => setShowCreateModal(false)}
+        />
+      </Modal>
       {error && <p className="text-red-500">{error}</p>}
     </div>
   );

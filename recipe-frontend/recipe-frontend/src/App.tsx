@@ -4,9 +4,9 @@ import CompleteRegistrationPage from "./pages/authPages/CompleteRegisterPage";
 import EmailSentPage from "./pages/authPages/EmailSentPage";
 import LoginPage from "./pages/authPages/LoginPage";
 import VerifyTokenPage from "./pages/authPages/verifyTokenPage";
-import Layout from "./pages/layout/layout";
 import DashboardPage from "./pages/recipePages/dashboardPage";
 import UsersRecipesPage from "./pages/recipePages/userRecipesPage";
+import Layout from "./pages/layout/Layout";
 function App() {
   return (
     <>

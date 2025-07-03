@@ -1,6 +1,6 @@
 import { RefreshCcw, Save } from "lucide-react";
 import React from "react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "../../ui/Button";
 import { Card } from "../../../components/ui/Card";
 import { CardContent } from "../../../components/ui/CardContent";
 import type { IRecipe } from "../../../types/recipeType";
@@ -28,7 +28,9 @@ const RecipeAiCard: React.FC<RecipeCardProps> = ({
       </div>
       <CardContent>
         <h2 className="text-xl font-semibold mb-2">{recipe.name}</h2>
-        <p className="mb-2">Categories: {recipe.categories.join(", ")}</p>
+        {recipe.categories?.length > 0 && (
+          <p className="mb-2">Categories: {recipe.categories.join(", ")}</p>
+        )}
         <h3 className="font-medium">Ingredients:</h3>
         <ul className="list-disc list-inside mb-2">
           {recipe.ingredients.map((ing, idx) => (

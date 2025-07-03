@@ -5,6 +5,7 @@ interface LabeledInputProps {
   placeholder: string;
   value: string;
   onChange: (val: string) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   className?: string;
 }
 
@@ -13,6 +14,7 @@ const LabeledInput: React.FC<LabeledInputProps> = ({
   placeholder,
   value,
   onChange,
+  onKeyDown,
   className = "",
 }) => {
   return (
@@ -24,6 +26,7 @@ const LabeledInput: React.FC<LabeledInputProps> = ({
         className={`border p-2 w-full ${className}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={onKeyDown}
       />
     </div>
   );

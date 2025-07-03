@@ -50,7 +50,8 @@ export const createRecipe = async (
 ) => {
   try {
     const recipe = req.body;
-    const newRecipe = await createRecipeService(recipe);
+    const userId = (req as any).userId;
+    const newRecipe = await createRecipeService(recipe, userId);
     if (!newRecipe) {
       res.status(404).json({ message: "Can't create recipe", success: false });
       return;

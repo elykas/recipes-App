@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { IRecipe, Ingredient } from "../../../types/recipeType";
-import { Button } from "../../ui/button";
+import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { CardContent } from "../../ui/CardContent";
 import LabeledInput from "../../ui/LabeledInput";
@@ -18,16 +18,14 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 }) => {
   const [name, setName] = useState(initialRecipe?.name || "");
   const [categories, setCategories] = useState(initialRecipe?.categories || []);
-  const [ingredients, setIngredients] = useState<Ingredient[]>(
-    initialRecipe?.ingredients || []
-  );
+  const [ingredients, setIngredients] = useState<Ingredient[]>(initialRecipe?.ingredients || []);
   const [steps, setSteps] = useState(initialRecipe?.steps || []);
 
   const handleAddIngredient = () => {
     setIngredients([...ingredients, { quantity: "", name: "", unit: "" }]);
   };
 
-  const handleIngredientChange = (
+  const handleIngredientUpdate = (
     index: number,
     field: keyof Ingredient,
     value: string
@@ -70,9 +68,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <LabeledInput
           placeholder="Categories (comma separated)"
           value={categories.join(", ")}
-          onChange={(val) =>
-            setCategories(val.split(",").map((c) => c.trim()))
-          }
+          onChange={(val) => setCategories(val.split(",").map((c) => c.trim()))}
         />
 
         <h3 className="font-medium mt-4 mb-2">Ingredients:</h3>
@@ -81,21 +77,19 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
             <LabeledInput
               placeholder="Quantity"
               value={ing.quantity}
-              onChange={(val) =>
-                handleIngredientChange(idx, "quantity", val)
-              }
+              onChange={(val) => handleIngredientUpdate(idx, "quantity", val)}
               className="flex-1"
             />
             <LabeledInput
               placeholder="Name"
               value={ing.name}
-              onChange={(val) => handleIngredientChange(idx, "name", val)}
+              onChange={(val) => handleIngredientUpdate(idx, "name", val)}
               className="flex-1"
             />
             <LabeledInput
               placeholder="Unit"
               value={ing.unit}
-              onChange={(val) => handleIngredientChange(idx, "unit", val)}
+              onChange={(val) => handleIngredientUpdate(idx, "unit", val)}
               className="flex-1"
             />
           </div>

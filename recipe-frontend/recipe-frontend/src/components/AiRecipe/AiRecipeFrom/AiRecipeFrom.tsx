@@ -1,7 +1,8 @@
-import { Button } from "../../ui/button";
+import { Button } from "../../ui/Button";
 import React, { useState } from "react";
 import { useGeneratedRecipesContext } from "../../../context/aiContext";
-import TagsInput from "../TagsInput/TagsInput";
+import TagsInput from "../../ui/TagsInput";
+import LabeledInput from "../../ui/LabeledInput";
 
 interface Props {
   onGenerateRecipe: (
@@ -32,6 +33,12 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
     e.preventDefault();
 
     onGenerateRecipe(finalIngredients, finalCategories, freeText);
+
+    setIngredients([]);
+    setCategories([]);
+    setCurrentIngredient("");
+    setCurrentCategory("");
+    setFreeText("");
   };
 
   return (
@@ -56,17 +63,14 @@ const RecipeAiForm: React.FC<Props> = ({ onGenerateRecipe }) => {
         />
 
         <div>
-          <label className="block text-sm font-medium mb-1">Free Text</label>
-          <input
-            type="text"
+          <LabeledInput
+            label="Free Text"
             placeholder="e.g. No oven required"
-            className="border p-2 rounded w-full"
             value={freeText}
-            onChange={(e) => setFreeText(e.target.value)}
+            onChange={setFreeText}
           />
         </div>
       </div>
-
       <Button type="submit" disabled={isLoading} className="w-full">
         {isLoading ? "Generating..." : "Generate Recipe"}
       </Button>

@@ -1,6 +1,7 @@
 import React from "react";
 import type { IRecipe } from "../../../types/recipeType";
 import { X } from "lucide-react";
+import { Button } from "../../ui/Button";
 
 type RecipeHistoryListProps = {
   recipes: IRecipe[];
@@ -20,15 +21,15 @@ const AiRecipesHistory: React.FC<RecipeHistoryListProps> = ({ recipes, onSelect,
             key={idx}
             className="border p-2 rounded shadow-sm flex justify-between items-center"
           >
-            <button
+            <Button
               className="text-left flex-1"
               onClick={() => onSelect(rec)}
             >
               {rec.name} - {rec.categories.join(", ")}
-            </button>
-           <button type="button" onClick={() => onDelete(idx)}>
+            </Button>
+           <Button type="button" onClick={() => onDelete(idx)}>
               <X className="w-4 h-4" />
-            </button>
+            </Button>
           </li>
         ))}
       </ul>

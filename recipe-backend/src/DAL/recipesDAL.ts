@@ -18,9 +18,10 @@ export const getRecipeByIdMongo = async (id: string) => {
     }   
 }
 
-export const createRecipeMongo = async (recipeData: IRecipe) => {
+export const createRecipeMongo = async (recipeData: IRecipe, userId: string) => {
     try {
         const newRecipe = await Recipe.create(recipeData);
+
         return newRecipe;
     } catch (error) {
         throw new Error("Failed to create recipe");
