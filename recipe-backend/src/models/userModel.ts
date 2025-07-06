@@ -1,54 +1,17 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import { IRecipe } from "./recipeModel";
 
-export interface IUser extends Document {
+export interface IUser  {
+  id: number;
   username: string;
   email?: string;
-  googleId?: string;
-  favoriteRecipes: mongoose.Types.ObjectId[];
   phone?: string;
+  googleId?: string;
   isAdmin?: boolean;
-  
+  imageUrl?: string;
+  bio?: string;
+  recipes?: IRecipe[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-const userSchema = new Schema<IUser>(
-  {
-    username: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      match: /^\S+@\S+\.\S+$/,
-    },
-    favoriteRecipes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Recipe",
-      },
-    ],
-    googleId: {
-      type: String,
-      unique: true,
-      sparse: true,
-    },
-    phone: {
-      type: String,
-      unique: true,
-      sparse:true
-    },
-  },{
-    timestamps: true,
-  }
-);
-
-userSchema.statics.findByEmail = function (email: string) {
-  return this.findOne({ email }).populate("favoriteRecipes"); // Populates the recipe details
-};
-
-const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
-
-export default User;
+export default IUser

@@ -1,57 +1,79 @@
-import Recipe, { IRecipe } from "../models/recipeModel";
+import { IRecipe } from "../models/recipeModel";
+import prisma from "../config/database"
 
-export const getAllRecipesMongo = async () => {
+
+export const pgGetAllRecipes = async (authorId?: number) => {
     try {
-        const recipes = await Recipe.find();
+        const recipes = await prisma.recipe.findMany({
+            where: authorId ? { authorId } : undefined,
+            orderBy: { createdAt: 'desc' }
+        });
         return recipes;
     } catch (error) {
-        throw new Error("Failed to fetch recipes");
-    }   
-}
+        throw new Error("Failed to fetch recipes: " + error);
+    }
+};
 
-export const getRecipeByIdMongo = async (id: string) => {
+export const pgGetRecipeById = async (id: number) => {
     try {
-        const recipe = await Recipe.findById(id);
+        const recipe = await prisma.recipe.findUnique({
+            where: { id },
+        });
         return recipe;
     } catch (error) {
-        throw new Error("Failed to fetch recipe byId");
-    }   
-}
+        throw new Error("Failed to fetch recipe by id: " + error);
+    }
+};
 
-export const createRecipeMongo = async (recipeData: IRecipe, userId: string) => {
-    try {
-        const newRecipe = await Recipe.create(recipeData);
-
+export const pgCreateRecipe = async (recipeData: IRecipe, authorId: number) => {
+       try {
+        const newRecipe = await prisma.recipe.create({
+            data: {
+                ...recipeData,
+                authorId
+            },
+        });
         return newRecipe;
     } catch (error) {
-        throw new Error("Failed to create recipe");
-    }   
-}
+        throw new Error("Failed to create recipe on the postgres database: " + error);
+    }
+};
 
-export const updateRecipeMongo = async (id: string, recipeData: IRecipe) => {
+export const pgUpdateRecipe = async (id: number, recipeData: Partial<IRecipe>) => {
     try {
-        const recipe = await Recipe.findByIdAndUpdate(id, recipeData, { new: true });
+        const recipe = await prisma.recipe.update({
+            where: { id },
+            data: recipeData,
+        });
         return recipe;
     } catch (error) {
-        throw new Error("Failed to update recipe");
-    }   
-}
+        throw new Error("Failed to update recipe: " + error);
+    }
+};
 
-export const deleteRecipeMongo = async (id: string) => {
+export const pgDeleteRecipe = async (id: number) => {
     try {
-        const recipe = await Recipe.findByIdAndDelete(id);
+        const recipe = await prisma.recipe.delete({
+            where: { id },
+        });
         return recipe;
     } catch (error) {
-        throw new Error("Failed to delete recipe");
-    }   
-}
+        throw new Error("Failed to delete recipe: " + error);
+    }
+};
 
-export const getRecipesByCategoryMongo = async (category: string) => {
+export const pgGetRecipesByCategory = async (category: string, authorId?: number) => {
     try {
-        const recipes = await Recipe.find({ category });
+        const recipes = await prisma.recipe.findMany({
+            where: {
+                category: { has: category },
+                ...(authorId ? { authorId } : {}),
+            },
+            orderBy: { createdAt: 'desc' }
+        });
         return recipes;
     } catch (error) {
-        throw new Error("Failed to fetch recipes by category");
-    }   
-}
+        throw new Error("Failed to fetch recipes by category: " + error);
+    }
+};
 

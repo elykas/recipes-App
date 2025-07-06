@@ -4,7 +4,8 @@ import { verifyTempToken } from "../utils/authUtils/jwt";
 
 declare module "express" {
   interface Request {
-    userId?: string;
+    userId?: number;
+    email?: string;
   }
 }
 
@@ -24,8 +25,13 @@ export const authenticateToken = (
     }
 
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const userId = Number(decoded.id);
 
-    (req as any).userId = decoded.id;
+    if (!userId) {
+      res.status(400).json({ message: "Invalid user ID", success: false });
+      return;
+    }
+    req.userId = userId;
 
     next();
   } catch (error) {
@@ -53,7 +59,7 @@ export const verifyTempTokenMiddleware = (
       return; 
     }
 
-    (req as any).email = decoded.email;
+    req.email = decoded.email;
 
     next();
   } catch (error) {

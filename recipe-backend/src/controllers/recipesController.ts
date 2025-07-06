@@ -1,12 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import Recipe from "../models/recipeModel";
+import { NextFunction, Request, Response } from "express";
 import {
   createRecipeService,
   getAllRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
 } from "../services/recipeService";
-import { get } from "node:http";
 
 export const getAllRecipes = async (
   req: Request,
@@ -14,7 +12,8 @@ export const getAllRecipes = async (
   next: NextFunction
 ) => {
   try {
-    const recipes = await getAllRecipesService();
+    const authorId: number = (req as any).userId;
+    const recipes = await getAllRecipesService(authorId);
     if (!recipes || recipes.length === 0) {
       res.status(404).json({ message: "No recipes found" });
       return;
@@ -24,14 +23,13 @@ export const getAllRecipes = async (
     next(error);
   }
 };
-
 export const getRecipeById = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const {recipeId} = req.params;
+    const { recipeId } = req.params;
     const recipe = await getRecipeByIdService(recipeId);
     if (!recipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
@@ -46,17 +44,27 @@ export const getRecipeById = async (
 export const createRecipe = async (
   req: Request,
   res: Response,
+
   next: NextFunction
 ) => {
   try {
     const recipe = req.body;
-    const userId = (req as any).userId;
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "No Id provided", success: false });
+    }
     const newRecipe = await createRecipeService(recipe, userId);
     if (!newRecipe) {
       res.status(404).json({ message: "Can't create recipe", success: false });
       return;
     }
-    res.status(201).json({ data: newRecipe, success: true, message: "Recipe created successfully" });
+    res
+      .status(201)
+      .json({
+        data: newRecipe,
+        success: true,
+        message: "Recipe created successfully",
+      });
   } catch (error) {
     next(error);
   }
@@ -68,19 +76,23 @@ export const editRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const {recipeId} = req.params;
+    const { recipeId } = req.params;
     const recipe = req.body;
 
-    const updatedRecipe = await Recipe.findByIdAndUpdate(
-      recipeId,
-      req.body,
-      { new: true }
-    );
+    const updatedRecipe = await Recipe.findByIdAndUpdate(recipeId, req.body, {
+      new: true,
+    });
     if (!updatedRecipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    res.status(200).json({ data: updatedRecipe, success: true , message: "Recipe updated successfully"});
+    res
+      .status(200)
+      .json({
+        data: updatedRecipe,
+        success: true,
+        message: "Recipe updated successfully",
+      });
   } catch (error) {
     next(error);
   }
@@ -92,7 +104,7 @@ export const deleteRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const {recipeId} = req.params;
+    const { recipeId } = req.params;
     const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
     if (!deletedRecipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
@@ -110,7 +122,7 @@ export const getByCategory = async (
   next: NextFunction
 ) => {
   try {
-    const {category} = req.params;
+    const { category } = req.params;
 
     if (!category || category.trim().length === 0) {
       res.status(400).json({ message: "Category is required", success: false });

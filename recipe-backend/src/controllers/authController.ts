@@ -111,7 +111,7 @@ export const verifyTempToken = async (
     const email = (req as any).email;
     const { token } = req.body;
 
-    const user = await checkUserExist(email);
+    const user: IUser = await checkUserExist(email);
 
     if (user) {
       const accessToken = generateAccessToken(user.id);

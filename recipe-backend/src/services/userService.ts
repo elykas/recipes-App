@@ -1,36 +1,36 @@
-import { deleteUserMongo, getAllUsersMongo, getUserByIdMongo, updateUserMongo } from "../DAL/userDAL";
+import { pgDeleteUser, pgGetAllUsers, pgGetUserById, pgUpdateUser } from "../DAL/userDAL";
 import { IUser } from "../models/userModel";
 
 export const getAllUsersService = async () => {
     try {
-        const users = await getAllUsersMongo();
+        const users = await pgGetAllUsers();
         return users;
     } catch (error) {
         throw new Error("Failed to fetch users");
     }
 };
 
-export const getUserByIdService = async (id: string) => {
+export const getUserByIdService = async (id: number) => {
     try {
-        const user = await getUserByIdMongo(id);
+        const user = await pgGetUserById(id);
         return user;
     } catch (error) {
-        throw new Error("Failed to fetch user by ID");
+        throw new Error("Failed to fetch user by ID" + error);
     }
 };
 
-export const updateUserService = async (id: string, user: IUser) => {
+export const updateUserService = async (id: number, user: Partial<IUser>) => {
     try {
-        const updatedUser = await updateUserMongo(id, user);
+        const updatedUser = await pgUpdateUser(id, user);
         return updatedUser;
     } catch (error) {
         throw new Error("Failed to update user");
     }
 };
 
-export const deleteUserService = async (id: string) => {
+export const deleteUserService = async (id: number) => {
     try {
-        const deletedUser = await deleteUserMongo(id);
+        const deletedUser = await pgDeleteUser(id);
         return deletedUser; 
     } catch (error) {
         throw new Error("Failed to delete user");

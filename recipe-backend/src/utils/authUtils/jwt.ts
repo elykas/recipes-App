@@ -4,7 +4,7 @@ const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
 const TEMP_SECRET: string = process.env.TEMP_SECRET as string;
 
-export const generateAccessToken = (id: string): string => {
+export const generateAccessToken = (id: number): string => {
   if (!JWT_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }
@@ -14,7 +14,7 @@ export const generateAccessToken = (id: string): string => {
   return accessToken;
 };
 
-export const generateRefreshToken = (id: string): string => {
+export const generateRefreshToken = (id: number): string => {
   if (!REFRESH_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }

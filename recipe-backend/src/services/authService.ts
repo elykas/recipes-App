@@ -1,13 +1,13 @@
 import {
-  mongoCheckUserExist,
-  mongoCreateUser,
-  mongoFindOrCreateUserToGoogleAuth,
+  pgCheckUserExist,
+  pgCreateUser,
+  pgFindOrCreateUserToGoogleAuth,
 } from "../DAL/authDAL";
 import { generateTempToken } from "../utils/authUtils/jwt";
 import { sendLoginEmail } from "../utils/authUtils/sendLoginEmail";
 
 export const checkUserExist = async (email: string) => {
-  const user = await mongoCheckUserExist(email);
+  const user = await pgCheckUserExist(email);
   if (!user) {
     return null;
   }
@@ -15,11 +15,11 @@ export const checkUserExist = async (email: string) => {
 };
 
 export const createNewUserService = async (email: string, username: string) => {
-  const user = await mongoCheckUserExist(email);
+  const user = await pgCheckUserExist(email);
   if (user) {
     return null;
   }
-  const newUser = await mongoCreateUser(email, username);
+  const newUser = await pgCreateUser(email, username);
   return newUser;
 };
 
@@ -34,7 +34,7 @@ export const findOrCreateUserGoogleAuthService = async (
   username: string,
   email: string
 ) => {
-  const user = await mongoFindOrCreateUserToGoogleAuth(
+  const user = await pgFindOrCreateUserToGoogleAuth(
     googleId,
     username,
     email

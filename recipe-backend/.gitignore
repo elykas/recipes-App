@@ -9,3 +9,4 @@ build/
 
 *.log
 GIT 
+/src/generated/prisma
