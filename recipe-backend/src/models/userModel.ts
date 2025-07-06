@@ -6,6 +6,8 @@ export interface IUser extends Document {
   googleId?: string;
   favoriteRecipes: mongoose.Types.ObjectId[];
   phone?: string;
+  isAdmin?: boolean;
+  
 }
 
 const userSchema = new Schema<IUser>(
