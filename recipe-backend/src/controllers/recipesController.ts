@@ -5,9 +5,11 @@ import {
   getRecipeByIdService,
   getRecipesByCategoryService,
 } from "../services/recipeService";
+import {AuthenticatedRequest} from "../types/requests"
+import IRecipe from "../models/recipeModel";
 
 export const getAllRecipes = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -42,17 +44,14 @@ export const getRecipeById = async (
 };
 
 export const createRecipe = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
-
   next: NextFunction
 ) => {
   try {
-    const recipe = req.body;
+    const recipe:IRecipe | null  = req.body;
     const userId = req.userId;
-    if (!userId) {
-      return res.status(401).json({ message: "No Id provided", success: false });
-    }
+  
     const newRecipe = await createRecipeService(recipe, userId);
     if (!newRecipe) {
       res.status(404).json({ message: "Can't create recipe", success: false });

@@ -9,6 +9,7 @@ declare module "express" {
   }
 }
 
+
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export const authenticateToken = (
