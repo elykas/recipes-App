@@ -5,11 +5,13 @@ export interface Ingredient {
 }
 
 export interface IRecipe {
-  _id: string;
+  id?: number;
   name: string;
-  categories: string[];
+  category: string[];
   ingredients: Ingredient[];
   steps: string[];
+  prepTime?: number;
+  imageUrl?: string;
+  authorId?: number;
 }
-
 export type NewRecipe = Omit<IRecipe, "_id">;

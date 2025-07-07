@@ -1,21 +1,25 @@
 import { NextFunction, Request, Response } from "express";
 import {
   createRecipeService,
-  getAllRecipesService,
+  deleteRecipeService,
+  getAllRecipesFromUserService,
   getRecipeByIdService,
   getRecipesByCategoryService,
+  updateRecipeService,
 } from "../services/recipeService";
-import {AuthenticatedRequest} from "../types/requests"
+import { AuthenticatedRequest } from "../types/requests";
+import { FullRecipe } from "../types/responses";
 import IRecipe from "../models/recipeModel";
+import { RecipeResponseDTO } from "../dto/recipe.dto";
 
-export const getAllRecipes = async (
+export const getAllRecipesFromUser = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const authorId: number = (req as any).userId;
-    const recipes = await getAllRecipesService(authorId);
+    const authorId: number = req.userId;
+    const recipes: RecipeResponseDTO[] = await getAllRecipesFromUserService(authorId);
     if (!recipes || recipes.length === 0) {
       res.status(404).json({ message: "No recipes found" });
       return;
@@ -25,6 +29,7 @@ export const getAllRecipes = async (
     next(error);
   }
 };
+
 export const getRecipeById = async (
   req: Request,
   res: Response,
@@ -32,7 +37,7 @@ export const getRecipeById = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const recipe = await getRecipeByIdService(recipeId);
+    const recipe: RecipeResponseDTO | null = await getRecipeByIdService(+recipeId);
     if (!recipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
@@ -49,21 +54,15 @@ export const createRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const recipe:IRecipe | null  = req.body;
+    const recipe: IRecipe = req.body;
     const userId = req.userId;
-  
-    const newRecipe = await createRecipeService(recipe, userId);
-    if (!newRecipe) {
-      res.status(404).json({ message: "Can't create recipe", success: false });
-      return;
-    }
-    res
-      .status(201)
-      .json({
-        data: newRecipe,
-        success: true,
-        message: "Recipe created successfully",
-      });
+
+    const newRecipe : RecipeResponseDTO= await createRecipeService(recipe, userId);
+    res.status(201).json({
+      data: newRecipe,
+      success: true,
+      message: "Recipe created successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -78,20 +77,16 @@ export const editRecipe = async (
     const { recipeId } = req.params;
     const recipe = req.body;
 
-    const updatedRecipe = await Recipe.findByIdAndUpdate(recipeId, req.body, {
-      new: true,
-    });
+    const updatedRecipe = await updateRecipeService(+recipeId, recipe);
     if (!updatedRecipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    res
-      .status(200)
-      .json({
-        data: updatedRecipe,
-        success: true,
-        message: "Recipe updated successfully",
-      });
+    res.status(200).json({
+      data: updatedRecipe,
+      success: true,
+      message: "Recipe updated successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -104,7 +99,7 @@ export const deleteRecipe = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const deletedRecipe = await Recipe.findByIdAndDelete(recipeId);
+    const deletedRecipe = await deleteRecipeService(+recipeId);
     if (!deletedRecipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;

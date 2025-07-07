@@ -1,21 +1,24 @@
-import mongoose, { Schema, Document, Model, Types } from 'mongoose';
-import validator from 'validator';
-
 interface Ingredient {
+  id?: number;
   name: string;
   quantity?: string;
   unit?:string
 }
 
-export interface IRecipe extends Document {
-  id: string;
+interface Category {
+  id?: number;
   name: string;
-  category: string[];
+}
+
+export interface IRecipe {
+  id?: number;
+  name: string;
+  categories: Category[];
   ingredients: Ingredient[];
   steps: string[];
-  prepTime?: Number;
+  prepTime?: number;
   imageUrl?: string;
-  authorId: number;
+  authorId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

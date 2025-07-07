@@ -1,36 +1,59 @@
-import Recipe, { IRecipe } from "../models/recipeModel";
 import {
-  pgCreateRecipe, pgDeleteRecipe, pgGetAllRecipes, pgGetRecipeById, pgGetRecipesByCategory, pgUpdateRecipe, 
-} from "../DAL/recipesDAL";
+  pgCreateRecipe,
+  pgDeleteRecipe,
+  pgGetAllRecipes,
+  pgGetRecipeById,
+  pgGetRecipesByCategory,
+  pgUpdateRecipe,
+} from "../dal/recipesDAL";
+import { RecipeResponseDTO } from "../dto/recipe.dto";
+import { IRecipe } from "../models/recipeModel";
+import { FullRecipe } from "../types/responses";
+import { mapRecipeToDTO } from "../utils/mappers/recipeMapper";
 
-export const getAllRecipesService = async (authorId?: number) => {
+export const getAllRecipesFromUserService = async (
+  authorId: number
+): Promise<RecipeResponseDTO[]> => {
   try {
-    const recipes = await pgGetAllRecipes(authorId);
-    return recipes;
+    const recipes: FullRecipe[] = await pgGetAllRecipes(authorId);
+    const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
+    return recipesDto;
   } catch (error) {
     throw new Error("Failed to fetch recipes:" + error);
   }
 };
 
-export const getRecipeByIdService = async (id: number) => {
+export const getRecipeByIdService = async (
+  id: number
+): Promise<RecipeResponseDTO | null> => {
   try {
-    const recipe = await pgGetRecipeById(id);
-    return recipe;
+    const recipe: FullRecipe | null = await pgGetRecipeById(id);
+    if (!recipe) return null;
+
+    const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
+    return recipeDto;
   } catch (error) {
     throw new Error("Failed to fetch recipe byId:" + error);
   }
 };
 
-export const createRecipeService = async (recipeData: IRecipe, authorId: number) => {
+export const createRecipeService = async (
+  recipeData: IRecipe,
+  authorId: number
+) : Promise<RecipeResponseDTO> => {
   try {
     const newRecipe = await pgCreateRecipe(recipeData, authorId);
-    return newRecipe;
+    const recipeDto: RecipeResponseDTO = mapRecipeToDTO(newRecipe);
+    return recipeDto;
   } catch (error) {
     throw new Error("Failed to create recipe:" + error);
   }
 };
 
-export const updateRecipeService = async (id: number, recipeData: Partial<IRecipe>) => {
+export const updateRecipeService = async (
+  id: number,
+  recipeData: Partial<IRecipe>
+) => {
   try {
     const recipe = await pgUpdateRecipe(id, recipeData);
     return recipe;
@@ -48,7 +71,10 @@ export const deleteRecipeService = async (id: number) => {
   }
 };
 
-export const getRecipesByCategoryService = async (category: string, auhtorId?: number) => {
+export const getRecipesByCategoryService = async (
+  category: string,
+  auhtorId?: number
+) => {
   try {
     const recipes = await pgGetRecipesByCategory(category, auhtorId);
     return recipes;

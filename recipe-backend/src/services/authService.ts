@@ -2,7 +2,7 @@ import {
   pgCheckUserExist,
   pgCreateUser,
   pgFindOrCreateUserToGoogleAuth,
-} from "../DAL/authDAL";
+} from "../dal/authDAL";
 import { generateTempToken } from "../utils/authUtils/jwt";
 import { sendLoginEmail } from "../utils/authUtils/sendLoginEmail";
 
@@ -34,11 +34,7 @@ export const findOrCreateUserGoogleAuthService = async (
   username: string,
   email: string
 ) => {
-  const user = await pgFindOrCreateUserToGoogleAuth(
-    googleId,
-    username,
-    email
-  );
+  const user = await pgFindOrCreateUserToGoogleAuth(googleId, username, email);
   return user;
 };
 
