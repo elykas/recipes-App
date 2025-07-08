@@ -16,7 +16,6 @@ interface RecipesContextProps {
   deleteRecipe: (recipeId: string) => Promise<void>;
   updateRecipe: (recipe: IRecipe) => Promise<void>;
   getRecipesByCategory: (category: string) => Promise<void>;
-  getRecipeByAi: (ingredients: string[], category: string[],freeText: string) => Promise<void>;
 }
 
 const RecipesContext = createContext<RecipesContextProps>({
@@ -29,7 +28,6 @@ const RecipesContext = createContext<RecipesContextProps>({
   deleteRecipe: async () => {},
   updateRecipe: async () => {},
   getRecipesByCategory: async () => {},
-  getRecipeByAi: async () => {},
 });
 
 export const RecipesProvider: React.FC<RecipesProviderProps> = ({
@@ -42,7 +40,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const getAllRecipes = async () => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/crud-recipes`);
+      const response = await api.get(`/recipes`);
       const data = response.data as IRecipe[];
       setRecipes(data);
     } catch (error) {
@@ -55,7 +53,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const getRecipe = async (recipeId: string) => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/crud-recipes/get-recipe/${recipeId}`);
+      const response = await api.get(`/recipes/get-recipe/${recipeId}`);
       const data = response.data as IRecipe;
       setRecipe(data);
     } catch (error) {
@@ -68,7 +66,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const addRecipe = async (newRecipe: NewRecipe) => {
     setIsLoading(true);
     try {
-      await api.post(`/crud-recipes`, newRecipe);
+      await api.post(`/recipes`, newRecipe);
     } catch (error) {
       throw new Error("failed to add recipe");
     } finally {
@@ -79,7 +77,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const deleteRecipe = async (recipeId: string) => {
     setIsLoading(true);
     try {
-      await api.delete(`/crud-recipes/${recipeId}`);
+      await api.delete(`/recipes/${recipeId}`);
     } catch (error) {
       throw new Error("failed to delete recipe");
     } finally {
@@ -90,7 +88,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const updateRecipe = async (recipe: IRecipe) => {
     setIsLoading(true);
     try {
-      await api.put(`/crud-recipes`, recipe);
+      await api.put(`/recipes`, recipe);
     } catch (error) {
       throw new Error("failed to update recipe");
     } finally {
@@ -100,7 +98,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
 
   const getRecipesByCategory = async (category: string) => {
     try {
-      const response = await api.get(`/crud-recipes/get-by-category/${category}`);
+      const response = await api.get(`/recipes/get-by-category/${category}`);
       const data = response.data as IRecipe[];
       setRecipes(data);
     } catch (error) {
@@ -108,15 +106,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
-  const getRecipeByAi = async (ingredients: string[], category: string[],freeText: string) => {
-    try {
-      const response = await api.post(`/crud-recipes/generate-recipe`, { ingredients, category, freeText });
-      const data = response.data as IRecipe;
-      setRecipe(data);
-    } catch (error) {
-      throw new Error("failed to get recipe by AI");
-    }
-  }
+
 
   return (
     <RecipesContext.Provider
@@ -130,7 +120,6 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
         deleteRecipe,
         updateRecipe,
         getRecipesByCategory,
-        getRecipeByAi
       }}
     >
       {children}

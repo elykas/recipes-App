@@ -32,7 +32,7 @@ model User {
 model Recipe {
   id        Int      @id @default(autoincrement())
   name      String   @unique
-  categories  Category[]  @relation("RecipeCategories")
+  categories  Category[]  
   steps     String[]
   prepTime  Int? @default(30)
   imageUrl  String?
@@ -56,5 +56,5 @@ model Ingredient {
 model Category {
   id  Int  @id @default(autoincrement())
   name String
-  recipes    Recipe[]  @relation("RecipeCategories")
+  recipes    Recipe[]  
 }

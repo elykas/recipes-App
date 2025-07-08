@@ -4,10 +4,11 @@ import dotenv from 'dotenv';
 import passport  from './config/passport'
 import cors from 'cors';
 import {errorHandler} from './middleware/errorHandler';   
-import recipeRouter from './routes/crudRecipesRouter';
+import recipeRouter from './routes/recipesRouter';
 import authRouter from './routes/authRouter';
 import userRouter from './routes/userRouter';
 import aiRouter from './routes/aiRouter';
+import categoryRouter from './routes/categoryRouter';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
@@ -46,10 +47,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/api/crud-recipes',recipeRouter);
+app.use('/api/recipes',recipeRouter);
 app.use('/api/auth',authRouter);
 app.use('/api/user', userRouter)
 app.use("/api/ai-recipes", aiRouter)
+app.use("/api/categories", categoryRouter)
 
 app.use(errorHandler);
 

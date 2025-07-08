@@ -1,13 +1,19 @@
 export interface Ingredient {
+  id?: number;
   quantity: string;
   name: string;
   unit: string;
 }
 
+export interface Category {
+  id: number;
+  name?: string;
+}
+
 export interface IRecipe {
   id?: number;
   name: string;
-  category: string[];
+  category: Category[];
   ingredients: Ingredient[];
   steps: string[];
   prepTime?: number;

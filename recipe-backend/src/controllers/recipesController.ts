@@ -3,27 +3,38 @@ import {
   createRecipeService,
   deleteRecipeService,
   getAllRecipesFromUserService,
+  getAllRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
+  getUserRecipesByCategoryService,
   updateRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
-import { FullRecipe } from "../types/responses";
 import IRecipe from "../models/recipeModel";
 import { RecipeResponseDTO } from "../dto/recipe.dto";
 
 export const getAllRecipesFromUser = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const authorId: number = req.userId;
-    const recipes: RecipeResponseDTO[] = await getAllRecipesFromUserService(authorId);
-    if (!recipes || recipes.length === 0) {
-      res.status(404).json({ message: "No recipes found" });
-      return;
-    }
+    const { userId } = req as AuthenticatedRequest;
+    const recipes: RecipeResponseDTO[] =
+      await getAllRecipesFromUserService(userId);
+    res.status(200).json({ data: recipes, success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllRecipes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const recipes: RecipeResponseDTO[] = await getAllRecipesService();
     res.status(200).json({ data: recipes, success: true });
   } catch (error) {
     next(error);
@@ -37,11 +48,8 @@ export const getRecipeById = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const recipe: RecipeResponseDTO | null = await getRecipeByIdService(+recipeId);
-    if (!recipe) {
-      res.status(404).json({ message: "Recipe not found", success: false });
-      return;
-    }
+    const recipe: RecipeResponseDTO | null =
+      await getRecipeByIdService(+recipeId);
     res.status(200).json({ data: recipe, success: true });
   } catch (error) {
     next(error);
@@ -49,15 +57,19 @@ export const getRecipeById = async (
 };
 
 export const createRecipe = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const recipe: IRecipe = req.body;
-    const userId = req.userId;
+    const { userId } = req as AuthenticatedRequest;
 
-    const newRecipe : RecipeResponseDTO= await createRecipeService(recipe, userId);
+    const newRecipe: RecipeResponseDTO = await createRecipeService(
+      recipe,
+      userId
+    );
+
     res.status(201).json({
       data: newRecipe,
       success: true,
@@ -74,14 +86,9 @@ export const editRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const { recipeId } = req.params;
-    const recipe = req.body;
+    const recipe: IRecipe = req.body;
 
-    const updatedRecipe = await updateRecipeService(+recipeId, recipe);
-    if (!updatedRecipe) {
-      res.status(404).json({ message: "Recipe not found", success: false });
-      return;
-    }
+    const updatedRecipe: RecipeResponseDTO = await updateRecipeService(recipe);
     res.status(200).json({
       data: updatedRecipe,
       success: true,
@@ -99,35 +106,50 @@ export const deleteRecipe = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const deletedRecipe = await deleteRecipeService(+recipeId);
-    if (!deletedRecipe) {
-      res.status(404).json({ message: "Recipe not found", success: false });
-      return;
-    }
-    res.status(200).json({ data: deletedRecipe, success: true });
+    const deletedRecipe: RecipeResponseDTO =
+      await deleteRecipeService(+recipeId);
+    res.status(200).json({
+      data: deletedRecipe,
+      success: true,
+      message: "Recipe deleted successfully",
+    });
   } catch (error) {
     next(error);
   }
 };
 
-export const getByCategory = async (
+export const getUserRecipesByCategory = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { category } = req.params;
+    const { categoryId } = req.params;
+    const { userId } = req as AuthenticatedRequest;
 
-    if (!category || category.trim().length === 0) {
-      res.status(400).json({ message: "Category is required", success: false });
-      return;
+    if (!categoryId) {
+      throw new Error("Category id is required");
     }
 
-    const recipes = await getRecipesByCategoryService(category);
-    if (!recipes || recipes.length === 0) {
-      res.status(404).json({ message: "No recipes found" });
-      return;
-    }
+    const recipes = await getUserRecipesByCategoryService(+categoryId, userId);
+    res.status(200).json({
+      data: recipes,
+      success: true,
+      message: "Recipes by category fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getRecipesByCategory = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { categoryId } = req.params;
+    const recipes = await getRecipesByCategoryService(+categoryId);
     res.status(200).json({ data: recipes, success: true });
   } catch (error) {
     next(error);
