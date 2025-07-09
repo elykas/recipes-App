@@ -37,8 +37,8 @@ model Recipe {
   prepTime  Int? @default(30)
   imageUrl  String?
   ingredients Ingredient[] 
-  author    User?    @relation("UserRecipes", fields: [authorId], references: [id])
-  authorId  Int?
+  author    User    @relation("UserRecipes", fields: [authorId], references: [id])
+  authorId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

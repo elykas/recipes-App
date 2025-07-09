@@ -3,41 +3,35 @@ import {
   pgGetAllUsers,
   pgGetUserById,
   pgUpdateUser,
-} from "../dal/userDAL";
-import { IUser } from "../models/userModel";
+} from "../dal/userDal";
+import { UpdateUserDto, UserDto } from "../dto/userDto";
+import { UserWithoutRecipes } from "../types/responses";
+import errorResponse from "../utils/errors/errors";
+import { mapUserToDto } from "../utils/mappers/userMapper";
 
-export const getAllUsersService = async () => {
-  try {
-    const users = await pgGetAllUsers();
-    return users;
-  } catch (error) {
-    throw new Error("Failed to fetch users");
-  }
+export const getAllUsersService = async (): Promise<UserDto[]> => {
+  const users: UserWithoutRecipes[] = await pgGetAllUsers();
+  const recipesDto: UserDto[] = users.map(mapUserToDto);
+  return recipesDto;
 };
 
-export const getUserByIdService = async (id: number) => {
-  try {
-    const user = await pgGetUserById(id);
-    return user;
-  } catch (error) {
-    throw new Error("Failed to fetch user by ID" + error);
-  }
+export const getUserByIdService = async (id: number): Promise<UserDto> => {
+  const user = await pgGetUserById(id);
+  if (!user) throw errorResponse("User not found", 404);
+  const userDto: UserDto = mapUserToDto(user);
+  return userDto;
 };
 
-export const updateUserService = async (id: number, user: Partial<IUser>) => {
-  try {
-    const updatedUser = await pgUpdateUser(id, user);
+export const updateUserService = async (
+  id: number,
+  user: UpdateUserDto
+): Promise<UpdateUserDto> => {
+    const updatedUser: UpdateUserDto = await pgUpdateUser(id, user);
     return updatedUser;
-  } catch (error) {
-    throw new Error("Failed to update user");
-  }
 };
 
-export const deleteUserService = async (id: number) => {
-  try {
-    const deletedUser = await pgDeleteUser(id);
-    return deletedUser;
-  } catch (error) {
-    throw new Error("Failed to delete user");
-  }
+export const deleteUserService = async (id: number): Promise<UserDto> => {
+    const deletedUser: UserWithoutRecipes = await pgDeleteUser(id);
+    const userDto: UserDto = mapUserToDto(deletedUser);
+    return userDto;
 };

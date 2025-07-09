@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { getRecipeAIService } from "../services/ai/aiService";
+import IRecipe from "../models/recipeModel";
 
 export const generateRecipe = async (
   req: Request,
@@ -8,7 +9,7 @@ export const generateRecipe = async (
 ) => {
   try {
     const { ingredients, category, freeText,previousRecipes } = req.body;
-    const recipe = await getRecipeAIService(ingredients, category, freeText,previousRecipes);
+    const recipe: IRecipe = await getRecipeAIService(ingredients, category, freeText,previousRecipes);
     res.status(200).json({ success: true, data: recipe });
   } catch (error) {
     next(error);

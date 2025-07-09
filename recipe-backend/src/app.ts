@@ -1,5 +1,5 @@
 import express from 'express';
-import connectDB from './config/db';
+import connectDB from '../legacy-mongo/config/db';
 import dotenv from 'dotenv';
 import passport  from './config/passport'
 import cors from 'cors';

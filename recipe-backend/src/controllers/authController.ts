@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import passport from "passport";
+import { UserDto } from "../dto/userDto";
 import { IUser } from "../models/userModel";
 import {
   checkUserExist,
@@ -8,6 +9,7 @@ import {
   findOrCreateUserGoogleAuthService,
   sendLoginLinkService,
 } from "../services/authService";
+import { TempTokenRequest } from "../types/requests";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -21,7 +23,7 @@ const CLIENT_URL = process.env.CLIENT_URL as string;
 
 export const googleAuth = passport.authenticate("google", {
   scope: ["email", "profile"],
-  prompt: "select_account",  
+  prompt: "select_account",
 });
 
 export const googleAuthCallback = (
@@ -31,7 +33,7 @@ export const googleAuthCallback = (
 ) => {
   passport.authenticate(
     "google",
-    { failureRedirect:`${CLIENT_URL}/login`, session: false },
+    { failureRedirect: `${CLIENT_URL}/login`, session: false },
     async (err: Error, user: IUser) => {
       if (err) return next(err);
       if (!user) return res.redirect(`${CLIENT_URL}/login`);
@@ -41,6 +43,11 @@ export const googleAuthCallback = (
           return res
             .status(500)
             .json({ success: false, message: "JWT secret is not defined" });
+        }
+        if (user.id === undefined) {
+          return res
+            .status(500)
+            .json({ success: false, message: "User ID is missing" });
         }
 
         const accessToken = generateAccessToken(user.id);
@@ -67,7 +74,7 @@ export const handleGoogleCallback = async (
       : null;
 
   try {
-    const user = await findOrCreateUserGoogleAuthService(
+    const user: UserDto = await findOrCreateUserGoogleAuthService(
       profile.id,
       profile.displayName,
       email
@@ -108,10 +115,10 @@ export const verifyTempToken = async (
   next: NextFunction
 ) => {
   try {
-    const email = (req as any).email;
+    const {email} = req as TempTokenRequest;
     const { token } = req.body;
 
-    const user: IUser = await checkUserExist(email);
+    const user: UserDto | null = await checkUserExist(email);
 
     if (user) {
       const accessToken = generateAccessToken(user.id);
@@ -137,14 +144,9 @@ export const completeRegister = async (
 ) => {
   try {
     const { username } = req.body;
-    const { email } = req as any;
+    const { email } = req as TempTokenRequest;
 
-    const user = await createNewUserService(email, username);
-
-    if (!user) {
-      res.status(400).json({ success: false, message: "User already exists" });
-      return;
-    }
+    const user: UserDto = await createNewUserService(email, username);
 
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);

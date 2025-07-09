@@ -8,13 +8,9 @@ export const getRecipeAIService = async (
   category: string[],
   freeText: string,
   previousRecipes: IRecipe[]
-) => {
+): Promise<IRecipe> => {
   let prompt = buildRecipePrompt(ingredients, category, freeText, previousRecipes);
-  try {
-    const generatedRecipe = await geminiAgentGenerate(prompt)
+    const generatedRecipe: IRecipe = await geminiAgentGenerate(prompt)
     return generatedRecipe
-  } catch (error) {
-    console.error("Error communicating with Gemini API:", error);
-    throw new Error("failed to generate recipe" + error)
-  }
+  
 };

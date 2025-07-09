@@ -1,48 +1,55 @@
-import  IUser from "../models/userModel";
 import prisma from "../config/database";
+import { UpdateUserDto } from "../dto/userDto";
+import IUser from "../models/userModel";
+import { UserWithoutRecipes, UserWithRecipes } from "../types/responses";
 
-export const pgGetAllUsers = async (): Promise<IUser[]> => {
-  try {
-    const users = await prisma.user.findMany();
-    return users;
-  } catch (error) {
-    throw new Error("Failed to fetch users: " + error);
-  }
+export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
+  const users = await prisma.user.findMany();
+  return users;
 };
 
-export const pgGetUserById = async (id: number): Promise<IUser> => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id },
-    });
-    if (!user) throw new Error("User not found");
-    return user;
-  } catch (error) {
-    throw new Error("Failed to fetch user by ID: " + error);
-  }
+export const pgGetUserById = async (
+  id: number
+): Promise<UserWithRecipes | null> => {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    include: {
+      recipes: {
+        include: {
+          ingredients: true,
+          categories: true,
+        },
+      },
+    },
+  });
+  return user;
 };
 
 export const pgUpdateUser = async (
-  id: number,userData: Partial<IUser>): Promise<IUser> => {
-  try {
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: userData,
-    });
-    return updatedUser;
-  } catch (error) {
-    throw new Error("Failed to update user: " + error);
-  }
+  id: number,
+  userData: UpdateUserDto
+): Promise<UpdateUserDto> => {
+  const updatedUser = await prisma.user.update({
+    where: { id },
+    data: {
+      username: userData.username,
+      imageUrl: userData.imageUrl,
+      bio: userData.bio,
+    },
+    select: {
+      id: true,
+      username: true,
+      imageUrl: true,
+      bio: true,
+    },
+  });
+
+  return updatedUser;
 };
 
-
-export const pgDeleteUser = async (id: number): Promise<IUser> => {
-  try {
+export const pgDeleteUser = async (id: number): Promise<UserWithoutRecipes> => {
     const deletedUser = await prisma.user.delete({
       where: { id },
     });
     return deletedUser;
-  } catch (error) {
-    throw new Error("Failed to delete user: " + error);
-  }
 };

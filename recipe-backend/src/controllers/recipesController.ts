@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { RecipeResponseDTO } from "../dto/recipe.dto";
+import IRecipe from "../models/recipeModel";
 import {
   createRecipeService,
   deleteRecipeService,
-  getAllRecipesFromUserService,
+  getAllRecipesFromUserService as getAllRecipesOfUserService,
   getAllRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
@@ -10,10 +12,8 @@ import {
   updateRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
-import IRecipe from "../models/recipeModel";
-import { RecipeResponseDTO } from "../dto/recipe.dto";
 
-export const getAllRecipesFromUser = async (
+export const getAllRecipesOfUser = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -21,7 +21,7 @@ export const getAllRecipesFromUser = async (
   try {
     const { userId } = req as AuthenticatedRequest;
     const recipes: RecipeResponseDTO[] =
-      await getAllRecipesFromUserService(userId);
+      await getAllRecipesOfUserService(userId);
     res.status(200).json({ data: recipes, success: true });
   } catch (error) {
     next(error);

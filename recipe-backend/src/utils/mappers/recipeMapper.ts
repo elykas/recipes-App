@@ -4,7 +4,10 @@ import { FullRecipe } from "../../types/responses";
 export const mapRecipeToDTO = (recipe: FullRecipe): RecipeResponseDTO => ({
   id: recipe.id,
   name: recipe.name,
-  categories: recipe.categories.map((c) => c.name),
+  categories: recipe.categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+  })),
   steps: recipe.steps,
   prepTime: recipe.prepTime,
   imageUrl: recipe.imageUrl,

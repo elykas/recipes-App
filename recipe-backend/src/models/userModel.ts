@@ -1,12 +1,12 @@
 import { IRecipe } from "./recipeModel";
 
 export interface IUser  {
-  id: number;
+  id?: number;
   username: string;
   email?: string;
   phone?: string;
   googleId?: string;
-  isAdmin?: boolean;
+  isAdmin: boolean;
   imageUrl?: string;
   bio?: string;
   recipes?: IRecipe[];

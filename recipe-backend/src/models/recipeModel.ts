@@ -1,13 +1,13 @@
 export interface Ingredient {
   id?: number;
   name: string;
-  quantity?: string;
-  unit?:string
+  quantity?: string | null;
+  unit?:string | null;
 }
 
 export interface Category {
-  id: number;
-  name?: string;
+  id?: number;
+  name: string;
 }
 
 export interface IRecipe {
@@ -16,9 +16,9 @@ export interface IRecipe {
   categories: Category[];
   ingredients: Ingredient[];
   steps: string[];
-  prepTime?: number;
-  imageUrl?: string;
-  authorId?: number;
+  prepTime?: number | null;
+  imageUrl?: string | null;
+  authorId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

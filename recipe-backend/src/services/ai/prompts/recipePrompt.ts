@@ -31,7 +31,7 @@ export const buildRecipePrompt = (
 
   prompt += `\nRespond with only valid JSON without extra text.
     Use the key "steps" for the recipe instructions instead of "instructions".`;
-  prompt += ` Each ingredient should be an object with the keys "quantity", "unit", and "name" 
+  prompt += ` Each ingredient should be an object with the keys "quantity:string", "unit", and "name" 
  representing the amount, unit, and ingredient name respectively.\n`;
  prompt += 'For any fractional quantity like 1/2, 1/4 etc., wrap the value in quotes, for example: "quantity": "1/2". Do not include markdown, comments or extra text. Respond strictly with clean JSON only.'
 
