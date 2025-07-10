@@ -1,4 +1,3 @@
-import { CategoryType } from "@prisma/client";
 import {
   pgCreateCategory,
   pgDeleteCategory,
@@ -8,6 +7,8 @@ import {
 } from "../DAL/categoriesDal";
 import { ICategory } from "../models/recipeModel";
 import errorResponse from "../utils/errors/errors";
+import { CategoryType } from "@prisma/client";
+
 export const getAllCategoriesService = async (): Promise<ICategory[]> => {
   const categories: ICategory[] = await pgGetAllCategories();
   return categories;

@@ -43,7 +43,7 @@ const UserRecipesPage = () => {
 
   const handleNextRecipe = () => {
     const currentIndex = recipes.findIndex(
-      (recipe) => recipe._id === selectedCard?._id
+      (recipe) => recipe.id === selectedCard?.id
     );
     const nextIndex = (currentIndex + 1) % recipes.length;
     setSelectedCard(recipes[nextIndex]);
@@ -51,7 +51,7 @@ const UserRecipesPage = () => {
 
   const handlePreviousRecipe = () => {
     const currentIndex = recipes.findIndex(
-      (recipe) => recipe._id === selectedCard?._id
+      (recipe) => recipe.id === selectedCard?.id
     );
     const previousIndex = (currentIndex - 1 + recipes.length) % recipes.length;
     setSelectedCard(recipes[previousIndex]);
@@ -76,6 +76,7 @@ const UserRecipesPage = () => {
   const handleCreateRecipe = async (recipe: NewRecipe) => {
     try {
       await addRecipe(recipe);
+      await getAllRecipes();
       setShowCreateModal(false);
     } catch (error) {
       setError("Failed to create recipe");
