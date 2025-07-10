@@ -1,19 +1,21 @@
+import { CategoryType } from "@prisma/client";
 export interface Ingredient {
   id?: number;
   name: string;
   quantity?: string | null;
-  unit?:string | null;
+  unit?: string | null;
 }
 
-export interface Category {
-  id?: number;
+export interface ICategory {
+  id: number;
   name: string;
+  type: CategoryType;
 }
 
 export interface IRecipe {
   id?: number;
   name: string;
-  categories: Category[];
+  categories: ICategory[];
   ingredients: Ingredient[];
   steps: string[];
   prepTime?: number | null;
@@ -23,4 +25,4 @@ export interface IRecipe {
   updatedAt?: Date;
 }
 
-export default IRecipe
+export default IRecipe;

@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  seed     = "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
 }
 
 datasource db {
@@ -55,6 +56,24 @@ model Ingredient {
 
 model Category {
   id  Int  @id @default(autoincrement())
-  name String
+  name String @unique
+  type CategoryType
   recipes    Recipe[]  
+}
+
+enum CategoryType {
+  MealType         // e.g. Breakfast, Dinner
+  MainIngredient   // e.g. Chicken, Tofu
+  Cuisine          // e.g. Italian, Japanese
+  DietaryPreference // e.g. Vegan, Gluten-Free
+  CookingMethod    // e.g. Air Fryer, Grilled
+  Occasion         // e.g. Holiday, Party
+  SkillLevel       // e.g. Beginner, Advanced
+  PreparationTime  // e.g. Under30Minutes
+  Equipment        // e.g. SlowCooker, InstantPot
+  Audience         // e.g. KidFriendly, BudgetFriendly
+  NutritionFocus   // e.g. HighProtein, LowFat
+  Seasonality      // e.g. Summer, Winter
+  FlavorProfile    // e.g. Spicy, Sweet
+  Texture          // e.g. Crunchy, Creamy
 }

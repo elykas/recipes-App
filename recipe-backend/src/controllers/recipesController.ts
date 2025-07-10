@@ -22,7 +22,7 @@ export const getAllRecipesOfUser = async (
     const { userId } = req as AuthenticatedRequest;
     const recipes: RecipeResponseDTO[] =
       await getAllRecipesOfUserService(userId);
-    res.status(200).json({ data: recipes, success: true });
+    res.status(200).json({ data: recipes, success: true, message: "Recipes of user fetched successfully" });
   } catch (error) {
     next(error);
   }
@@ -35,7 +35,7 @@ export const getAllRecipes = async (
 ) => {
   try {
     const recipes: RecipeResponseDTO[] = await getAllRecipesService();
-    res.status(200).json({ data: recipes, success: true });
+    res.status(200).json({ data: recipes, success: true, message: "Recipes fetched successfully" });
   } catch (error) {
     next(error);
   }
@@ -50,7 +50,7 @@ export const getRecipeById = async (
     const { recipeId } = req.params;
     const recipe: RecipeResponseDTO | null =
       await getRecipeByIdService(+recipeId);
-    res.status(200).json({ data: recipe, success: true });
+    res.status(200).json({ data: recipe, success: true, message: "Recipe by Id fetched successfully" });
   } catch (error) {
     next(error);
   }
@@ -150,7 +150,7 @@ export const getRecipesByCategory = async (
   try {
     const { categoryId } = req.params;
     const recipes = await getRecipesByCategoryService(+categoryId);
-    res.status(200).json({ data: recipes, success: true });
+    res.status(200).json({ data: recipes, success: true, message: "Recipes by category fetched successfully" });
   } catch (error) {
     next(error);
   }

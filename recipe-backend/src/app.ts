@@ -1,5 +1,4 @@
 import express from 'express';
-import connectDB from '../legacy-mongo/config/db';
 import dotenv from 'dotenv';
 import passport  from './config/passport'
 import cors from 'cors';
@@ -25,7 +24,6 @@ if (environment === 'production') {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-connectDB();
 
 app.use(express.json());
 app.use(cookieParser());

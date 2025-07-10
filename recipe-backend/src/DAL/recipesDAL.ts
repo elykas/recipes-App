@@ -1,5 +1,5 @@
 import prisma from "../config/database";
-import { Category, IRecipe } from "../models/recipeModel";
+import { ICategory, IRecipe } from "../models/recipeModel";
 import { FullRecipe } from "../types/responses";
 
 export const pgGetAllRecipes = async (
@@ -78,14 +78,14 @@ export const pgUpdateRecipe = async (
 };
 
 export const pgUpdateRecipeCategories = async (
-    recipeId: number,
-    categories: Category[]
+  recipeId: number,
+  categories: ICategory[]
 ): Promise<void> => {
-    await prisma.recipe.update({
+  await prisma.recipe.update({
     where: { id: recipeId },
     data: {
       categories: {
-        set: categories.map((category) => ({ id: category.id })), 
+        set: categories.map((category) => ({ id: category.id })),
       },
     },
   });
