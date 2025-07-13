@@ -98,15 +98,15 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               className="flex-1"
             />
             <LabeledInput
-              placeholder="Name"
-              value={ing.name}
-              onChange={(val) => handleIngredientUpdate(idx, "name", val)}
-              className="flex-1"
-            />
-            <LabeledInput
               placeholder="Unit"
               value={ing.unit}
               onChange={(val) => handleIngredientUpdate(idx, "unit", val)}
+              className="flex-1"
+            />
+            <LabeledInput
+              placeholder="Name"
+              value={ing.name}
+              onChange={(val) => handleIngredientUpdate(idx, "name", val)}
               className="flex-1"
             />
           </div>

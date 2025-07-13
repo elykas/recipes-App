@@ -50,7 +50,7 @@ export const googleAuthCallback = (
             .json({ success: false, message: "User ID is missing" });
         }
 
-        const accessToken = generateAccessToken(user.id);
+        const accessToken = generateAccessToken(user.id, user.isAdmin);
         const refreshToken = generateRefreshToken(user.id);
 
         setAuthCookies(res, accessToken, refreshToken);
@@ -121,7 +121,7 @@ export const verifyTempToken = async (
     const user: UserDto | null = await checkUserExist(email);
 
     if (user) {
-      const accessToken = generateAccessToken(user.id);
+      const accessToken = generateAccessToken(user.id, user.isAdmin ?? false);
       const refreshToken = generateRefreshToken(user.id);
       setAuthCookies(res, accessToken, refreshToken);
     } else {
@@ -148,7 +148,7 @@ export const completeRegister = async (
 
     const user: UserDto = await createNewUserService(email, username);
 
-    const accessToken = generateAccessToken(user.id);
+    const accessToken = generateAccessToken(user.id, user.isAdmin ?? false);
     const refreshToken = generateRefreshToken(user.id);
     setAuthCookies(res, accessToken, refreshToken);
     res
@@ -159,7 +159,7 @@ export const completeRegister = async (
   }
 };
 
-export const refreshToken = (req: Request, res: Response) => {
+export const refreshToken = async(req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies?.refreshToken;
 
@@ -175,7 +175,16 @@ export const refreshToken = (req: Request, res: Response) => {
       process.env.REFRESH_SECRET!
     ) as jwt.JwtPayload;
 
-    const accessToken = generateAccessToken(decoded.id);
+    const user: UserDto | null = await checkUserExist(decoded.id);
+
+    if (!user) {
+      res
+        .status(401)
+        .json({ message: "User not found", success: false });
+      return;
+    }
+
+    const accessToken = generateAccessToken(user.id, user.isAdmin ?? false);
     setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({ success: true });

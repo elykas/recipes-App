@@ -15,7 +15,7 @@ interface RecipesContextProps {
   getRecipe: (recipeId: number) => Promise<void>;
   addRecipe: (newRecipe: NewRecipe) => Promise<void>;
   deleteRecipe: (recipeId: number) => Promise<void>;
-  updateRecipe: (recipe: IRecipe) => Promise<void>;
+  updateRecipe: (recipe: IRecipe, recipeId: number) => Promise<void>;
   getRecipesByCategory: (category: string) => Promise<void>;
 }
 
@@ -88,10 +88,10 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
-  const updateRecipe = async (recipe: IRecipe) => {
+  const updateRecipe = async (recipe: IRecipe, recipeId: number) => {
     setIsLoading(true);
     try {
-      await api.put(`/recipes`, recipe);
+      await api.put(`/recipes/${recipeId}`, recipe);
     } catch (error) {
       throw new Error("failed to update recipe");
     } finally {

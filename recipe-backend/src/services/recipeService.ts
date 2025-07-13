@@ -47,9 +47,8 @@ export const createRecipeService = async (
   return recipeDto;
 };
 
-export const updateRecipeService = async (recipeData: IRecipe) => {
-  const { id, categories, ingredients, ...pureRecipeData } = recipeData;
-  const recipeId = id;
+export const updateRecipeService = async (recipeData: IRecipe, recipeId: number) => {
+  const {categories, ingredients, ...pureRecipeData } = recipeData;
   if (!recipeId) throw new Error("Recipe ID is required");
 
   if (recipeData.categories) {

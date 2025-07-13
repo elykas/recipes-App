@@ -4,11 +4,11 @@ const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
 const TEMP_SECRET: string = process.env.TEMP_SECRET as string;
 
-export const generateAccessToken = (id: number): string => {
+export const generateAccessToken = (id: number, isAdmin: boolean): string => {
   if (!JWT_SECRET) {
     throw new Error("TEMP_SECRET is not defined");
   }
-  const accessToken = jwt.sign({ id }, JWT_SECRET, {
+  const accessToken = jwt.sign({ id, isAdmin }, JWT_SECRET, {
     expiresIn: "7d",
   });
   return accessToken;
