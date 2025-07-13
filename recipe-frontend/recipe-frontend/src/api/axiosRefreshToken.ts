@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000/api",
   withCredentials: true,
 });
 
@@ -18,7 +18,6 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
      if (originalRequest.url.includes("/auth/refresh-token")) {
       return Promise.reject(error);
     }

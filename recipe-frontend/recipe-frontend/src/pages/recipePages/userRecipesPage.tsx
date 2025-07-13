@@ -22,13 +22,11 @@ const UserRecipesPage = () => {
 
   useEffect(() => {
     const fetchUserRecipes = async () => {
-      if (!recipes) {
         try {
           await getAllRecipes();
         } catch (error) {
           setError("Failed to fetch recipes");
         }
-      }
     };
     fetchUserRecipes();
   }, []);
@@ -43,7 +41,7 @@ const UserRecipesPage = () => {
 
   const handleNextRecipe = () => {
     const currentIndex = recipes.findIndex(
-      (recipe) => recipe._id === selectedCard?._id
+      (recipe) => recipe.id === selectedCard?.id
     );
     const nextIndex = (currentIndex + 1) % recipes.length;
     setSelectedCard(recipes[nextIndex]);
@@ -51,13 +49,13 @@ const UserRecipesPage = () => {
 
   const handlePreviousRecipe = () => {
     const currentIndex = recipes.findIndex(
-      (recipe) => recipe._id === selectedCard?._id
+      (recipe) => recipe.id === selectedCard?.id
     );
     const previousIndex = (currentIndex - 1 + recipes.length) % recipes.length;
     setSelectedCard(recipes[previousIndex]);
   };
 
-  const handleDeleteRecipe = async (recipeId: string) => {
+  const handleDeleteRecipe = async (recipeId: number) => {
     try {
       await deleteRecipe(recipeId);
     } catch (error) {
@@ -81,7 +79,7 @@ const UserRecipesPage = () => {
       setError("Failed to create recipe");
     }
   };
-
+  
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Recipes</h2>
