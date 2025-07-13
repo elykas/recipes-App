@@ -1,3 +1,5 @@
+import type { ICategory } from "./categoryType";
+
 export interface Ingredient {
   id?: number;
   quantity: string;
@@ -5,19 +7,16 @@ export interface Ingredient {
   unit: string;
 }
 
-export interface Category {
-  id: number;
-  name?: string;
-}
+
 
 export interface IRecipe {
-  id?: number;
+  id: number;
   name: string;
-  category: Category[];
+  categories: ICategory[];
   ingredients: Ingredient[];
   steps: string[];
   prepTime?: number;
   imageUrl?: string;
   authorId?: number;
 }
-export type NewRecipe = Omit<IRecipe, "_id">;
+export type NewRecipe = Omit<IRecipe, "id">;

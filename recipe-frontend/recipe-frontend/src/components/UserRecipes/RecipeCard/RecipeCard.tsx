@@ -6,7 +6,7 @@ import { CardContent } from "../../ui/CardContent";
 
 interface RecipeCardProps {
   recipe: IRecipe;
-  onDelete: (recipeId: string) => void;
+  onDelete: (recipeId: number) => void;
   onEdit: (recipe: IRecipe) => void;
   onClose: () => void;
   onNext: () => void;
@@ -21,11 +21,29 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onNext,
   onPrev,
 }) => {
-   return (
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <Card className="p-6 max-w-md w-full relative shadow-lg">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4 text-center">{recipe.name}</h2>
+          {recipe.categories?.length > 0 && (
+            <div className="mb-4 text-center">
+              <h4 className="text-sm font-semibold text-gray-600 mb-2">
+                Categories:
+              </h4>
+              <div className="flex flex-wrap justify-center gap-2">
+                {recipe.categories.map((cat, index) => (
+                  <span
+                    key={index}
+                    className="bg-gray-100 border text-xs px-2 py-1 rounded text-gray-800"
+                  >
+                    {cat.name}{" "}
+                    <span className="text-gray-500 italic">({cat.type})</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="mb-4">
             <h3 className="font-semibold mb-2">ingredients:</h3>
@@ -60,7 +78,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             <Button onClick={() => onEdit(recipe)} variant="primary">
               edit
             </Button>
-            <Button onClick={() => onDelete(recipe._id)} variant="destructive">
+            <Button onClick={() => onDelete(recipe.id)} variant="destructive">
               delete
             </Button>
           </div>

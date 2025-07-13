@@ -22,13 +22,11 @@ const UserRecipesPage = () => {
 
   useEffect(() => {
     const fetchUserRecipes = async () => {
-      if (!recipes) {
         try {
           await getAllRecipes();
         } catch (error) {
           setError("Failed to fetch recipes");
         }
-      }
     };
     fetchUserRecipes();
   }, []);
@@ -57,7 +55,7 @@ const UserRecipesPage = () => {
     setSelectedCard(recipes[previousIndex]);
   };
 
-  const handleDeleteRecipe = async (recipeId: string) => {
+  const handleDeleteRecipe = async (recipeId: number) => {
     try {
       await deleteRecipe(recipeId);
     } catch (error) {
@@ -82,7 +80,7 @@ const UserRecipesPage = () => {
       setError("Failed to create recipe");
     }
   };
-
+  
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">My Recipes</h2>

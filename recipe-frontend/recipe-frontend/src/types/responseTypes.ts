@@ -1,3 +1,4 @@
+import type { ICategory } from "./categoryType";
 import type { IRecipe } from "./recipeType";
 import type { IUser } from "./userType";
 
@@ -21,4 +22,22 @@ export type AiRecipeResponse = {
   success: boolean;
   message: string;
   data: IRecipe;
+};
+
+export type SingleRecipeResponse = {
+  success: boolean;
+  message: string;
+  data: IRecipe;
+};
+
+export type RecipeListResponse = {
+  success: boolean;
+  message: string;
+  data: IRecipe[];
+};
+
+export type CategoryListResponse = {
+  success: boolean;
+  message: string;
+  data: ICategory[];
 };

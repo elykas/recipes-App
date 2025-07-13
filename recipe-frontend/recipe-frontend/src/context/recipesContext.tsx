@@ -1,6 +1,7 @@
 import api from "../api/axiosRefreshToken"
 import React, { createContext, useContext, useState } from "react";
 import type { IRecipe, NewRecipe } from "../types/recipeType";
+import type { RecipeListResponse, SingleRecipeResponse } from "../types/responseTypes";
 
 
 interface RecipesProviderProps {
@@ -11,9 +12,9 @@ interface RecipesContextProps {
   recipe: IRecipe | null;
   isLoading: boolean;
   getAllRecipes: () => Promise<void>;
-  getRecipe: (recipeId: string) => Promise<void>;
+  getRecipe: (recipeId: number) => Promise<void>;
   addRecipe: (newRecipe: NewRecipe) => Promise<void>;
-  deleteRecipe: (recipeId: string) => Promise<void>;
+  deleteRecipe: (recipeId: number) => Promise<void>;
   updateRecipe: (recipe: IRecipe) => Promise<void>;
   getRecipesByCategory: (category: string) => Promise<void>;
 }
@@ -41,8 +42,9 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     setIsLoading(true);
     try {
       const response = await api.get(`/recipes`);
-      const data = response.data as IRecipe[];
-      setRecipes(data);
+      const data = response.data as RecipeListResponse;
+      const recipes: IRecipe[] = data.data;
+      setRecipes(recipes);
     } catch (error) {
       throw new Error("failed to get recipes");
     } finally {
@@ -50,12 +52,13 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
-  const getRecipe = async (recipeId: string) => {
+  const getRecipe = async (recipeId: number) => {
     setIsLoading(true);
     try {
       const response = await api.get(`/recipes/get-recipe/${recipeId}`);
-      const data = response.data as IRecipe;
-      setRecipe(data);
+      const data:SingleRecipeResponse = response.data as SingleRecipeResponse;
+      const recipe: IRecipe = data.data;
+      setRecipe(recipe);
     } catch (error) {
       throw new Error("failed to get recipe");
     } finally {
@@ -74,7 +77,7 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
     }
   };
 
-  const deleteRecipe = async (recipeId: string) => {
+  const deleteRecipe = async (recipeId: number) => {
     setIsLoading(true);
     try {
       await api.delete(`/recipes/${recipeId}`);
@@ -99,8 +102,9 @@ export const RecipesProvider: React.FC<RecipesProviderProps> = ({
   const getRecipesByCategory = async (category: string) => {
     try {
       const response = await api.get(`/recipes/get-by-category/${category}`);
-      const data = response.data as IRecipe[];
-      setRecipes(data);
+      const data = response.data as RecipeListResponse;
+      const recipes: IRecipe[] = data.data;
+      setRecipes(recipes);
     } catch (error) {
       throw new Error("failed to get recipes by category");
     }

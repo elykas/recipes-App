@@ -4,10 +4,12 @@ import { Button } from "../../ui/Button";
 import { Card } from "../../ui/Card";
 import { CardContent } from "../../ui/CardContent";
 import LabeledInput from "../../ui/LabeledInput";
+import { useCategoriesContext } from "../../../context/categoriesContext";
+import Select from "react-select";
 
 interface RecipeFormProps {
   initialRecipe?: IRecipe;
-  onSubmit: (recipe: Omit<IRecipe, "_id">) => void;
+  onSubmit: (recipe: Omit<IRecipe, "id">) => void;
   onCancel: () => void;
 }
 
@@ -16,10 +18,18 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const {categories} = useCategoriesContext();
+  const [error, setError] = useState("");
   const [name, setName] = useState(initialRecipe?.name || "");
-  const [categories, setCategories] = useState(initialRecipe?.categories || []);
+  const [categoriesSelected, setCategoriesSelected] = useState(initialRecipe?.categories || []);
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialRecipe?.ingredients || []);
   const [steps, setSteps] = useState(initialRecipe?.steps || []);
+
+  const categoryOptions = categories.map((cat) => ({
+    label: `${cat.name} (${cat.type})`,
+    value: cat.id,
+    ...cat,
+  }));
 
   const handleAddIngredient = () => {
     setIngredients([...ingredients, { quantity: "", name: "", unit: "" }]);
@@ -27,11 +37,11 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
 
   const handleIngredientUpdate = (
     index: number,
-    field: keyof Ingredient,
+    field: Exclude<keyof Ingredient, "id">,
     value: string
   ) => {
     const updated = [...ingredients];
-    updated[index][field] = value;
+    (updated[index][field] ) = value;
     setIngredients(updated);
   };
 
@@ -48,7 +58,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   const handleSubmit = () => {
     onSubmit({
       name,
-      categories,
+      categories: categoriesSelected,
       ingredients,
       steps,
     });
@@ -65,11 +75,18 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           onChange={setName}
         />
 
-        <LabeledInput
-          placeholder="Categories (comma separated)"
-          value={categories.join(", ")}
-          onChange={(val) => setCategories(val.split(",").map((c) => c.trim()))}
-        />
+        <div className="mb-4">
+          <label className="block mb-1 font-medium">Categories</label>
+          <Select
+            options={categoryOptions}
+            isMulti
+            getOptionLabel={(e) => `${e.name} (${e.type})`}
+            getOptionValue={(e) => e.id.toString()}
+            value={categoriesSelected}
+            onChange={(selected) => setCategoriesSelected(selected as typeof categoriesSelected)}
+            placeholder="Select categories..."
+          />
+        </div>
 
         <h3 className="font-medium mt-4 mb-2">Ingredients:</h3>
         {ingredients.map((ing, idx) => (
