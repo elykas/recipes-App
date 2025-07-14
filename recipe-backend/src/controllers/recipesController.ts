@@ -114,7 +114,7 @@ export const editRecipe = async (
       video?: Express.Multer.File[];
     };
 
-    const updatedRecipe: RecipeResponseDTO = await updateRecipeWithMediaService(
+    const updatedRecipe = await updateRecipeWithMediaService(
       +recipeId,
       recipe,
       userId,

@@ -67,7 +67,7 @@ export const createRecipeWithMediaService = async (
   return await createRecipeService(finalData, userId);
 };
 
-
+//NOTE: I have to think about what include a recipe if many images and videos
 export const updateRecipeWithMediaService = async (
   recipeId: number,
   updatedData: IRecipe,
@@ -77,30 +77,30 @@ export const updateRecipeWithMediaService = async (
   const existingRecipe = await getRecipeByIdService(recipeId);
   if (!existingRecipe) throw new Error("Recipe not found");
 
-  let imageUrls = existingRecipe.imageUrls || [];
-  if (files?.images && files.images.length > 0) {
-    imageUrls = await Promise.all(
-      files.images.map((file) =>
-        uploadMediaService(file.buffer, userId, file.mimetype, "recipe-image")
-      )
-    );
-  }
+//   let imageUrls = existingRecipe.imageUrl || [];
+//   if (files?.images && files.images.length > 0) {
+//     imageUrls = await Promise.all(
+//       files.images.map((file) =>
+//         uploadMediaService(file.buffer, userId, file.mimetype, "recipe-image")
+//       )
+//     );
+//   }
 
-  let videoUrl = existingRecipe.videoUrl || "";
-  if (files?.video && files.video.length > 0) {
-    videoUrl = await uploadMediaService(
-      files.video[0].buffer,
-      userId,
-      files.video[0].mimetype,
-      "recipe-video"
-    );
-  }
+//   let videoUrl = existingRecipe.videoUrl || "";
+//   if (files?.video && files.video.length > 0) {
+//     videoUrl = await uploadMediaService(
+//       files.video[0].buffer,
+//       userId,
+//       files.video[0].mimetype,
+//       "recipe-video"
+//     );
+//   }
 
-  const finalData = {
-    ...updatedData,
-    imageUrls,
-    videoUrl,
-  };
+   const finalData = {
+     ...updatedData,
+//     imageUrls,
+//     videoUrl,
+   };
 
-  return await updateRecipeService(finalData, recipeId);
+  return finalData;
 };
