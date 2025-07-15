@@ -17,48 +17,76 @@ datasource db {
 
 
 model User {
-  id               Int       @id @default(autoincrement())
-  username         String    
-  email            String?   @unique 
-  phone            String?   @unique
-  googleId         String?   @unique
-  isAdmin          Boolean   @default(false)
-  imageUrl         String?
-  bio              String?
-  recipes          Recipe[]  @relation("UserRecipes")
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id         Int     @id @default(autoincrement()) 
+  publicId   String  @unique @default(uuid())     
+  email      String?  @unique
+  username   String   @unique
+  fullName   String?
+  phone      String?  @unique
+  imageUrl   String?
+  bio        String?
+  headLine   String?
+  isAdmin    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastLogin  DateTime?
+  locale     String?  @default("en")
+  recipes        Recipe[]     @relation("UserRecipes")
+  posts          Post[]       @relation("UserPosts")
+  comments       Comment[]    @relation("UserComments")
+  postLikes      PostLike[]   @relation("UserPostLikes")
+  recipeLikes    RecipeLike[] @relation("UserRecipeLikes")
+  favorites      Favorite[]   @relation("UserFavorites")
+  followers      Follower[]   @relation("UserFollowersFollowing", references: [followerId])
+  following      Follower[]   @relation("UserFollowersFollowing", references: [followingId])
+  groups         GroupMember[]
+  notifications  Notification[]
+  userEvents     UserEvent[]
 }
 
 model Recipe {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id          Int     @id @default(autoincrement()) 
+  publicId    String  @unique @default(uuid())     
+  title       String   
   categories  Category[]  
-  steps     String[]
-  prepTime  Int? @default(30)
-  imageUrl  String?
+  steps       Step[]
+  favorites   Favorite[]
+  comments    Comment[]
+  posts       Post[]
+  tags        RecipeTag[]
+  likes       RecipeLike[]
+  prepTime    Int? @default(30)
+  imageUrl    String?
   ingredients Ingredient[] 
-  author    User    @relation("UserRecipes", fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  description String?
+  difficulty  DifficultyLevel @default(Easy)
+  isPublic    Boolean @default(false)
+  author      User    @relation("UserRecipes", fields: [authorId], references: [id])
+  authorId    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum DifficultyLevel {
+  Easy
+  Medium
+  Hard
 }
 
 model Ingredient {
   id  Int  @id @default(autoincrement())
-  name String  
+  name     String  
   quantity String?
-  unit String?
-  
-  recipeId  Int
-  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  unit     String?
+  recipeId Int
+  recipe   Recipe  @relation(fields: [recipeId], references: [id])
 }
 
 model Category {
-  id  Int  @id @default(autoincrement())
-  name String @unique
-  type CategoryType
-  recipes    Recipe[]  
+  id       Int  @id @default(autoincrement())
+  name     String @unique
+  type     CategoryType
+  recipes  Recipe[]  
 }
 
 enum CategoryType {
@@ -76,4 +104,209 @@ enum CategoryType {
   Seasonality      // e.g. Summer, Winter
   FlavorProfile    // e.g. Spicy, Sweet
   Texture          // e.g. Crunchy, Creamy
+}
+
+model Step {
+  id          Int  @id @default(autoincrement())
+  title       String?
+  description String
+  imageUrl    String?
+  duration    Int?
+  recipeId    Int
+  recipe      Recipe  @relation(fields: [recipeId], references: [id])
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  publicId    String   @unique @default(uuid())
+  name        String
+  creator     User         @relation(fields: [creatorId], references: [id])
+  creatorId   Int
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  members     GroupMember[]
+  recipes     Recipe[]   
+}
+
+model GroupMember {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   Int
+  admin     Boolean  @default(false)
+  joinedAt  DateTime @default(now())
+  @@unique([userId, groupId])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  createdAt DateTime @default(now())
+  @@unique([userId, recipeId]) 
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  publicId    String  @unique @default(uuid())     
+  authorId    Int
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  type        PostType @default(IMAGE) 
+  content     String?  
+  imageUrl    String?  
+  recipeId    Int?
+  recipe      Recipe?  @relation(fields: [recipeId], references: [id])
+  tags        RecipeTag[]
+  likes       PostLike[]
+  comments    Comment[]
+}
+
+enum PostType {
+  TextBg     
+  Image   
+  Video
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
+  type      LikeType @default(LIKE)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+}
+
+model RecipeLike {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  recipeId  Int
+  type      LikeType @default(LIKE)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, recipeId])
+}
+
+//HAVE TO FIX IT BY OUR APP 
+enum LikeType {
+  Like      
+  Love    
+  Haha
+  Wow       
+  Sad       
+  Angry            
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId  Int?
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  parent    Comment? @relation("CommentThread", fields: [parentId], references: [id])
+  parentId  Int?
+  replies   Comment[] @relation("CommentThread")
+}
+
+model Follow {
+  id          Int      @id @default(autoincrement())
+  followerId  Int      // מי שעוקב
+  followingId Int      // מי שעוקבים אחריו
+  createdAt   DateTime @default(now())
+  follower    User     @relation("UserFollowers", fields: [followerId], references: [id])
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id])
+  @@unique([followerId, followingId]) 
+}
+
+model Tag {
+  id         Int       @id @default(autoincrement())
+  publicId   String    @unique @default(uuid())
+  name       String    @unique
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  recipes    RecipeTag[]
+  posts      PostTag[] 
+}
+
+model PostTag {
+  id      Int     @id @default(autoincrement())
+  postId  Int
+  tagId   Int
+  post    Post    @relation(fields: [postId], references: [id])
+  tag     Tag     @relation(fields: [tagId], references: [id])
+  @@unique([postId, tagId])
+}
+
+model RecipeTag {
+  id        Int     @id @default(autoincrement())
+  recipeId  Int
+  tagId     Int
+  recipe    Recipe  @relation(fields: [recipeId], references: [id])
+  tag       Tag     @relation(fields: [tagId], references: [id])
+  @@unique([recipeId, tagId])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      Int      // למי מיועדת ההתראה
+  type        NotificationType
+  message     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+enum NotificationType {
+  Like
+  Comment
+  Follow
+  NewPost
+  NewRecipe
+  System
+  CommentReply
+  Mention
+  Search
+  WeeklyDigest
+  Trending
+  TagFollowed
+}
+
+model UserEvent {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  eventType  EventType
+  metadata   Json?    // פרטים נוספים על האירוע, כמו מזהה של פוסט, מתכון, זמן וכו'
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+enum EventType {
+  Login
+  Logout
+  ViewRecipe
+  ViewPost
+  CreateRecipe
+  CreatePost
+  Like
+  Comment
+  Follow
+  Unfollow
+  UpadateProfile
+  Search
+  Share
+  ClickNotification
 }

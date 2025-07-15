@@ -29,6 +29,8 @@ export const pgGetRecipeById = async (
   return recipe;
 };
 
+
+//NOTE: when create a recipe need to add the order step for each step
 export const pgCreateRecipe = async (
   recipeData: IRecipe,
   authorId: number
@@ -61,6 +63,7 @@ export const pgCreateRecipe = async (
   return newRecipe;
 };
 
+//NOTE: when create a recipe need to add the order step for each step
 export const pgUpdateRecipe = async (
   recipeData: Partial<IRecipe>
 ): Promise<FullRecipe> => {
