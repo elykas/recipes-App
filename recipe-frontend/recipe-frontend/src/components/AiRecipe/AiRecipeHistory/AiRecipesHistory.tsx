@@ -1,6 +1,6 @@
+import { X } from "lucide-react";
 import React from "react";
 import type { IRecipe } from "../../../types/recipeType";
-import { X } from "lucide-react";
 import { Button } from "../../ui/Button";
 
 type RecipeHistoryListProps = {
@@ -9,7 +9,11 @@ type RecipeHistoryListProps = {
   onDelete: (index: number) => void;
 };
 
-const AiRecipesHistory: React.FC<RecipeHistoryListProps> = ({ recipes, onSelect, onDelete }) => {
+const AiRecipesHistory: React.FC<RecipeHistoryListProps> = ({
+  recipes,
+  onSelect,
+  onDelete,
+}) => {
   if (recipes.length === 0) return null;
 
   return (
@@ -21,13 +25,13 @@ const AiRecipesHistory: React.FC<RecipeHistoryListProps> = ({ recipes, onSelect,
             key={idx}
             className="border p-2 rounded shadow-sm flex justify-between items-center"
           >
-            <Button
-              className="text-left flex-1"
-              onClick={() => onSelect(rec)}
-            >
-              {rec.name} - {rec.categories.join(", ")}
+            <Button className="text-left flex-1" onClick={() => onSelect(rec)}>
+              {rec.name} -{" "}
+              {rec.categories && Array.isArray(rec.categories)
+                ? rec.categories.map((cat) => cat.name).join(", ")
+                : "No categories"}
             </Button>
-           <Button type="button" onClick={() => onDelete(idx)}>
+            <Button type="button" onClick={() => onDelete(idx)}>
               <X className="w-4 h-4" />
             </Button>
           </li>

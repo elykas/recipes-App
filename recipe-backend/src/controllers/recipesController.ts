@@ -2,15 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import { RecipeResponseDTO } from "../dto/recipe.dto";
 import IRecipe from "../models/recipeModel";
 import {
-  createRecipeService,
   deleteRecipeService,
   getAllRecipesFromUserService as getAllRecipesOfUserService,
   getAllRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
   getUserRecipesByCategoryService,
-  updateRecipeService,
 } from "../services/recipeService";
+import {
+  createRecipeWithMediaService,
+  updateRecipeWithMediaService,
+} from "../services/storageService";
 import { AuthenticatedRequest } from "../types/requests";
 
 export const getAllRecipesOfUser = async (
@@ -22,7 +24,11 @@ export const getAllRecipesOfUser = async (
     const { userId } = req as AuthenticatedRequest;
     const recipes: RecipeResponseDTO[] =
       await getAllRecipesOfUserService(userId);
-    res.status(200).json({ data: recipes, success: true, message: "Recipes of user fetched successfully" });
+    res.status(200).json({
+      data: recipes,
+      success: true,
+      message: "Recipes of user fetched successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -35,7 +41,11 @@ export const getAllRecipes = async (
 ) => {
   try {
     const recipes: RecipeResponseDTO[] = await getAllRecipesService();
-    res.status(200).json({ data: recipes, success: true, message: "Recipes fetched successfully" });
+    res.status(200).json({
+      data: recipes,
+      success: true,
+      message: "Recipes fetched successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -50,7 +60,11 @@ export const getRecipeById = async (
     const { recipeId } = req.params;
     const recipe: RecipeResponseDTO | null =
       await getRecipeByIdService(+recipeId);
-    res.status(200).json({ data: recipe, success: true, message: "Recipe by Id fetched successfully" });
+    res.status(200).json({
+      data: recipe,
+      success: true,
+      message: "Recipe by Id fetched successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -65,9 +79,15 @@ export const createRecipe = async (
     const recipe: IRecipe = req.body;
     const { userId } = req as AuthenticatedRequest;
 
-    const newRecipe: RecipeResponseDTO = await createRecipeService(
+    const files = req.files as {
+      images?: Express.Multer.File[];
+      video?: Express.Multer.File[];
+    };
+
+    const newRecipe: RecipeResponseDTO = await createRecipeWithMediaService(
       recipe,
-      userId
+      userId,
+      files
     );
 
     res.status(201).json({
@@ -86,9 +106,20 @@ export const editRecipe = async (
   next: NextFunction
 ) => {
   try {
+    const { recipeId } = req.params;
+    const { userId } = req as AuthenticatedRequest;
     const recipe: IRecipe = req.body;
+    const files = req.files as {
+      images?: Express.Multer.File[];
+      video?: Express.Multer.File[];
+    };
 
-    const updatedRecipe: RecipeResponseDTO = await updateRecipeService(recipe);
+    const updatedRecipe = await updateRecipeWithMediaService(
+      +recipeId,
+      recipe,
+      userId,
+      files
+    );
     res.status(200).json({
       data: updatedRecipe,
       success: true,
@@ -150,7 +181,11 @@ export const getRecipesByCategory = async (
   try {
     const { categoryId } = req.params;
     const recipes = await getRecipesByCategoryService(+categoryId);
-    res.status(200).json({ data: recipes, success: true, message: "Recipes by category fetched successfully" });
+    res.status(200).json({
+      data: recipes,
+      success: true,
+      message: "Recipes by category fetched successfully",
+    });
   } catch (error) {
     next(error);
   }

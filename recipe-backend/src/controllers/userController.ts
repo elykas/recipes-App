@@ -49,8 +49,8 @@ export const updateUser = async (
 ) => {
   try {
     const { userId } = req as AuthenticatedRequest;
-
     const user:UpdateUserDto = req.body;
+
     const updatedUser = await updateUserService(userId, user);
     res.status(200).json({
       success: true,
