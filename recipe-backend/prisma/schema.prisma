@@ -17,54 +17,60 @@ datasource db {
 
 
 model User {
-  id         Int     @id @default(autoincrement()) 
-  publicId   String  @unique @default(uuid())     
-  email      String?  @unique
-  username   String   @unique
-  fullName   String?
-  phone      String?  @unique
-  imageUrl   String?
-  bio        String?
-  headLine   String?
-  isAdmin    Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  lastLogin  DateTime?
-  locale     String?  @default("en")
-  recipes        Recipe[]     @relation("UserRecipes")
-  posts          Post[]       @relation("UserPosts")
-  comments       Comment[]    @relation("UserComments")
-  postLikes      PostLike[]   @relation("UserPostLikes")
-  recipeLikes    RecipeLike[] @relation("UserRecipeLikes")
-  favorites      FavoriteRecipes[]   @relation("UserFavorites")
-  followers      Follower[]   @relation("UserFollowersFollowing", references: [followerId])
-  following      Follower[]   @relation("UserFollowersFollowing", references: [followingId])
-  groups         GroupMember[]
-  notifications  Notification[]
-  userEvents     UserEvent[]
+  id                  Int                 @id @default(autoincrement()) 
+  publicId            String              @unique @default(uuid())     
+  email               String?             @unique
+  username            String              @unique
+  fullName            String?
+  phone               String?             @unique
+  imageUrl            String?
+  bio                 String?
+  headLine            String?
+  isAdmin             Boolean             @default(false)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  lastLogin           DateTime?
+  agreedToPolicy      Boolean             @default(false)
+  agreedToPolicyDate  DateTime?
+  locale              String?             @default("en")
+  score               Float?              @default(0)
+  scoreUpdatedAt      DateTime?
+  recipes             Recipe[]            @relation("UserRecipes")
+  posts               Post[]              @relation("UserPosts")
+  comments            Comment[]           @relation("UserComments")
+  postLikes           PostLike[]          @relation("UserPostLikes")
+  recipeLikes         RecipeLike[]        @relation("UserRecipeLikes")
+  favoritesRecipes    FavoriteRecipes[]   @relation("UserFavoritesRecipes")
+  followers           Follow[]            @relation("UserFollowers", references: [followerId])
+  following           Follow[]            @relation("UserFollowing", references: [followingId])
+  groups              GroupMember[]
+  notifications       Notification[]
+  userEvents          UserEvent[]
 }
 
 model Recipe {
-  id          Int     @id @default(autoincrement()) 
-  publicId    String  @unique @default(uuid())     
-  title       String   
-  categories  Category[]  
-  steps       Step[]
-  favorites   Favorite[]
-  comments    Comment[]
-  posts       Post[]
-  tags        RecipeTag[]
-  likes       RecipeLike[]
-  prepTime    Int? @default(30)
-  imageUrl    String?
-  ingredients Ingredient[] 
-  description String?
-  difficulty  DifficultyLevel @default(Easy)
-  isPublic    Boolean @default(false)
-  author      User    @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  Int                 @id @default(autoincrement()) 
+  publicId            String              @unique @default(uuid())     
+  title               String   
+  categories          Category[]  
+  steps               Step[]
+  favorites           FavoriteRecipes[]
+  comments            Comment[]
+  posts               Post[]
+  tags                RecipeTag[]
+  likes               RecipeLike[]
+  prepTime            Int?                @default(30)
+  imageUrl            String?
+  ingredients         Ingredient[] 
+  description         String?
+  difficulty          DifficultyLevel     @default(Easy)
+  isPublic            Boolean             @default(false)
+  score               Float?              @default(0)
+  scoreUpdatedAt      DateTime?
+  author              User                @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId            Int
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
 }
 
 enum DifficultyLevel {
@@ -74,19 +80,19 @@ enum DifficultyLevel {
 }
 
 model Ingredient {
-  id  Int  @id @default(autoincrement())
-  name     String  
-  quantity String?
-  unit     String?
-  recipeId Int
-  recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  id                  Int                   @id @default(autoincrement())
+  name                String  
+  quantity            String?
+  unit                String?
+  recipeId            Int
+  recipe              Recipe                @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
 model Category {
-  id       Int  @id @default(autoincrement())
-  name     String @unique
-  type     CategoryType
-  recipes  Recipe[]  
+  id                  Int                   @id @default(autoincrement())
+  name                String                @unique
+  type                CategoryType
+  recipes             Recipe[]  
 }
 
 enum CategoryType {
@@ -141,7 +147,7 @@ model GroupMember {
 
 model FavoriteRecipes {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserFavoritesRecipes",fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId  Int
@@ -153,12 +159,14 @@ model Post {
   id          Int      @id @default(autoincrement())
   publicId    String  @unique @default(uuid())     
   authorId    Int
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author      User     @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  type        PostType @default(IMAGE) 
+  type        PostType @default(Image) 
   content     String?  
-  imageUrl    String?  
+  imageUrl    String?
+  score Float? @default(0)
+  scoreUpdatedAt DateTime?  
   recipeId    Int?
   recipe      Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
   tags        RecipeTag[]
@@ -174,11 +182,11 @@ enum PostType {
 
 model PostLike {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserPostLikes", fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-  type      LikeType @default(LIKE)
+  type      LikeType @default(Like)
   createdAt DateTime @default(now())
 
   @@unique([userId, postId])
@@ -186,11 +194,11 @@ model PostLike {
 
 model RecipeLike {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation("UserRecipeLikes", fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId  Int
-  type      LikeType @default(LIKE)
+  type      LikeType @default(Like)
   createdAt DateTime @default(now())
 
   @@unique([userId, recipeId])
@@ -211,13 +219,14 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author    User     @relation("UserComments", fields: [authorId], references: [id], onDelete: Cascade)
   authorId  Int
   recipe    Recipe?  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   recipeId  Int?
   post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int?
   parent    Comment? @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  Int?
   replies   Comment[] @relation("CommentThread")
 }
 
