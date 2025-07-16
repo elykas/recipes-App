@@ -26,21 +26,23 @@ model User {
   imageUrl            String?
   bio                 String?
   headLine            String?
+  birthDate           DateTime? 
   isAdmin             Boolean             @default(false)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   lastLogin           DateTime?           @default(now())
   agreedToPolicy      Boolean             @default(false)
   agreedToPolicyDate  DateTime?
+  agreedToPolicyVersion String?
   locale              String?             @default("en")
   score               Float?              @default(0)
   scoreUpdatedAt      DateTime?           @default(now())
   recipes             Recipe[]            @relation("UserRecipes")
   posts               Post[]              @relation("UserPosts")
   comments            Comment[]           @relation("UserComments")
-  postLikes           PostLike[]          @relation("UserPostLikes")
-  recipeLikes         RecipeLike[]        @relation("UserRecipeLikes")
-  favoritesRecipes    FavoriteRecipes[]   @relation("UserFavoritesRecipes")
+  postLike            PostLike[]          @relation("UserPostLikes")
+  recipeLike          RecipeLike[]        @relation("UserRecipeLikes")
+  favoriteRecipe      FavoriteRecipes[]   @relation("UserFavoritesRecipes")
   followers           Follow[]            @relation("UserFollowers")
   following           Follow[]            @relation("UserFollowing")
   userGroups          GroupMember[]       @relation("UserGroups")
@@ -49,25 +51,27 @@ model User {
   userEvents          UserEvent[]         @relation("UserEvents")
 }
 
+
 model Recipe {
   id                  Int                 @id @default(autoincrement()) 
   publicId            String              @unique @default(uuid())     
   title               String   
   categories          Category[]          
+  ingredients         Ingredient[] 
   steps               Step[]
-  favorites           FavoriteRecipes[]
+  prepTime            Int?                @default(30)
+  difficulty          DifficultyLevel     @default(Easy)
+  isPublic            Boolean             @default(false)
+  imageUrl            String?
+  description         String?
+  tip                 String[]
+  score               Float?              @default(0)
+  scoreUpdatedAt      DateTime?
+  favoriteRecipe      FavoriteRecipes[]
   comments            Comment[]
   posts               Post[]
   tags                RecipeTag[]
   likes               RecipeLike[]
-  prepTime            Int?                @default(30)
-  imageUrl            String?
-  ingredients         Ingredient[] 
-  description         String?
-  difficulty          DifficultyLevel     @default(Easy)
-  isPublic            Boolean             @default(false)
-  score               Float?              @default(0)
-  scoreUpdatedAt      DateTime?
   author              User                @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
   authorId            Int
   groups              Group[]             @relation("GroupRecipes")
@@ -128,6 +132,8 @@ model Group {
   id                  Int                     @id @default(autoincrement())
   publicId            String                  @unique @default(uuid())
   name                String
+  description         String?
+  imageUrl            String?
   creator             User?                   @relation("UserCreatedGroups", fields: [creatorId], references: [id], onDelete: SetNull)
   creatorId           Int?
   createdAt           DateTime                @default(now())
@@ -160,14 +166,14 @@ model FavoriteRecipes {
 model Post {
   id                  Int                     @id @default(autoincrement())
   publicId            String                  @unique @default(uuid())     
+  content             String?  
+  imageUrl            String?
+  score               Float?                  @default(0)
+  type                PostType                @default(Image) 
   authorId            Int
   author              User                    @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
-  type                PostType                @default(Image) 
-  content             String?  
-  imageUrl            String?
-  score               Float?                  @default(0)
   scoreUpdatedAt      DateTime?  
   recipeId            Int?
   recipe              Recipe?                 @relation(fields: [recipeId], references: [id], onDelete: SetNull)

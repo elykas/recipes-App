@@ -1,23 +1,20 @@
 import express from "express";
 import {
   completeRegister,
-  googleAuth,
-  googleAuthCallback,
-  loginUser,
   logout,
   refreshToken,
-  verifyTempToken,
+  verifyAuthToken,
 } from "../controllers/authController";
-import { verifyTempTokenMiddleware } from "../middleware/authMiddleware";
+import {
+  authenticateToken,
+  verifyAuthTokenMiddleware,
+} from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/login", loginUser);
-router.post("/complete-register", verifyTempTokenMiddleware, completeRegister);
-router.post("/verify-token", verifyTempTokenMiddleware, verifyTempToken);
-router.get("/logout", logout);
-router.get("/google", googleAuth);
-router.get("/google/callback", googleAuthCallback);
+router.post("/verify-token", verifyAuthTokenMiddleware, verifyAuthToken);
+router.post("/complete-register", authenticateToken, completeRegister);
 router.post("/refresh-token", refreshToken);
+router.get("/logout", logout);
 
 export default router;

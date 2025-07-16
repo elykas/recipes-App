@@ -1,22 +1,33 @@
-export interface IngredientDTO {
-  id: number;
-  name: string;
-  quantity?: string | null;
-  unit?: string | null;
-}
+import IRecipe, { DifficultyLevel, ICategory, IIngredient, IRecipeLikes, ISteps } from "../models/recipeModel";
 
-export interface CategoryDTO {
-  id: number;
-  name: string;
-}
+
 
 export interface RecipeResponseDTO {
-  id: number;
-  name: string;
-  categories: CategoryDTO[];
-  steps: string[];
+  publicId: number;
+  title: string;
+  categories: ICategory[];
+  ingredients: IIngredient[];
+  difficulty: DifficultyLevel;
+  isPublic: boolean;
+  steps: ISteps[];
   prepTime?: number | null;
   imageUrl?: string | null;
+  description?: string | null;
+  tip?: string[] | null;
+  likes?: IRecipeLikes[];
   authorId: number;
-  ingredients: IngredientDTO[];
+}
+
+export interface CreateRecipeDTO {
+  title: string;
+  categories: ICategory[];
+  steps: ISteps[];
+  ingredients: IIngredient[];
+  difficulty?: DifficultyLevel;
+  isPublic?: boolean;
+  prepTime?: number | null;
+  imageUrl?: string | null;
+  description?: string | null;
+  tip?: string[] | null;
+  authorId: number;
 }

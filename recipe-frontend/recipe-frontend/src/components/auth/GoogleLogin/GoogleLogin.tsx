@@ -6,7 +6,9 @@ const GoogleLoginButton: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
     });
-
+    if (data.sesion) {
+      await login(data)
+    }
     if (error) {
       console.error("Error logging in:", error.message);
     }

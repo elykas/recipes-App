@@ -1,9 +1,9 @@
 import prisma from "../config/database";
-import { Ingredient } from "../models/recipeModel";
+import { IIngredient } from "../models/recipeModel";
 
 export const pgUpdateRecipeIngredients = async (
   recipeId: number,
-  ingredients: Ingredient[]
+  ingredients: IIngredient[]
 ): Promise<void> => {
   await prisma.ingredient.deleteMany({
     where: { recipeId },
@@ -14,7 +14,7 @@ export const pgUpdateRecipeIngredients = async (
       name: ing.name,
       quantity: ing.quantity,
       unit: ing.unit,
-      recipeId, 
+      recipeId,
     })),
   });
 };

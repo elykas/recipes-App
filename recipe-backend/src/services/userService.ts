@@ -2,6 +2,7 @@ import {
   pgDeleteUser,
   pgGetAllUsers,
   pgGetUserById,
+  pgGetUserIdByPublicId,
   pgUpdateUser,
 } from "../dal/userDal";
 import { UpdateUserDto, UserDto } from "../dto/userDto";
@@ -20,6 +21,14 @@ export const getUserByIdService = async (id: number): Promise<UserDto> => {
   if (!user) throw errorResponse("User not found", 404);
   const userDto: UserDto = mapUserToDto(user);
   return userDto;
+};
+
+export const getUserIdByPublicIdService = async (
+  publicId: string
+): Promise<Number> => {
+  const userId: Number | null = await pgGetUserIdByPublicId(publicId);
+  if (!userId) throw errorResponse("User not found", 404);
+  return userId;
 };
 
 export const updateUserService = async (

@@ -1,18 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { getRecipeByIdService } from "../services/recipeService";
-import { getUserByIdService } from "../services/userService";
-import { extractUserFromToken } from "../utils/authUtils/extractUserFromToken";
-import { verifyTempToken } from "../utils/authUtils/jwt";
-import { getCategoryByIdService } from "../services/categoriesService";
+import { getUserByIdService, getUserIdByPublicIdService } from "../services/userService";
+import { verifyAuthToken as verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
 
 declare module "express" {
   interface Request {
-    userId?: number;
-    email?: string;
+    publicId?: string;
   }
 }
-
-const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export const authenticateToken = (
   req: Request,
@@ -20,31 +15,27 @@ export const authenticateToken = (
   next: NextFunction
 ) => {
   try {
-    const decoded = extractUserFromToken(req);
-    if (!decoded) {
-      res.status(403).json({ message: "Invalid token", success: false });
-      return;
-    }
-    const userId = Number(decoded.id);
+    const decoded = VerifyUserToken(req);
+    const userId = decoded.publicId;
     if (!userId) {
-      res.status(400).json({ message: "Invalid user ID", success: false });
+      res.status(400).json({ message: "Missing user ID", success: false });
       return;
     }
-    req.userId = userId;
-
+    req.publicId = userId;
     next();
   } catch (error) {
-    res.status(403).json({ message: "Invalid token", success: false });
+    res.status(403).json({ message: (error as Error).message , success: false });
     return;
   }
 };
-export const verifyTempTokenMiddleware = (
+
+export const verifyAuthTokenMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const token = req.cookies?.tempToken || req.body.token;
+    const token = req.body.token;
     if (typeof token !== "string" || !token) {
       res
         .status(401)
@@ -52,7 +43,7 @@ export const verifyTempTokenMiddleware = (
       return;
     }
 
-    const decoded = verifyTempToken(token);
+    const decoded = verifyAuthToken(token);
     if (!decoded) {
       res
         .status(403)
@@ -60,7 +51,7 @@ export const verifyTempTokenMiddleware = (
       return;
     }
 
-    req.email = decoded.email;
+    req.publicId = decoded.sub;
 
     next();
   } catch (error) {
@@ -75,22 +66,22 @@ export const authorizeAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const decoded = extractUserFromToken(req);
+    const decoded = VerifyUserToken(req);
 
-    if (!decoded?.id || !decoded.isAdmin) {
+    if (!decoded?.publicId || !decoded.isAdmin) {
       res
         .status(403)
         .json({ message: "Forbidden: Admins only", success: false });
       return;
     }
 
-    const user = await getUserByIdService(Number(decoded.id));
+    const user = await getUserByIdService(decoded.publicId);
     if (!user) {
       res.status(404).json({ message: "User not found", success: false });
       return;
     }
 
-    req.userId = Number(user.id);
+    req.publicId = user.publicId;
     next();
   } catch (error) {
     res.status(403).json({ message: "Invalid token", success: false });
@@ -104,22 +95,22 @@ export const authorizeUserAndExist = async (
   next: NextFunction
 ) => {
   try {
-    const decoded = extractUserFromToken(req);
+    const decoded = VerifyUserToken(req);
 
-    if (!decoded?.id) {
+    if (!decoded?.publicId) {
       res
         .status(403)
         .json({ message: "Forbidden: Users only", success: false });
       return;
     }
 
-    const user = await getUserByIdService(Number(decoded.id));
+    const user = await getUserByIdService(decoded.publicId);
     if (!user) {
       res.status(404).json({ message: "User not found", success: false });
       return;
     }
 
-    req.userId = Number(user.id);
+    req.publicId = user.publicId;
     next();
   } catch (error) {
     res.status(403).json({ message: "Invalid token", success: false });
@@ -135,13 +126,19 @@ export const checkRecipeOwnerShip = async (
   try {
     const recipeId = Number(req.params.recipeId);
     const recipe = await getRecipeByIdService(recipeId);
-
     if (!recipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-
-    if (recipe.authorId !== req.userId) {
+    const publicId = req.publicId;
+    if (!publicId) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: User not authenticated", success: false });
+      return;
+    }
+    const userId = await getUserIdByPublicIdService(publicId);
+    if (recipe.authorId !== userId) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this recipe",
         success: false,
@@ -158,5 +155,3 @@ export const checkRecipeOwnerShip = async (
     return;
   }
 };
-
-

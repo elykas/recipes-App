@@ -25,6 +25,16 @@ export const pgGetUserById = async (
   return user;
 };
 
+export const pgGetUserIdByPublicId = async (
+  publicId: string
+): Promise<Number | null> => {
+  const userId: Number | null = await prisma.user.findUnique({
+    where: { publicId },
+    select: {id: true},
+  });
+  return userId;
+};
+
 export const pgUpdateUser = async (
   id: number,
   userData: UpdateUserDto

@@ -2,11 +2,9 @@ import { Request } from "express";
 
 
 export interface AuthenticatedRequest extends Request {
-  userId: number;
+  publicId: string;
 }
 
-export interface TempTokenRequest extends Request {
-  email: string;
-}
+
 
 
