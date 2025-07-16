@@ -29,30 +29,31 @@ model User {
   isAdmin             Boolean             @default(false)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
-  lastLogin           DateTime?
+  lastLogin           DateTime?           @default(now())
   agreedToPolicy      Boolean             @default(false)
   agreedToPolicyDate  DateTime?
   locale              String?             @default("en")
   score               Float?              @default(0)
-  scoreUpdatedAt      DateTime?
+  scoreUpdatedAt      DateTime?           @default(now())
   recipes             Recipe[]            @relation("UserRecipes")
   posts               Post[]              @relation("UserPosts")
   comments            Comment[]           @relation("UserComments")
   postLikes           PostLike[]          @relation("UserPostLikes")
   recipeLikes         RecipeLike[]        @relation("UserRecipeLikes")
   favoritesRecipes    FavoriteRecipes[]   @relation("UserFavoritesRecipes")
-  followers           Follow[]            @relation("UserFollowers", references: [followerId])
-  following           Follow[]            @relation("UserFollowing", references: [followingId])
-  groups              GroupMember[]
-  notifications       Notification[]
-  userEvents          UserEvent[]
+  followers           Follow[]            @relation("UserFollowers")
+  following           Follow[]            @relation("UserFollowing")
+  userGroups          GroupMember[]       @relation("UserGroups")
+  createdGroups       Group[]             @relation("UserCreatedGroups")
+  notifications       Notification[]      @relation("UserNotifications")
+  userEvents          UserEvent[]         @relation("UserEvents")
 }
 
 model Recipe {
   id                  Int                 @id @default(autoincrement()) 
   publicId            String              @unique @default(uuid())     
   title               String   
-  categories          Category[]  
+  categories          Category[]          
   steps               Step[]
   favorites           FavoriteRecipes[]
   comments            Comment[]
@@ -69,6 +70,7 @@ model Recipe {
   scoreUpdatedAt      DateTime?
   author              User                @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
   authorId            Int
+  groups              Group[]             @relation("GroupRecipes")
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 }
@@ -92,7 +94,7 @@ model Category {
   id                  Int                   @id @default(autoincrement())
   name                String                @unique
   type                CategoryType
-  recipes             Recipe[]  
+  recipes             Recipe[]            
 }
 
 enum CategoryType {
@@ -113,65 +115,65 @@ enum CategoryType {
 }
 
 model Step {
-  id          Int  @id @default(autoincrement())
-  title       String?
-  description String
-  imageUrl    String?
-  duration    Int?
-  recipeId    Int
-  recipe      Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-}
+  id                  Int                     @id @default(autoincrement())
+  title               String?
+  description         String
+  imageUrl            String?
+  duration            Int?
+  recipeId            Int
+  recipe              Recipe                  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+} 
 
 model Group {
-  id          Int      @id @default(autoincrement())
-  publicId    String   @unique @default(uuid())
-  name        String
-  creator     User?         @relation(fields: [creatorId], references: [id], onDelete: SetNull)
-  creatorId   Int?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  members     GroupMember[]
-  recipes     Recipe[]   
+  id                  Int                     @id @default(autoincrement())
+  publicId            String                  @unique @default(uuid())
+  name                String
+  creator             User?                   @relation("UserCreatedGroups", fields: [creatorId], references: [id], onDelete: SetNull)
+  creatorId           Int?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  members             GroupMember[]
+  recipes             Recipe[]                @relation("GroupRecipes")
 }
 
 model GroupMember {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  groupId   Int
-  admin     Boolean  @default(false)
-  joinedAt  DateTime @default(now())
+  id                  Int                     @id @default(autoincrement())
+  user                User                    @relation("UserGroups", fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int
+  group               Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId             Int
+  admin               Boolean                 @default(false)
+  joinedAt            DateTime                @default(now())
   @@unique([userId, groupId])
 }
 
 model FavoriteRecipes {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation("UserFavoritesRecipes",fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId  Int
-  createdAt DateTime @default(now())
+  id                  Int                     @id @default(autoincrement())
+  user                User                    @relation("UserFavoritesRecipes",fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int
+  recipe              Recipe                  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId            Int
+  createdAt           DateTime                @default(now())
   @@unique([userId, recipeId]) 
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
-  publicId    String  @unique @default(uuid())     
-  authorId    Int
-  author      User     @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  type        PostType @default(Image) 
-  content     String?  
-  imageUrl    String?
-  score Float? @default(0)
-  scoreUpdatedAt DateTime?  
-  recipeId    Int?
-  recipe      Recipe?  @relation(fields: [recipeId], references: [id], onDelete: SetNull)
-  tags        RecipeTag[]
-  likes       PostLike[]
-  comments    Comment[]
+  id                  Int                     @id @default(autoincrement())
+  publicId            String                  @unique @default(uuid())     
+  authorId            Int
+  author              User                    @relation("UserPosts", fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  type                PostType                @default(Image) 
+  content             String?  
+  imageUrl            String?
+  score               Float?                  @default(0)
+  scoreUpdatedAt      DateTime?  
+  recipeId            Int?
+  recipe              Recipe?                 @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  tags                PostTag[]               @relation("PostTags")
+  likes               PostLike[]              @relation("PostLikes")
+  comments            Comment[]
 }
 
 enum PostType {
@@ -181,25 +183,25 @@ enum PostType {
 }
 
 model PostLike {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation("UserPostLikes", fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int
-  type      LikeType @default(Like)
-  createdAt DateTime @default(now())
+  id                  Int                     @id @default(autoincrement())
+  user                User                    @relation("UserPostLikes", fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int
+  post                Post                    @relation("PostLikes", fields: [postId], references: [id], onDelete: Cascade)
+  postId              Int
+  type                LikeType                @default(Like)
+  createdAt           DateTime                @default(now())
 
   @@unique([userId, postId])
 }
 
 model RecipeLike {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation("UserRecipeLikes", fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId  Int
-  type      LikeType @default(Like)
-  createdAt DateTime @default(now())
+  id                  Int                     @id @default(autoincrement())
+  user                User                    @relation("UserRecipeLikes", fields: [userId], references: [id], onDelete: Cascade)
+  userId              Int
+  recipe              Recipe                  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId            Int
+  type                LikeType                @default(Like)
+  createdAt           DateTime                @default(now())
 
   @@unique([userId, recipeId])
 }
@@ -215,67 +217,67 @@ enum LikeType {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation("UserComments", fields: [authorId], references: [id], onDelete: Cascade)
-  authorId  Int
-  recipe    Recipe?  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  recipeId  Int?
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    Int?
-  parent    Comment? @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
-  parentId  Int?
-  replies   Comment[] @relation("CommentThread")
+  id                  Int                     @id @default(autoincrement())
+  content             String
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  author              User                    @relation("UserComments", fields: [authorId], references: [id], onDelete: Cascade)
+  authorId            Int
+  recipe              Recipe?                 @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  recipeId            Int?
+  post                Post?                   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId              Int?
+  parent              Comment?                @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId            Int?
+  replies             Comment[]               @relation("CommentThread")
 }
 
 model Follow {
-  id          Int      @id @default(autoincrement())
-  followerId  Int      // מי שעוקב
-  followingId Int      // מי שעוקבים אחריו
-  createdAt   DateTime @default(now())
-  follower    User     @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User     @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+  id                  Int                     @id @default(autoincrement())
+  followerId          Int      
+  followingId         Int      
+  createdAt           DateTime                @default(now())
+  follower            User                    @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following           User                    @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
   @@unique([followerId, followingId]) 
 }
 
 model Tag {
-  id         Int       @id @default(autoincrement())
-  publicId   String    @unique @default(uuid())
-  name       String    @unique
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  recipes    RecipeTag[]
-  posts      PostTag[] 
+  id                  Int                     @id @default(autoincrement())
+  publicId            String                  @unique @default(uuid())
+  name                String                  @unique
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  recipes             RecipeTag[]
+  posts               PostTag[] 
 }
 
 model PostTag {
-  id      Int     @id @default(autoincrement())
-  postId  Int
-  tagId   Int
-  post    Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  id                  Int                     @id @default(autoincrement())
+  postId              Int
+  tagId               Int
+  post                Post                    @relation("PostTags", fields: [postId], references: [id], onDelete: Cascade)
+  tag                 Tag                     @relation(fields: [tagId], references: [id], onDelete: Cascade)
   @@unique([postId, tagId])
 }
 
 model RecipeTag {
-  id        Int     @id @default(autoincrement())
-  recipeId  Int
-  tagId     Int
-  recipe    Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  id                  Int                     @id @default(autoincrement())
+  recipeId            Int
+  tagId               Int
+  recipe              Recipe                  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  tag                 Tag                     @relation(fields: [tagId], references: [id], onDelete: Cascade)
   @@unique([recipeId, tagId])
 }
 
 model Notification {
-  id          Int      @id @default(autoincrement())
-  userId      Int      // למי מיועדת ההתראה
-  type        NotificationType
-  message     String
-  isRead      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                  Int                     @id @default(autoincrement())
+  userId              Int      
+  type                NotificationType
+  message             String
+  isRead              Boolean                 @default(false)
+  createdAt           DateTime                @default(now())
+  user                User                    @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum NotificationType {
@@ -294,12 +296,12 @@ enum NotificationType {
 }
 
 model UserEvent {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  eventType  EventType
-  metadata   Json?    // פרטים נוספים על האירוע, כמו מזהה של פוסט, מתכון, זמן וכו'
-  createdAt  DateTime @default(now())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    Int                    @id @default(autoincrement())
+  userId                Int
+  eventType             EventType
+  metadata              Json?    
+  createdAt             DateTime               @default(now())
+  user                  User                   @relation("UserEvents", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum EventType {
