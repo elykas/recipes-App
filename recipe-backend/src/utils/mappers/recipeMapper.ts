@@ -1,7 +1,7 @@
 import { RecipeResponseDTO } from "../../dto/recipe.dto";
-import { FullRecipe } from "../../types/responses";
+import { PreviewRecipes } from "../../types/responses";
 
-export const mapRecipeToDTO = (recipe: FullRecipe): RecipeResponseDTO => ({
+export const mapRecipeToDTO = (recipe: PreviewRecipes): RecipeResponseDTO => ({
   id: recipe.id,
   name: recipe.name,
   categories: recipe.categories.map((c) => ({

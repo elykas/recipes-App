@@ -3,6 +3,8 @@ export type FullRecipe = Prisma.RecipeGetPayload<{
     include: {
         ingredients: true;
         categories: true
+        steps: true
+        likes: true
     };
 }>;
 
@@ -12,8 +14,25 @@ export type UserWithRecipes = Prisma.UserGetPayload<{
         recipes: {
             include: {
                 ingredients: true;
-                categories: true
+                categories: true;
+                steps: true;
+                favoriteRecipe: true
             };
+        
+        },
+        posts:{
+        
+        },
+        favoriteRecipes: {
+            include: {
+                recipe: {
+                    include: {
+                        ingredients: true;
+                        categories: true;
+                        steps: true;
+                    }
+                }
+            }
         }
 
     }

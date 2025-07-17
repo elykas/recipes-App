@@ -1,4 +1,5 @@
-import IRecipe, { DifficultyLevel, ICategory, IIngredient, IRecipeLikes, ISteps } from "../models/recipeModel";
+import { DifficultyLevel } from "@prisma/client";
+import IRecipe, {  ICategory, IIngredient, IRecipeLikes, ISteps } from "../models/recipeModel";
 
 
 
@@ -15,7 +16,7 @@ export interface RecipeResponseDTO {
   description?: string | null;
   tip?: string[] | null;
   likes?: IRecipeLikes[];
-  authorId: number;
+  authorPublicId: string
 }
 
 export interface CreateRecipeDTO {

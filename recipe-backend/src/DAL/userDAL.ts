@@ -1,7 +1,6 @@
 import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
-import IUser from "../models/userModel";
-import { UserWithoutRecipes, UserWithRecipes } from "../types/responses";
+import { UserWithoutRecipes } from "../types/responses";
 
 export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
   const users = await prisma.user.findMany();
@@ -9,18 +8,10 @@ export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
 };
 
 export const pgGetUserById = async (
-  id: number
-): Promise<UserWithRecipes | null> => {
+  publicId: string
+): Promise<UserWithoutRecipes | null> => {
   const user = await prisma.user.findUnique({
-    where: { id },
-    include: {
-      recipes: {
-        include: {
-          ingredients: true,
-          categories: true,
-        },
-      },
-    },
+    where: { publicId },
   });
   return user;
 };
@@ -28,28 +19,28 @@ export const pgGetUserById = async (
 export const pgGetUserIdByPublicId = async (
   publicId: string
 ): Promise<Number | null> => {
-  const userId: Number | null = await prisma.user.findUnique({
+  const userId = await prisma.user.findUnique({
     where: { publicId },
-    select: {id: true},
+    select: { id: true },
   });
-  return userId;
+  return userId?.id ?? null;
 };
 
 export const pgUpdateUser = async (
-  id: number,
+  publicId: string,
   userData: UpdateUserDto
 ): Promise<UpdateUserDto> => {
   const updatedUser = await prisma.user.update({
-    where: { id },
+    where: { publicId },
     data: {
-      username: userData.username,
-      imageUrl: userData.imageUrl,
+      fullName: userData.fullName,
+      headLine: userData.headLine,
       bio: userData.bio,
     },
     select: {
-      id: true,
-      username: true,
-      imageUrl: true,
+      publicId: true,
+      fullName: true,
+      headLine: true,
       bio: true,
     },
   });
@@ -57,9 +48,34 @@ export const pgUpdateUser = async (
   return updatedUser;
 };
 
-export const pgDeleteUser = async (id: number): Promise<UserWithoutRecipes> => {
-    const deletedUser = await prisma.user.delete({
-      where: { id },
-    });
-    return deletedUser;
+export const pgDeleteUser = async (
+  publicId: string
+): Promise<UserWithoutRecipes> => {
+  const deletedUser = await prisma.user.delete({
+    where: { publicId },
+  });
+  return deletedUser;
+};
+
+export const pgAddUserImage = async (
+  publicId: string,
+  imageUrl: string
+): Promise<UserWithoutRecipes> => {
+  const updatedUser = await prisma.user.update({
+    where: { publicId },
+    data: {
+      imageUrl,
+    },
+  });
+  return updatedUser;
+};
+
+export const pgGetImageByPublicId = async (
+  publicId: string
+): Promise<string> => {
+  const user = await prisma.user.findUnique({
+    where: { publicId },
+    select: { imageUrl: true },
+  });
+  return user?.imageUrl ?? "";
 };

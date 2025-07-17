@@ -1,15 +1,21 @@
 import prisma from "../config/database";
 import { ICategory, IRecipe } from "../models/recipeModel";
-import { FullRecipe } from "../types/responses";
+import { PreviewRecipes } from "../types/responses";
 
 export const pgGetAllRecipes = async (
-  authorId?: number
-): Promise<FullRecipe[]> => {
-  const recipes: FullRecipe[] = await prisma.recipe.findMany({
-    where: authorId ? { authorId } : undefined,
-    include: {
-      ingredients: true,
-      categories: true,
+  publicId?: string
+): Promise<Partial<PreviewRecipes>[]> => {
+  const recipes = await prisma.recipe.findMany({
+    where: publicId ? { author: { publicId } } : undefined,
+    select: {
+      publicId: true,
+      title: true,
+      isPublic: true,
+      imageUrl: true,
+      difficulty: true,
+      _count: {
+        select: { likes: true },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -17,27 +23,28 @@ export const pgGetAllRecipes = async (
 };
 
 export const pgGetRecipeById = async (
-  id: number
-): Promise<FullRecipe | null> => {
-  const recipe: FullRecipe | null = await prisma.recipe.findUnique({
-    where: { id },
+  publicId: string
+): Promise<PreviewRecipes | null> => {
+  const recipe: PreviewRecipes | null = await prisma.recipe.findUnique({
+    where: { publicId },
     include: {
       ingredients: true,
       categories: true,
+      steps: true,
+      likes: true,
     },
   });
   return recipe;
 };
 
-
 //NOTE: when create a recipe need to add the order step for each step
 export const pgCreateRecipe = async (
   recipeData: IRecipe,
   authorId: number
-): Promise<FullRecipe> => {
+): Promise<PreviewRecipes> => {
   const newRecipe = await prisma.recipe.create({
     data: {
-      name: recipeData.name,
+      name: recipeData.title,
       categories: {
         connect: recipeData.categories.map((category) => ({
           id: category.id,
@@ -66,7 +73,7 @@ export const pgCreateRecipe = async (
 //NOTE: when create a recipe need to add the order step for each step
 export const pgUpdateRecipe = async (
   recipeData: Partial<IRecipe>
-): Promise<FullRecipe> => {
+): Promise<PreviewRecipes> => {
   const updatedRecipe = await prisma.recipe.update({
     where: { id: recipeData.id },
     data: {
@@ -94,7 +101,7 @@ export const pgUpdateRecipeCategories = async (
   });
 };
 
-export const pgDeleteRecipe = async (id: number): Promise<FullRecipe> => {
+export const pgDeleteRecipe = async (id: number): Promise<PreviewRecipes> => {
   const recipe = await prisma.recipe.delete({
     where: { id },
     include: { ingredients: true, categories: true },
@@ -105,7 +112,7 @@ export const pgDeleteRecipe = async (id: number): Promise<FullRecipe> => {
 export const pgGetRecipesByCategory = async (
   categoryId: number,
   authorId?: number
-): Promise<FullRecipe[]> => {
+): Promise<PreviewRecipes[]> => {
   const recipes = await prisma.recipe.findMany({
     where: {
       categories: {

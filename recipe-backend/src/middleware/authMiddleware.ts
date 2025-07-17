@@ -124,21 +124,21 @@ export const checkRecipeOwnerShip = async (
   next: NextFunction
 ) => {
   try {
-    const recipeId = Number(req.params.recipeId);
-    const recipe = await getRecipeByIdService(recipeId);
+    const recipePublicId = Number(req.params.recipeId);
+    const recipe = await getRecipeByIdService(recipePublicId);
     if (!recipe) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
-    const publicId = req.publicId;
-    if (!publicId) {
+    const userPublicId = req.publicId;
+    if (!userPublicId) {
       res
         .status(403)
         .json({ message: "Forbidden: User not authenticated", success: false });
       return;
     }
-    const userId = await getUserIdByPublicIdService(publicId);
-    if (recipe.authorId !== userId) {
+    
+    if (recipe.authorPublicId !== userPublicId) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this recipe",
         success: false,

@@ -28,6 +28,7 @@ export interface IUser {
   userGroups?: IGroupMember[];
   createdGroups?: IGroup[];
   userEvents?: IUserEvents[];
+  feedback?: IFeedback[];
 }
 
 export interface IUserEvents {
@@ -55,6 +56,14 @@ export enum EvevntType {
   Search = "Search",
   Share = "Share",
   ClickNotification = "ClickNotification",
+}
+
+export interface IFeedback {
+  id?: number | null;
+  userId: number;
+  user?: IUser | null;
+  content: string;
+  createdAt?: Date;
 }
 
 export default IUser;

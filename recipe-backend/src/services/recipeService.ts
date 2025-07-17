@@ -9,21 +9,21 @@ import {
 } from "../dal/recipesDAL";
 import { RecipeResponseDTO } from "../dto/recipe.dto";
 import { IRecipe } from "../models/recipeModel";
-import { FullRecipe } from "../types/responses";
-import { mapRecipeToDTO } from "../utils/mappers/recipeMapper";
+import { PreviewRecipes } from "../types/responses";
 import errorResponse from "../utils/errors/errors";
+import { mapRecipeToDTO } from "../utils/mappers/recipeMapper";
 import { updateRecipeIngredientsService } from "./ingredientsService";
 
-export const getAllRecipesFromUserService = async (
-  authorId: number
+export const getAllRecipesOfUserService = async (
+  publicAuthorId: string
 ): Promise<RecipeResponseDTO[]> => {
-  const recipes: FullRecipe[] = await pgGetAllRecipes(authorId);
+  const recipes: PreviewRecipes[] = await pgGetAllRecipes(publicAuthorId);
   const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
   return recipesDto;
 };
 
 export const getAllRecipesService = async (): Promise<RecipeResponseDTO[]> => {
-  const recipes: FullRecipe[] = await pgGetAllRecipes();
+  const recipes: PreviewRecipes[] = await pgGetAllRecipes();
   const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
   return recipesDto;
 };
@@ -31,7 +31,7 @@ export const getAllRecipesService = async (): Promise<RecipeResponseDTO[]> => {
 export const getRecipeByIdService = async (
   id: number
 ): Promise<RecipeResponseDTO | null> => {
-  const recipe: FullRecipe | null = await pgGetRecipeById(id);
+  const recipe: PreviewRecipes | null = await pgGetRecipeById(id);
   if (!recipe) throw errorResponse("Recipe not found", 404);
 
   const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
@@ -42,13 +42,16 @@ export const createRecipeService = async (
   recipeData: IRecipe,
   authorId: number
 ): Promise<RecipeResponseDTO> => {
-  const newRecipe: FullRecipe = await pgCreateRecipe(recipeData, authorId);
+  const newRecipe: PreviewRecipes = await pgCreateRecipe(recipeData, authorId);
   const recipeDto: RecipeResponseDTO = mapRecipeToDTO(newRecipe);
   return recipeDto;
 };
 
-export const updateRecipeService = async (recipeData: IRecipe, recipeId: number) => {
-  const {categories, ingredients, ...pureRecipeData } = recipeData;
+export const updateRecipeService = async (
+  recipeData: IRecipe,
+  recipeId: number
+) => {
+  const { categories, ingredients, ...pureRecipeData } = recipeData;
   if (!recipeId) throw new Error("Recipe ID is required");
 
   if (recipeData.categories) {
@@ -58,13 +61,15 @@ export const updateRecipeService = async (recipeData: IRecipe, recipeId: number)
   if (recipeData.ingredients) {
     await updateRecipeIngredientsService(recipeId, ingredients);
   }
-  const recipe: FullRecipe = await pgUpdateRecipe(pureRecipeData);
+  const recipe: PreviewRecipes = await pgUpdateRecipe(pureRecipeData);
   const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
   return recipeDto;
 };
 
-export const deleteRecipeService = async (id: number): Promise<RecipeResponseDTO> => {
-  const recipe: FullRecipe = await pgDeleteRecipe(id);
+export const deleteRecipeService = async (
+  id: number
+): Promise<RecipeResponseDTO> => {
+  const recipe: PreviewRecipes = await pgDeleteRecipe(id);
   const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
   return recipeDto;
 };
@@ -73,7 +78,7 @@ export const getUserRecipesByCategoryService = async (
   categoryId: number,
   authorId: number
 ): Promise<RecipeResponseDTO[]> => {
-  const recipes: FullRecipe[] = await pgGetRecipesByCategory(
+  const recipes: PreviewRecipes[] = await pgGetRecipesByCategory(
     categoryId,
     authorId
   );
@@ -84,7 +89,7 @@ export const getUserRecipesByCategoryService = async (
 export const getRecipesByCategoryService = async (
   categoryId: number
 ): Promise<RecipeResponseDTO[]> => {
-  const recipes: FullRecipe[] = await pgGetRecipesByCategory(categoryId);
+  const recipes: PreviewRecipes[] = await pgGetRecipesByCategory(categoryId);
   const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
   return recipesDto;
 };

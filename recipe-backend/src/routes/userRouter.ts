@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  addUserImage,
   deleteUser,
   getAllUsers,
   getUserById,
@@ -7,13 +8,14 @@ import {
 } from "../controllers/userController";
 import { authenticateToken, authorizeAdmin, authorizeUserAndExist } from "../middleware/authMiddleware";
 import { validateUser } from "../middleware/validateMiddleware";
-import { userImageUpload } from "../middleware/uploadMiddleware";
+import { singleImageUpload} from "../middleware/uploadMiddleware";
 
 const router = express.Router();
 
 router.get("/get-user/", authenticateToken, authorizeUserAndExist, getUserById);
 router.get("/", authenticateToken, authorizeAdmin, getAllUsers);
-router.put("/", authenticateToken, authorizeUserAndExist, userImageUpload, validateUser, updateUser);
+router.put("/", authenticateToken, authorizeUserAndExist, validateUser, updateUser);
+router.post("/add-image", authenticateToken, authorizeUserAndExist, singleImageUpload, addUserImage);
 router.delete("/", authenticateToken, authorizeUserAndExist, deleteUser);
 
 export default router;

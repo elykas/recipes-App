@@ -1,18 +1,9 @@
 import multer from "multer";
 
-// הגדרת אחסון בזיכרון (ניתן גם לדיסק)
 const storage = multer.memoryStorage();
 
-// הפונקציה לסינון סוגי הקבצים המותרים
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // מגדירים אילו סוגים מותר להעלות
-  const allowedMimeTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "video/mp4"
-  ];
-
+  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
@@ -20,20 +11,10 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
   }
 };
 
-// הגדרת מגבלת גודל (למשל 10MB לקבצים)
-const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
+const maxSizeInBytes = 10 * 1024 * 1024;
 
-// יצירת ה middleware
-const upload = multer({
+export const singleImageUpload = multer({
   storage,
   fileFilter,
   limits: { fileSize: maxSizeInBytes },
-});
-
-export const recipeMediaUpload = upload.fields([
-  { name: "images", maxCount: 4 },
-  { name: "video", maxCount: 1 },
-]);
-
-// 👤 משתמש - תמונה אחת
-export const userImageUpload = upload.single("image");
+}).single("image");

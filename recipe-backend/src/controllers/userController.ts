@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import {
+  addUserImageService,
   deleteUserService,
   getAllUsersService,
   getUserByIdService,
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
-import { UpdateUserDto } from "../dto/userDto";
+import { UpdateUserDto, UserDto } from "../dto/userDto";
 export const getAllUsers = async (
   req: Request,
   res: Response,
@@ -30,8 +31,8 @@ export const getUserById = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req as AuthenticatedRequest;
-    const user = await getUserByIdService(userId);
+    const { publicId } = req as AuthenticatedRequest;
+    const user: UserDto = await getUserByIdService(publicId);
     res.status(200).json({
       success: true,
       user: user,
@@ -48,10 +49,10 @@ export const updateUser = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req as AuthenticatedRequest;
+    const { publicId } = req as AuthenticatedRequest;
     const user:UpdateUserDto = req.body;
 
-    const updatedUser = await updateUserService(userId, user);
+    const updatedUser = await updateUserService(publicId, user);
     res.status(200).json({
       success: true,
       user: updatedUser,
@@ -68,9 +69,9 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req as AuthenticatedRequest;
+    const { publicId } = req as AuthenticatedRequest;
 
-    await deleteUserService(userId);
+    await deleteUserService(publicId);
     res
       .status(200)
       .json({ success: true, message: "User deleted successfully" });
@@ -78,3 +79,23 @@ export const deleteUser = async (
     next(error);
   }
 };
+
+export const addUserImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { publicId } = req as AuthenticatedRequest;
+    const image = req.file;
+    const userWithImage = await addUserImageService(publicId, { image });
+    res.status(200).json({
+      success: true,
+      user: userWithImage,
+      message: "User image updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

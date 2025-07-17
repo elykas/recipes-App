@@ -3,16 +3,13 @@ import { RecipeResponseDTO } from "../dto/recipe.dto";
 import IRecipe from "../models/recipeModel";
 import {
   deleteRecipeService,
-  getAllRecipesFromUserService as getAllRecipesOfUserService,
+  getAllRecipesOfUserService,
   getAllRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
   getUserRecipesByCategoryService,
 } from "../services/recipeService";
-import {
-  createRecipeWithMediaService,
-  updateRecipeWithMediaService,
-} from "../services/storageService";
+import {} from "../services/storageService";
 import { AuthenticatedRequest } from "../types/requests";
 
 export const getAllRecipesOfUser = async (
@@ -21,9 +18,9 @@ export const getAllRecipesOfUser = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req as AuthenticatedRequest;
+    const { publicId } = req as AuthenticatedRequest;
     const recipes: RecipeResponseDTO[] =
-      await getAllRecipesOfUserService(userId);
+      await getAllRecipesOfUserService(publicId);
     res.status(200).json({
       data: recipes,
       success: true,

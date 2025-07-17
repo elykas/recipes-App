@@ -1,4 +1,4 @@
-import { CategoryType } from "@prisma/client";
+import { CategoryType, DifficultyLevel } from "@prisma/client";
 import IUser from "./userModel";
 export interface IIngredient {
   id?: number;
@@ -40,11 +40,7 @@ export interface IRecipeLikes {
   userId: number;
 }
 
-export enum DifficultyLevel {
-  Easy = "Easy",
-  Medium = "Medium",
-  Hard = "Hard",
-}
+
 
 export interface ISteps {
   id: number;

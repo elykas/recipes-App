@@ -9,15 +9,14 @@ import { IUserEvents } from "../models/userModel";
 
 export type UserDto = {
   publicId: string;
-  email: string;
+  email: string | null;
   username: string;
-  fullName?: string;
-  phone?: string;
-  imageUrl?: string;
-  bio?: string;
-  headLine?: string;
-  birthDate?: Date;
-  isAdmin: boolean;
+  fullName?: string | null;
+  phone?: string | null;
+  imageUrl?: string | null;
+  bio?: string | null;
+  headLine?: string | null;
+  birthDate?: Date | null;
   recipes?: IRecipe[];
   posts?: IPost[];
   postLikes?: IPostLike[];
@@ -45,8 +44,8 @@ export interface CreateUserDto {
 }
 
 export type UpdateUserDto = {
-  id: number;
-  username: string;
-  imageUrl?: string | null;
+  publicId: string;
+  fullName?: string | null;
+  headLine?: string | null;
   bio?: string | null;
 };
