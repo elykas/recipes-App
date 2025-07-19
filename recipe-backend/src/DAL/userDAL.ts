@@ -1,6 +1,7 @@
 import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
 import { UserWithoutRecipes } from "../types/responses";
+import { pgGetRecipeIdByPublicId } from "./recipesDAL";
 
 export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
   const users = await prisma.user.findMany();
@@ -18,7 +19,7 @@ export const pgGetUserById = async (
 
 export const pgGetUserIdByPublicId = async (
   publicId: string
-): Promise<Number | null> => {
+): Promise<number | null> => {
   const userId = await prisma.user.findUnique({
     where: { publicId },
     select: { id: true },
@@ -79,3 +80,4 @@ export const pgGetImageByPublicId = async (
   });
   return user?.imageUrl ?? "";
 };
+

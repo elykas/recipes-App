@@ -1,10 +1,11 @@
+import { title } from "process";
 import prisma from "../config/database";
 import { ICategory, IRecipe } from "../models/recipeModel";
-import { PreviewRecipes } from "../types/responses";
+import { FullRecipe, PreviewRecipes } from "../types/responses";
 
 export const pgGetAllRecipes = async (
   publicId?: string
-): Promise<Partial<PreviewRecipes>[]> => {
+): Promise<Partial<FullRecipe>[]> => {
   const recipes = await prisma.recipe.findMany({
     where: publicId ? { author: { publicId } } : undefined,
     select: {
@@ -22,10 +23,64 @@ export const pgGetAllRecipes = async (
   return recipes;
 };
 
+export const pgGetRecipeIdByPublicId = async (
+  publicId: string
+): Promise<number | null> => {
+  const recipeId = await prisma.recipe.findUnique({
+    where: { publicId },
+    select: { id: true },
+  });
+  return recipeId?.id ?? null;
+};
+
+export const pgGetPreviewRecipes = async (
+  currentUserPublicId: string,
+  targetUserPublicId: string,
+  searchQuery?: string,
+  cursor?: string,
+  pageSize: number = 10
+): Promise<PreviewRecipes[]> => {
+  const isOwner = currentUserPublicId === targetUserPublicId;
+
+  const recipesPreview = await prisma.recipe.findMany({
+    where: {
+      author: { publicId: targetUserPublicId },
+      ...(isOwner ? {} : { isPublic: true }),
+      ...(searchQuery
+        ? {
+            title: {
+              contains: searchQuery,
+              mode: "insensitive",
+            },
+          }
+        : {}),
+    },
+    select: {
+      title: true,
+      publicId: true,
+      imageUrl: true,
+      categories: {
+        select: { name: true },
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: pageSize,
+    ...(cursor && {
+      cursor: { publicId: cursor },
+      skip: 1,
+    }),
+  });
+
+  return recipesPreview;
+};
+
 export const pgGetRecipeById = async (
   publicId: string
-): Promise<PreviewRecipes | null> => {
-  const recipe: PreviewRecipes | null = await prisma.recipe.findUnique({
+): Promise<FullRecipe | null> => {
+  const recipe: FullRecipe | null = await prisma.recipe.findUnique({
     where: { publicId },
     include: {
       ingredients: true,
@@ -37,23 +92,58 @@ export const pgGetRecipeById = async (
   return recipe;
 };
 
+export const pgGetRecipesByIds = async (
+  publicIds: string[]
+): Promise<FullRecipe[]> => {
+  const recipes = await prisma.recipe.findMany({
+    where: {
+      publicId: {
+        in: publicIds,  
+      },
+    },
+    include: {
+      ingredients: true,
+      categories: true,
+      steps: true,
+      likes: true,
+    },
+  });
+  return recipes;
+};
+
 //NOTE: when create a recipe need to add the order step for each step
 export const pgCreateRecipe = async (
   recipeData: IRecipe,
-  authorId: number
-): Promise<PreviewRecipes> => {
+  publicAuthorId: string
+): Promise<FullRecipe> => {
   const newRecipe = await prisma.recipe.create({
     data: {
-      name: recipeData.title,
+      title: recipeData.title,
       categories: {
         connect: recipeData.categories.map((category) => ({
           id: category.id,
         })),
       },
-      steps: recipeData.steps,
-      prepTime: recipeData.prepTime ?? 30,
+      steps: {
+        create: recipeData.steps.map((step) => ({
+          title: step.title,
+          description: step.description,
+          imageUrl: step.imageUrl,
+          duration: step.duration,
+          order: step.order,
+        })),
+      },
+      difficulty: recipeData.difficulty,
+      isPublic: recipeData.isPublic,
+      prepTime: recipeData.prepTime,
       imageUrl: recipeData.imageUrl,
-      authorId,
+      description: recipeData.description,
+      tip: recipeData.tip,
+      author: {
+        connect: {
+          publicId: publicAuthorId,
+        },
+      },
       ingredients: {
         create: recipeData.ingredients.map((ingredient) => ({
           name: ingredient.name,
@@ -65,6 +155,8 @@ export const pgCreateRecipe = async (
     include: {
       ingredients: true,
       categories: true,
+      steps: true,
+      likes: true,
     },
   });
   return newRecipe;
@@ -77,7 +169,7 @@ export const pgUpdateRecipe = async (
   const updatedRecipe = await prisma.recipe.update({
     where: { id: recipeData.id },
     data: {
-      name: recipeData.name,
+      : recipeData.name,
       steps: recipeData.steps,
       prepTime: recipeData.prepTime,
       imageUrl: recipeData.imageUrl,

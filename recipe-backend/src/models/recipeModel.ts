@@ -48,6 +48,7 @@ export interface ISteps {
   description: string;
   imageUrl?: string | null; 
   duration?: number | null;
+  order: number;
 }
 
 export interface IFavoriteRecipes {

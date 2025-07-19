@@ -1,45 +1,58 @@
 import { Prisma } from "@prisma/client";
 export type FullRecipe = Prisma.RecipeGetPayload<{
-    include: {
-        ingredients: true;
-        categories: true
-        steps: true
-        likes: true
-    };
+  include: {
+    ingredients: true;
+    categories: true;
+    steps: true;
+    likes: true;
+  };
 }>;
 
+export type PreviewRecipes = Prisma.RecipeGetPayload<{
+  select: {
+    title: true;
+    publicId: true;
+    imageUrl: true;
+    categories: {
+      select: {
+        name: true;
+      };
+    }
+    _count: {
+      select: {
+        likes: true;
+      };
+    };
+  };
+}>;
 
 export type UserWithRecipes = Prisma.UserGetPayload<{
-    include: {
-        recipes: {
-            include: {
-                ingredients: true;
-                categories: true;
-                steps: true;
-                favoriteRecipe: true
-            };
-        
-        },
-        posts:{
-        
-        },
-        favoriteRecipes: {
-            include: {
-                recipe: {
-                    include: {
-                        ingredients: true;
-                        categories: true;
-                        steps: true;
-                    }
-                }
-            }
-        }
-
-    }
-}>
+  include: {
+    recipes: {
+      include: {
+        ingredients: true;
+        categories: true;
+        steps: true;
+        favoriteRecipe: true;
+      };
+    };
+    posts: {};
+    favoriteRecipes: {
+      include: {
+        recipe: {
+          include: {
+            ingredients: true;
+            categories: true;
+            steps: true;
+          };
+        };
+      };
+    };
+  };
+}>;
 
 export type UserWithoutRecipes = Prisma.UserGetPayload<{
-    include: {
-        recipes: false
-    }
-}>
+  include: {
+    recipes: false;
+  };
+}>;

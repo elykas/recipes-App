@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import passport  from './config/passport'
 import cors from 'cors';
 import {errorHandler} from './middleware/errorHandler';   
 import recipeRouter from './routes/recipesRouter';
@@ -41,9 +40,6 @@ app.use(
         saveUninitialized: true,
     })
 );
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use('/api/recipes',recipeRouter);
 app.use('/api/auth',authRouter);
