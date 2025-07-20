@@ -1,7 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { getRecipeByIdService } from "../services/recipeService";
-import { getUserByIdService, getUserIdByPublicIdService } from "../services/userService";
-import { verifyAuthToken as verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
+import {
+  getPublicUserIdByRecipeIdService,
+  getRecipeByIdService,
+} from "../services/recipeService";
+import {
+  getUserByIdService,
+  getUserIdByPublicIdService,
+} from "../services/userService";
+import {
+  verifyAuthToken as verifyAuthToken,
+  VerifyUserToken,
+} from "../utils/authUtils/jwt";
 
 declare module "express" {
   interface Request {
@@ -24,7 +33,7 @@ export const authenticateToken = (
     req.publicId = userId;
     next();
   } catch (error) {
-    res.status(403).json({ message: (error as Error).message , success: false });
+    res.status(403).json({ message: (error as Error).message, success: false });
     return;
   }
 };
@@ -124,9 +133,10 @@ export const checkRecipeOwnerShip = async (
   next: NextFunction
 ) => {
   try {
-    const recipePublicId = Number(req.params.recipeId);
-    const recipe = await getRecipeByIdService(recipePublicId);
-    if (!recipe) {
+    const recipePublicId = req.params.recipeId;
+    const authorRecipeId: string =
+      await getPublicUserIdByRecipeIdService(recipePublicId);
+    if (!authorRecipeId) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
@@ -137,8 +147,8 @@ export const checkRecipeOwnerShip = async (
         .json({ message: "Forbidden: User not authenticated", success: false });
       return;
     }
-    
-    if (recipe.authorPublicId !== userPublicId) {
+
+    if (authorRecipeId !== userPublicId) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this recipe",
         success: false,

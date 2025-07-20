@@ -1,49 +1,117 @@
 import {
   pgCreateRecipe,
   pgDeleteRecipe,
-  pgGetAllRecipes,
+  pgGetAllRecipesName,
+  pgGetPreviewRecipes,
+  pgGetPublicUserIdByPublicRecipeId,
   pgGetRecipeById,
   pgGetRecipesByCategory,
+  pgGetRecipesByIds,
   pgUpdateRecipe,
   pgUpdateRecipeCategories,
 } from "../dal/recipesDAL";
-import { RecipeResponseDTO } from "../dto/recipe.dto";
+import {
+  PreviewRecipeDto,
+  RecipeResponseDTO,
+  SearchRecipeDto,
+} from "../dto/recipe.dto";
 import { IRecipe } from "../models/recipeModel";
-import { PreviewRecipes } from "../types/responses";
+import {
+  FullRecipe,
+  PreviewRecipesResponse,
+  SearchRecipeResponse,
+} from "../types/responses";
 import errorResponse from "../utils/errors/errors";
-import { mapRecipeToDTO } from "../utils/mappers/recipeMapper";
+import {
+  mapFullRecipeToDTO,
+  mapPreviewRecipeToDto,
+  mapSearchRecipeToDto,
+} from "../utils/mappers/recipeMapper";
 import { updateRecipeIngredientsService } from "./ingredientsService";
+import { checkUserIsOwnerAndGetId } from "../utils/checkUtils/checkUserUtils";
 
-export const getAllRecipesOfUserService = async (
-  publicAuthorId: string
-): Promise<RecipeResponseDTO[]> => {
-  const recipes: PreviewRecipes[] = await pgGetAllRecipes(publicAuthorId);
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
+export const getAllRecipesNameService = async (
+  searchQuery: string,
+  publicAuthorId?: string
+): Promise<SearchRecipeDto[]> => {
+  const recipes: SearchRecipeResponse[] = await pgGetAllRecipesName(
+    publicAuthorId,
+    searchQuery
+  );
+  const recipesDto: SearchRecipeDto[] = recipes.map(mapSearchRecipeToDto);
   return recipesDto;
 };
 
-export const getAllRecipesService = async (): Promise<RecipeResponseDTO[]> => {
-  const recipes: PreviewRecipes[] = await pgGetAllRecipes();
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
+export const getPreviewRecipesService = async (
+  userPublicId?: string,
+  searchQuery?: string,
+  cursor?: string,
+  pageSize: number = 10
+): Promise<PreviewRecipeDto[]> => {
+  const previewRecipes: PreviewRecipesResponse[] = await pgGetPreviewRecipes(
+    userPublicId,
+    searchQuery,
+    cursor,
+    pageSize
+  );
+  const recipesDto: PreviewRecipeDto[] = previewRecipes.map(
+    mapPreviewRecipeToDto
+  );
   return recipesDto;
+};
+
+export const getPublicUserIdByRecipeIdService = async (
+  recipePublicId: string
+) => {
+  const publicUserId = await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
+  if (!publicUserId) throw errorResponse("Recipe not found", 404);
+  return publicUserId;
 };
 
 export const getRecipeByIdService = async (
-  id: number
-): Promise<RecipeResponseDTO | null> => {
-  const recipe: PreviewRecipes | null = await pgGetRecipeById(id);
+  recipePublicId: string,
+  currentUserPublicId: string
+): Promise<RecipeResponseDTO> => {
+  const targetUserPublicId: string =
+    await getPublicUserIdByRecipeIdService(recipePublicId);
+
+  const userId: number | undefined = await checkUserIsOwnerAndGetId(
+    currentUserPublicId,
+    targetUserPublicId
+  );
+
+  const recipe: FullRecipe | null = await pgGetRecipeById(
+    recipePublicId,
+    userId
+  );
   if (!recipe) throw errorResponse("Recipe not found", 404);
 
-  const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
+  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
   return recipeDto;
+};
+
+export const getRecipesByIdsService = async (
+  recipePublicId: string[],
+  currentUserPublicId: string,
+  targetUserPublicId: string
+): Promise<RecipeResponseDTO[]> => {
+  const userId: number | undefined = await checkUserIsOwnerAndGetId(
+    currentUserPublicId,
+    targetUserPublicId
+  );
+
+  const recipes: FullRecipe[] = await pgGetRecipesByIds(recipePublicId, userId);
+
+  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
+  return recipesDto;
 };
 
 export const createRecipeService = async (
   recipeData: IRecipe,
   authorId: number
 ): Promise<RecipeResponseDTO> => {
-  const newRecipe: PreviewRecipes = await pgCreateRecipe(recipeData, authorId);
-  const recipeDto: RecipeResponseDTO = mapRecipeToDTO(newRecipe);
+  const newRecipe: FullRecipe = await pgCreateRecipe(recipeData, authorId);
+  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(newRecipe);
   return recipeDto;
 };
 
@@ -61,16 +129,16 @@ export const updateRecipeService = async (
   if (recipeData.ingredients) {
     await updateRecipeIngredientsService(recipeId, ingredients);
   }
-  const recipe: PreviewRecipes = await pgUpdateRecipe(pureRecipeData);
-  const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
+  const recipe: PreviewRecipesResponse = await pgUpdateRecipe(pureRecipeData);
+  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
   return recipeDto;
 };
 
 export const deleteRecipeService = async (
   id: number
 ): Promise<RecipeResponseDTO> => {
-  const recipe: PreviewRecipes = await pgDeleteRecipe(id);
-  const recipeDto: RecipeResponseDTO = mapRecipeToDTO(recipe);
+  const recipe: PreviewRecipesResponse = await pgDeleteRecipe(id);
+  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
   return recipeDto;
 };
 
@@ -78,18 +146,19 @@ export const getUserRecipesByCategoryService = async (
   categoryId: number,
   authorId: number
 ): Promise<RecipeResponseDTO[]> => {
-  const recipes: PreviewRecipes[] = await pgGetRecipesByCategory(
+  const recipes: PreviewRecipesResponse[] = await pgGetRecipesByCategory(
     categoryId,
     authorId
   );
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
+  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;
 };
 
 export const getRecipesByCategoryService = async (
   categoryId: number
 ): Promise<RecipeResponseDTO[]> => {
-  const recipes: PreviewRecipes[] = await pgGetRecipesByCategory(categoryId);
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapRecipeToDTO);
+  const recipes: PreviewRecipesResponse[] =
+    await pgGetRecipesByCategory(categoryId);
+  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;
 };

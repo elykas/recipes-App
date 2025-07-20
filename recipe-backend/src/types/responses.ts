@@ -5,19 +5,30 @@ export type FullRecipe = Prisma.RecipeGetPayload<{
     categories: true;
     steps: true;
     likes: true;
+    author: {
+      select: { publicId: true };
+    };
+    favoriteRecipe: {
+      select: { id: true };
+    };
   };
 }>;
 
-export type PreviewRecipes = Prisma.RecipeGetPayload<{
+export type SearchRecipeResponse = Prisma.RecipeGetPayload<{
+  select: {
+    publicId: true;
+    title: true;
+    isPublic: true;
+  };
+}>;
+
+export type PreviewRecipesResponse = Prisma.RecipeGetPayload<{
   select: {
     title: true;
     publicId: true;
     imageUrl: true;
-    categories: {
-      select: {
-        name: true;
-      };
-    }
+    categories: true;
+    isPublic: true;
     _count: {
       select: {
         likes: true;

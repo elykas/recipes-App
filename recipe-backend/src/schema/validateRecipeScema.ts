@@ -16,3 +16,11 @@ export const RecipeSchema = z.object({
     })),
     freeText: z.string()
 })
+
+export const searchQuerySchema = z.object({
+  query: z.string().min(2, "Query too short").max(50, "Query too long"),
+});
+
+export const recipeIdParamsSchema = z.object({
+  recipeId: z.uuid("Invalid recipe ID format"),
+});

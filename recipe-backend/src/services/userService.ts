@@ -30,8 +30,8 @@ export const getUserByIdService = async (
 
 export const getUserIdByPublicIdService = async (
   publicId: string
-): Promise<Number> => {
-  const userId: Number | null = await pgGetUserIdByPublicId(publicId);
+): Promise<number> => {
+  const userId: number | null = await pgGetUserIdByPublicId(publicId);
   if (!userId) throw errorResponse("User not found", 404);
   return userId;
 };

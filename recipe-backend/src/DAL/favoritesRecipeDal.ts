@@ -1,6 +1,8 @@
 import prisma from "../config/database";
+import ErrorResponse from "../utils/errors/errors";
 import { pgGetRecipeIdByPublicId } from "./recipesDAL";
-import { pgGetUserIdByPublicId } from "./userDAL";
+import { pgGetUserIdByPublicId } from "./userDal";
+
 
 export const pgAddToFavoriteRecipes = async (
   publicId: string,
@@ -10,7 +12,7 @@ export const pgAddToFavoriteRecipes = async (
 
   const recipeId: number | null = await pgGetRecipeIdByPublicId(publicIdRecipe);
 
-  if (!userId || !recipeId) throw new Error("User or Recipe not found");
+  if (!userId || !recipeId) throw ErrorResponse("User not found", 404);
 
   await prisma.favoriteRecipes.create({
     data: {

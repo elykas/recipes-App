@@ -5,7 +5,7 @@ export interface IIngredient {
   name: string;
   quantity?: string | null;
   unit?: string | null;
-  recipeId: number;
+  recipeId?: number | null;
 }
 
 export interface ICategory {

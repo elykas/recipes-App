@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { RecipeResponseDTO } from "../dto/recipe.dto";
+import {
+  PreviewRecipeDto as PreviewRecipeDto,
+  RecipeResponseDTO,
+  SearchRecipeDto,
+} from "../dto/recipe.dto";
 import IRecipe from "../models/recipeModel";
 import {
   deleteRecipeService,
-  getAllRecipesOfUserService,
-  getAllRecipesService,
+  getAllRecipesNameService,
+  getAllRecipesNameService,
+  getPreviewRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
   getUserRecipesByCategoryService,
@@ -12,41 +17,52 @@ import {
 import {} from "../services/storageService";
 import { AuthenticatedRequest } from "../types/requests";
 
-export const getAllRecipesOfUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { publicId } = req as AuthenticatedRequest;
-    const recipes: RecipeResponseDTO[] =
-      await getAllRecipesOfUserService(publicId);
-    res.status(200).json({
-      data: recipes,
-      success: true,
-      message: "Recipes of user fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+export const getAllRecipesName =
+  (isUserScoped: boolean) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { publicId } = req as AuthenticatedRequest;
+      const searchQuery = req.query.query as string;
 
-export const getAllRecipes = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const recipes: RecipeResponseDTO[] = await getAllRecipesService();
-    res.status(200).json({
-      data: recipes,
-      success: true,
-      message: "Recipes fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+      const recipes: SearchRecipeDto[] = await getAllRecipesNameService(
+        searchQuery,
+        isUserScoped ? publicId : undefined
+      );
+      res.status(200).json({
+        data: recipes,
+        success: true,
+        message: "Recipes of user fetched successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+export const getPreviewRecipes =
+  (isUserScoped: boolean) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { publicId: userPublicId } = req as AuthenticatedRequest;
+      const searchQuery = req.query.query as string;
+      const cursor = req.query.cursor as string | undefined;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+
+      const recipes: PreviewRecipeDto[] = await getPreviewRecipesService(
+        isUserScoped ? userPublicId : undefined,
+        searchQuery,
+        cursor,
+        pageSize
+      );
+
+      res.status(200).json({
+        data: recipes,
+        success: true,
+        message: "Recipes fetched successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
 export const getRecipeById = async (
   req: Request,
@@ -55,8 +71,11 @@ export const getRecipeById = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const recipe: RecipeResponseDTO | null =
-      await getRecipeByIdService(+recipeId);
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const recipe: RecipeResponseDTO = await getRecipeByIdService(
+      recipeId,
+      userPublicId
+    );
     res.status(200).json({
       data: recipe,
       success: true,
@@ -81,7 +100,7 @@ export const createRecipe = async (
       video?: Express.Multer.File[];
     };
 
-    const newRecipe: RecipeResponseDTO = await createRecipeWithMediaService(
+    const newRecipe: RecipeResponseDTO = await createRecipeService(
       recipe,
       userId,
       files

@@ -3,22 +3,97 @@ import {
   createRecipe,
   deleteRecipe,
   editRecipe,
-  getAllRecipesOfUser,
+  getAllRecipesName,
+  getPreviewRecipes,
   getRecipeById,
   getRecipesByCategory,
   getUserRecipesByCategory,
 } from "../controllers/recipesController";
-import { authenticateToken, authorizeAdmin, authorizeUserAndExist, checkRecipeOwnerShip } from "../middleware/authMiddleware";
-import { validateRecipe } from "../middleware/validateMiddleware";
-import {singleImageUpload} from "../middleware/uploadMiddleware";
+import {
+  authenticateToken,
+  authorizeAdmin,
+  authorizeUserAndExist,
+  checkRecipeOwnerShip,
+} from "../middleware/authMiddleware";
+import {
+  validateRecipe,
+  validateRecipeIdParams,
+  validateSearchQuery,
+} from "../middleware/validateMiddleware";
+import { singleImageUpload } from "../middleware/uploadMiddleware";
+import { searchLimiter } from "../middleware/rateLimiterMiddleware";
+import { sanitizeParamsMiddleware, sanitizeQueryMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 
 const router = express.Router();
 
-router.get("/", authenticateToken, authorizeUserAndExist, getAllRecipesOfUser);
-router.get("/get-recipe/:recipeId", authenticateToken, authorizeUserAndExist, checkRecipeOwnerShip, getRecipeById);
-router.post("/", authenticateToken, authorizeUserAndExist, validateRecipe, singleImageUpload, createRecipe);
-router.put("/:recipeId", authenticateToken, authorizeUserAndExist, validateRecipe, checkRecipeOwnerShip, recipeMediaUpload, editRecipe);
-router.delete("/:recipeId", authenticateToken, authorizeUserAndExist, checkRecipeOwnerShip, deleteRecipe);
+router.get(
+  "/my/search",
+  authenticateToken,
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeQueryMiddleware,
+  validateSearchQuery,
+  getAllRecipesName(true)
+);
+router.get(
+  "/search",
+  authenticateToken,
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeQueryMiddleware,
+  validateSearchQuery,
+  getAllRecipesName(false)
+);
+router.get(
+  "/recipe/:recipeId",
+  authenticateToken,
+  authorizeUserAndExist,
+  sanitizeParamsMiddleware,
+  searchLimiter,
+  validateRecipeIdParams,
+  getRecipeById
+);
+router.get(
+  "/me/preview",
+  authenticateToken,
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeQueryMiddleware,
+  validateSearchQuery,
+  getPreviewRecipes(true)
+);
+router.get(
+  "/preview",
+  authenticateToken,
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeQueryMiddleware,
+  validateSearchQuery,
+  getPreviewRecipes(false)
+);
+router.post(
+  "/",
+  authenticateToken,
+  authorizeUserAndExist,
+  validateRecipe,
+  singleImageUpload,
+  createRecipe
+);
+router.put(
+  "/:recipeId",
+  authenticateToken,
+  authorizeUserAndExist,
+  validateRecipe,
+  checkRecipeOwnerShip,
+  editRecipe
+);
+router.delete(
+  "/:recipeId",
+  authenticateToken,
+  authorizeUserAndExist,
+  checkRecipeOwnerShip,
+  deleteRecipe
+);
 router.get(
   "/get-user-recipes-by-category/:categoryId",
   authenticateToken,
