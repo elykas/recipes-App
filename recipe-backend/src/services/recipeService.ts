@@ -1,3 +1,4 @@
+import prisma from "../config/database";
 import {
   pgCreateRecipe,
   pgDeleteRecipe,
@@ -13,15 +14,21 @@ import {
 } from "../dal/recipesDAL";
 import {
   PreviewRecipeDto,
-  RecipeResponseDTO,
+  RecipeIdDto,
+  RecipeResponseDto,
   SearchRecipeDto,
 } from "../dto/recipe.dto";
 import { IRecipe } from "../models/recipeModel";
 import {
-  FullRecipe,
+  FullRecipeResponse,
   PreviewRecipesResponse,
+  RecipeIdResonse,
   SearchRecipeResponse,
 } from "../types/responses";
+import {
+  checkUserIsOwnerAndGetId,
+  checkUserIsOwnerAndGetIds as checkUserIsOwnerByIds,
+} from "../utils/checkUtils/checkUserUtils";
 import errorResponse from "../utils/errors/errors";
 import {
   mapFullRecipeToDTO,
@@ -29,7 +36,8 @@ import {
   mapSearchRecipeToDto,
 } from "../utils/mappers/recipeMapper";
 import { updateRecipeIngredientsService } from "./ingredientsService";
-import { checkUserIsOwnerAndGetId, checkUserIsOwnerAndGetIds } from "../utils/checkUtils/checkUserUtils";
+import { updateRecipeStepsService } from "./stepsService";
+import { uploadSingleImage } from "./storageService";
 
 export const getAllRecipesNameService = async (
   searchQuery: string,
@@ -80,7 +88,7 @@ export const getAuthorsPublicIdsByRecipeIdsService = async (
 export const getRecipeByIdService = async (
   recipePublicId: string,
   currentUserPublicId: string
-): Promise<RecipeResponseDTO> => {
+): Promise<RecipeResponseDto> => {
   const targetUserPublicId: string =
     await getPublicUserIdByRecipeIdService(recipePublicId);
 
@@ -89,87 +97,125 @@ export const getRecipeByIdService = async (
     targetUserPublicId
   );
 
-  const recipe: FullRecipe | null = await pgGetRecipeById(
+  const recipe: FullRecipeResponse | null = await pgGetRecipeById(
     recipePublicId,
     userId
   );
   if (!recipe) throw errorResponse("Recipe not found", 404);
 
-  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
+  const recipeDto: RecipeResponseDto = mapFullRecipeToDTO(recipe);
   return recipeDto;
 };
 
-export const getRecipesByIdsService = async (
+export const getSomeRecipesByIdsService = async (
   recipePublicIds: string[],
   currentUserPublicId: string
-): Promise<RecipeResponseDTO[]> => {
+): Promise<RecipeResponseDto[]> => {
   const targetUserPublicIds: (string | null)[] =
     await getAuthorsPublicIdsByRecipeIdsService(recipePublicIds);
 
-  const userId: number | undefined = await checkUserIsOwnerAndGetIds(
+  const userId: number | undefined = await checkUserIsOwnerByIds(
     currentUserPublicId,
     targetUserPublicIds
   );
 
-  const recipes: FullRecipe[] = await pgGetRecipesByIds(recipePublicIds, userId);
+  const recipes: FullRecipeResponse[] = await pgGetRecipesByIds(
+    recipePublicIds,
+    userId
+  );
 
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
+  const recipesDto: RecipeResponseDto[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;
 };
 
 export const createRecipeService = async (
   recipeData: IRecipe,
-  authorId: number
-): Promise<RecipeResponseDTO> => {
-  const newRecipe: FullRecipe = await pgCreateRecipe(recipeData, authorId);
-  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(newRecipe);
-  return recipeDto;
+  image: any,
+  publicUserId: string
+): Promise<RecipeIdDto> => {
+  let imageUrl: string = "/placeholder.jpg";
+  if (image) {
+    const imagePath: string = await uploadSingleImage(
+      image.image,
+      publicUserId,
+      image.image.mimetype,
+      "recipe"
+    );
+    imageUrl = imagePath;
+  }
+
+  const newRecipe: RecipeIdResonse = await pgCreateRecipe(
+    recipeData,
+    publicUserId,
+    imageUrl
+  );
+  const newRecipeDto: RecipeIdDto = {
+    publicId: newRecipe.publicId,
+  };
+  return newRecipeDto;
 };
 
 export const updateRecipeService = async (
   recipeData: IRecipe,
-  recipeId: number
+  publicRecipeId: string
 ) => {
-  const { categories, ingredients, ...pureRecipeData } = recipeData;
-  if (!recipeId) throw new Error("Recipe ID is required");
+  const { categories, ingredients, steps, ...pureRecipeData } = recipeData;
 
-  if (recipeData.categories) {
-    await pgUpdateRecipeCategories(recipeId, categories);
-  }
+  if (!publicRecipeId) throw new Error("Recipe ID is required");
 
-  if (recipeData.ingredients) {
-    await updateRecipeIngredientsService(recipeId, ingredients);
-  }
-  const recipe: PreviewRecipesResponse = await pgUpdateRecipe(pureRecipeData);
-  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
+  const updatedRecipe = await prisma.$transaction(async (tx) => {
+    if (categories && categories.length) {
+      await pgUpdateRecipeCategories(publicRecipeId, categories, tx);
+    }
+
+    if (ingredients && ingredients.length) {
+      await updateRecipeIngredientsService(publicRecipeId, ingredients, tx);
+    }
+
+    if (steps && steps.length) {
+      await updateRecipeStepsService(publicRecipeId, steps, tx);
+    }
+
+    const recipe: FullRecipeResponse = await pgUpdateRecipe(
+      pureRecipeData,
+      publicRecipeId,
+      tx
+    );
+
+    return recipe;
+  });
+
+  const recipeDto: RecipeResponseDto = mapFullRecipeToDTO(updatedRecipe);
   return recipeDto;
 };
 
 export const deleteRecipeService = async (
-  id: number
-): Promise<RecipeResponseDTO> => {
-  const recipe: PreviewRecipesResponse = await pgDeleteRecipe(id);
-  const recipeDto: RecipeResponseDTO = mapFullRecipeToDTO(recipe);
-  return recipeDto;
+  publicRecipeId: string
+): Promise<RecipeIdDto> => {
+  const recipe: RecipeIdResonse = await pgDeleteRecipe(publicRecipeId);
+  const recipeIdDto: RecipeIdDto = {
+    publicId: recipe.publicId,
+  };
+  return recipeIdDto;
 };
 
 export const getUserRecipesByCategoryService = async (
   categoryId: number,
   authorId: number
-): Promise<RecipeResponseDTO[]> => {
+): Promise<RecipeResponseDto[]> => {
   const recipes: PreviewRecipesResponse[] = await pgGetRecipesByCategory(
     categoryId,
     authorId
   );
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
+  const recipesDto: RecipeResponseDto[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;
 };
 
 export const getRecipesByCategoryService = async (
   categoryId: number
-): Promise<RecipeResponseDTO[]> => {
+): Promise<RecipeResponseDto[]> => {
   const recipes: PreviewRecipesResponse[] =
     await pgGetRecipesByCategory(categoryId);
-  const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
+  const recipesDto: RecipeResponseDto[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;
 };

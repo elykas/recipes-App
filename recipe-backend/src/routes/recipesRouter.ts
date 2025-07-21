@@ -7,6 +7,7 @@ import {
   getPreviewRecipes,
   getRecipeById,
   getRecipesByCategory,
+  getSomeRecipesById,
   getUserRecipesByCategory,
 } from "../controllers/recipesController";
 import {
@@ -17,12 +18,13 @@ import {
 } from "../middleware/authMiddleware";
 import {
   validateRecipe,
+  validateRecipeIdBody,
   validateRecipeIdParams,
   validateSearchQuery,
 } from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
-import { sanitizeParamsMiddleware, sanitizeQueryMiddleware } from "../middleware/sanitazeHtmlMiddleware";
+import { sanitizeBodyMiddleware, sanitizeParamsMiddleware, sanitizeQueryMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 
 const router = express.Router();
 
@@ -53,6 +55,15 @@ router.get(
   validateRecipeIdParams,
   getRecipeById
 );
+router.post(
+  "/recipes",
+  authenticateToken,
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeBodyMiddleware,
+  validateRecipeIdBody,
+  getSomeRecipesById
+)
 router.get(
   "/me/preview",
   authenticateToken,
@@ -75,16 +86,22 @@ router.post(
   "/",
   authenticateToken,
   authorizeUserAndExist,
-  validateRecipe,
+  searchLimiter,
   singleImageUpload,
+  sanitizeBodyMiddleware,
+  validateRecipe,
   createRecipe
 );
 router.put(
   "/:recipeId",
   authenticateToken,
   authorizeUserAndExist,
-  validateRecipe,
   checkRecipeOwnerShip,
+  searchLimiter,
+  sanitizeBodyMiddleware,
+  sanitizeParamsMiddleware,
+  validateRecipeIdParams,
+  validateRecipe,
   editRecipe
 );
 router.delete(
@@ -92,6 +109,9 @@ router.delete(
   authenticateToken,
   authorizeUserAndExist,
   checkRecipeOwnerShip,
+  searchLimiter,
+  sanitizeParamsMiddleware,
+  validateRecipeIdParams,
   deleteRecipe
 );
 router.get(

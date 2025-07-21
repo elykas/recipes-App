@@ -36,8 +36,10 @@ export interface IRecipe {
 }
 
 export interface IRecipeLikes {
-  recipeId: number;
-  userId: number;
+  id: number;
+  recipeId?: number;
+  userId?: number;
+  type: string;
 }
 
 
@@ -52,7 +54,7 @@ export interface ISteps {
 }
 
 export interface IFavoriteRecipes {
-  id?: number;
+  id: number;
   recipeId: number;
   userId: number;
 }

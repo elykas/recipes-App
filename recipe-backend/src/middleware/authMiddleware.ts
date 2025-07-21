@@ -134,9 +134,9 @@ export const checkRecipeOwnerShip = async (
 ) => {
   try {
     const recipePublicId = req.params.recipeId;
-    const authorRecipeId: string =
+    const authorRecipePublicId: string =
       await getPublicUserIdByRecipeIdService(recipePublicId);
-    if (!authorRecipeId) {
+    if (!authorRecipePublicId) {
       res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
@@ -148,7 +148,7 @@ export const checkRecipeOwnerShip = async (
       return;
     }
 
-    if (authorRecipeId !== userPublicId) {
+    if (authorRecipePublicId !== userPublicId) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this recipe",
         success: false,

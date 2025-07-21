@@ -49,7 +49,7 @@ export const deleteUserService = async (publicId: string): Promise<UserDto> => {
   const userDto: UserDto = mapUserToDto(deletedUser);
   return userDto;
 };
-
+//have to add function for delete image without update
 export const addUserImageService = async (
   publicId: string,
   image: any

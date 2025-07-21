@@ -1,20 +1,27 @@
 import {z} from "zod";
 
 export const RecipeSchema = z.object({
-    name: z.string().min(3).max(20),
-    description: z.string(),
-    prepTime: z.number(),
+    title: z.string().min(3).max(20),
+    description: z.string().min(3).max(300).optional(),
+    prepTime: z.number().optional(),
+    imageUrl: z.string().optional(),
+    difficulty: z.enum(["easy", "medium", "hard"]),
+    isPublic: z.boolean(),
+    tip: z.array(z.string()).optional(),
     ingredients: z.array(z.object({
-        name: z.string(),
-        quantity: z.string(),
-        unit: z.string()
+        name: z.string().min(3).max(20),
+        quantity: z.string().max(5).optional(),
+        unit: z.string().max(20).optional()
     })),
-    steps: z.array(z.string()),
-    category: z.array(z.object({
-        name: z.string(),
-        type: z.string()
+    steps: z.array(z.object({
+        title: z.string().min(3).max(20).optional(),
+        description: z.string().min(3).max(300),
+        duration: z.number().optional(),
+        order: z.number()
     })),
-    freeText: z.string()
+    categories: z.array(z.object({
+        id: z.number(),
+    })),
 })
 
 export const searchQuerySchema = z.object({
@@ -23,4 +30,8 @@ export const searchQuerySchema = z.object({
 
 export const recipeIdParamsSchema = z.object({
   recipeId: z.uuid("Invalid recipe ID format"),
+});
+
+export const recipesIdBodySchema = z.object({
+  recipesId: z.array(z.uuid("Invalid recipe ID format")),
 });

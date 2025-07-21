@@ -1,8 +1,10 @@
+import { Prisma } from "@prisma/client";
 import { pgUpdateRecipeIngredients } from "../dal/ingredientsDal";
 import { IIngredient } from "../models/recipeModel";
 export const updateRecipeIngredientsService = async (
-  recipeId: number,
-  ingredients: IIngredient[]
+  publicRecipeId: string,
+  ingredients: IIngredient[],
+  tx: Prisma.TransactionClient
 ): Promise<void> => {
-  await pgUpdateRecipeIngredients(recipeId, ingredients);
+  await pgUpdateRecipeIngredients(publicRecipeId, ingredients, tx);
 };

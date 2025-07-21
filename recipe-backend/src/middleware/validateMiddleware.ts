@@ -1,5 +1,5 @@
 import {UserSchema} from "../schema/validateUserSchema";
-import {recipeIdParamsSchema, RecipeSchema, searchQuerySchema} from "../schema/validateRecipeScema";
+import {recipeIdParamsSchema, RecipeSchema, recipesIdBodySchema, searchQuerySchema} from "../schema/validateRecipeScema";
 import {Request, Response, NextFunction} from "express";
 
 export const validateUser = (req: Request, res: Response, next: NextFunction) => {
@@ -49,6 +49,22 @@ export const validateRecipeIdParams = (
   next: NextFunction
 ) => {
   const result = recipeIdParamsSchema.safeParse(req.params);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid recipe ID parameter",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateRecipeIdBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = recipesIdBodySchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
       success: false,

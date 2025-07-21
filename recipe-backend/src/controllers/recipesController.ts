@@ -1,20 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  PreviewRecipeDto as PreviewRecipeDto,
-  RecipeResponseDTO,
+  PreviewRecipeDto,
+  RecipeIdDto,
+  RecipeResponseDto,
   SearchRecipeDto,
 } from "../dto/recipe.dto";
 import IRecipe from "../models/recipeModel";
 import {
+  createRecipeService,
   deleteRecipeService,
-  getAllRecipesNameService,
   getAllRecipesNameService,
   getPreviewRecipesService,
   getRecipeByIdService,
   getRecipesByCategoryService,
+  getSomeRecipesByIdsService,
   getUserRecipesByCategoryService,
+  updateRecipeService,
 } from "../services/recipeService";
-import {} from "../services/storageService";
 import { AuthenticatedRequest } from "../types/requests";
 
 export const getAllRecipesName =
@@ -72,8 +74,30 @@ export const getRecipeById = async (
   try {
     const { recipeId } = req.params;
     const { publicId: userPublicId } = req as AuthenticatedRequest;
-    const recipe: RecipeResponseDTO = await getRecipeByIdService(
+    const recipe: RecipeResponseDto = await getRecipeByIdService(
       recipeId,
+      userPublicId
+    );
+    res.status(200).json({
+      data: recipe,
+      success: true,
+      message: "Recipe by Id fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSomeRecipesById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { recipesId } = req.body;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const recipe: RecipeResponseDto[] = await getSomeRecipesByIdsService(
+      recipesId,
       userPublicId
     );
     res.status(200).json({
@@ -92,18 +116,14 @@ export const createRecipe = async (
   next: NextFunction
 ) => {
   try {
-    const recipe: IRecipe = req.body;
-    const { userId } = req as AuthenticatedRequest;
+    const recipe: IRecipe = JSON.parse(req.body.recipe);
+    const { publicId } = req as AuthenticatedRequest;
+    const imageFile = req.file;
 
-    const files = req.files as {
-      images?: Express.Multer.File[];
-      video?: Express.Multer.File[];
-    };
-
-    const newRecipe: RecipeResponseDTO = await createRecipeService(
+    const newRecipe: RecipeIdDto = await createRecipeService(
       recipe,
-      userId,
-      files
+      imageFile,
+      publicId
     );
 
     res.status(201).json({
@@ -123,18 +143,11 @@ export const editRecipe = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const { userId } = req as AuthenticatedRequest;
-    const recipe: IRecipe = req.body;
-    const files = req.files as {
-      images?: Express.Multer.File[];
-      video?: Express.Multer.File[];
-    };
+    const recipe: IRecipe = req.body.recipe;
 
-    const updatedRecipe = await updateRecipeWithMediaService(
-      +recipeId,
+    const updatedRecipe: RecipeResponseDto = await updateRecipeService(
       recipe,
-      userId,
-      files
+      recipeId
     );
     res.status(200).json({
       data: updatedRecipe,
@@ -153,8 +166,8 @@ export const deleteRecipe = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const deletedRecipe: RecipeResponseDTO =
-      await deleteRecipeService(+recipeId);
+    const deletedRecipe: RecipeIdDto =
+      await deleteRecipeService(recipeId);
     res.status(200).json({
       data: deletedRecipe,
       success: true,

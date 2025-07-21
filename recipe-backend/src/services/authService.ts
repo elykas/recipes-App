@@ -24,7 +24,9 @@ export const createNewUserService = async (
   if (isUserExist) {
     throw errorResponse("User already exists", 400);
   }
-  const newUser = await pgCreateUser(publicId, userRegisterDetails);
+  //NOTE: add image placeholder
+  const imagePlaceholder: string = ""
+  const newUser = await pgCreateUser(publicId, userRegisterDetails, imagePlaceholder);
   const userDto: UserDto = mapUserToDto(newUser);
   return userDto;
 };

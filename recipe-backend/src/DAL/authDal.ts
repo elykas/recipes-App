@@ -3,9 +3,10 @@ import { UserWithoutRecipes } from "../types/responses";
 
 export const pgCreateUser = async (
   publicId: string,
-  userRegisterDetails: any
+  userRegisterDetails: any,
+  imagePlaceholder: string
 ): Promise<UserWithoutRecipes> => {
-  const {username, email, fullName, locale, birthdate, headline, agreedToPolicy
+  const {username, email, fullName, locale, birthDate, headLine, agreedToPolicy
 } = userRegisterDetails;
   const user: UserWithoutRecipes = await prisma.user.create({
     data: {
@@ -14,8 +15,9 @@ export const pgCreateUser = async (
       username,
       fullName,
       locale,
-      birthdate,
-      headline,
+      imageUrl: imagePlaceholder,
+      birthDate,
+      headLine,
       agreedToPolicy,  
       agreedToPolicyDate: new Date(),
     },

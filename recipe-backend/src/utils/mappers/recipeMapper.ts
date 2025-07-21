@@ -1,15 +1,17 @@
 import {
   PreviewRecipeDto,
-  RecipeResponseDTO,
+  RecipeResponseDto,
   SearchRecipeDto,
 } from "../../dto/recipe.dto";
 import {
-  FullRecipe,
+  FullRecipeResponse,
   PreviewRecipesResponse,
   SearchRecipeResponse,
 } from "../../types/responses";
 
-export const mapFullRecipeToDTO = (recipe: FullRecipe): RecipeResponseDTO => ({
+export const mapFullRecipeToDTO = (
+  recipe: FullRecipeResponse
+): RecipeResponseDto => ({
   publicId: recipe.publicId,
   title: recipe.title,
   difficulty: recipe.difficulty,
@@ -37,7 +39,10 @@ export const mapFullRecipeToDTO = (recipe: FullRecipe): RecipeResponseDTO => ({
     quantity: ing.quantity,
     unit: ing.unit,
   })),
-  likes: recipe.likes,
+  likes: recipe.likes.map((l) => ({
+    id: l.id,
+    type: l.type,
+  })),
   isFavorite: !!recipe.favoriteRecipe?.length,
 });
 

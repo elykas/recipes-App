@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-export type FullRecipe = Prisma.RecipeGetPayload<{
+export type FullRecipeResponse = Prisma.RecipeGetPayload<{
   include: {
     ingredients: true;
     categories: true;
@@ -65,5 +65,11 @@ export type UserWithRecipes = Prisma.UserGetPayload<{
 export type UserWithoutRecipes = Prisma.UserGetPayload<{
   include: {
     recipes: false;
+  };
+}>;
+
+export type RecipeIdResonse = Prisma.RecipeGetPayload<{
+  select: {
+    publicId: true;
   };
 }>;

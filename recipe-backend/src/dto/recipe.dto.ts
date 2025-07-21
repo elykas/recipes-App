@@ -1,12 +1,12 @@
 import { DifficultyLevel } from "@prisma/client";
-import IRecipe, {
+import {
   ICategory,
   IIngredient,
   IRecipeLikes,
   ISteps,
 } from "../models/recipeModel";
 
-export interface RecipeResponseDTO {
+export interface RecipeResponseDto {
   publicId: string;
   title: string;
   categories: ICategory[];
@@ -23,18 +23,8 @@ export interface RecipeResponseDTO {
   isFavorite: boolean;
 }
 
-export interface CreateRecipeDTO {
-  title: string;
-  categories: ICategory[];
-  steps: ISteps[];
-  ingredients: IIngredient[];
-  difficulty?: DifficultyLevel;
-  isPublic?: boolean;
-  prepTime?: number | null;
-  imageUrl?: string | null;
-  description?: string | null;
-  tip?: string[] | null;
-  authorId: number;
+export interface RecipeIdDto {
+  publicId: string;
 }
 
 export type SearchRecipeDto = {
