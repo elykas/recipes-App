@@ -2,6 +2,7 @@ import {
   pgCreateRecipe,
   pgDeleteRecipe,
   pgGetAllRecipesName,
+  pgGetAuthorsPublicIdsByRecipeIds,
   pgGetPreviewRecipes,
   pgGetPublicUserIdByPublicRecipeId,
   pgGetRecipeById,
@@ -28,7 +29,7 @@ import {
   mapSearchRecipeToDto,
 } from "../utils/mappers/recipeMapper";
 import { updateRecipeIngredientsService } from "./ingredientsService";
-import { checkUserIsOwnerAndGetId } from "../utils/checkUtils/checkUserUtils";
+import { checkUserIsOwnerAndGetId, checkUserIsOwnerAndGetIds } from "../utils/checkUtils/checkUserUtils";
 
 export const getAllRecipesNameService = async (
   searchQuery: string,
@@ -68,6 +69,14 @@ export const getPublicUserIdByRecipeIdService = async (
   return publicUserId;
 };
 
+export const getAuthorsPublicIdsByRecipeIdsService = async (
+  recipePublicIds: string[]
+) => {
+  const authorsPublicIds: (string | null)[] =
+    await pgGetAuthorsPublicIdsByRecipeIds(recipePublicIds);
+  return authorsPublicIds;
+};
+
 export const getRecipeByIdService = async (
   recipePublicId: string,
   currentUserPublicId: string
@@ -91,16 +100,18 @@ export const getRecipeByIdService = async (
 };
 
 export const getRecipesByIdsService = async (
-  recipePublicId: string[],
-  currentUserPublicId: string,
-  targetUserPublicId: string
+  recipePublicIds: string[],
+  currentUserPublicId: string
 ): Promise<RecipeResponseDTO[]> => {
-  const userId: number | undefined = await checkUserIsOwnerAndGetId(
+  const targetUserPublicIds: (string | null)[] =
+    await getAuthorsPublicIdsByRecipeIdsService(recipePublicIds);
+
+  const userId: number | undefined = await checkUserIsOwnerAndGetIds(
     currentUserPublicId,
-    targetUserPublicId
+    targetUserPublicIds
   );
 
-  const recipes: FullRecipe[] = await pgGetRecipesByIds(recipePublicId, userId);
+  const recipes: FullRecipe[] = await pgGetRecipesByIds(recipePublicIds, userId);
 
   const recipesDto: RecipeResponseDTO[] = recipes.map(mapFullRecipeToDTO);
   return recipesDto;

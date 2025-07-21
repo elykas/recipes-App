@@ -84,6 +84,29 @@ export const pgGetPublicUserIdByPublicRecipeId = async (publicId: string): Promi
   return userId?.author?.publicId ?? null;
 };
 
+export const pgGetAuthorsPublicIdsByRecipeIds = async (
+  recipePublicIds: string[]
+): Promise<(string | null)[]> => {
+  const recipes = await prisma.recipe.findMany({
+    where: { publicId: { in: recipePublicIds } },
+    select: {
+      publicId: true,
+      author: {
+        select: {
+          publicId: true,
+        },
+      },
+    },
+  });
+
+  const recipeMap = new Map(
+    recipes.map((r) => [r.publicId, r.author?.publicId ?? null])
+  );
+  return recipePublicIds.map((id) => recipeMap.get(id) ?? null);
+};
+
+
+
 export const pgGetRecipeById = async (
   recipePublicId: string,
   userId?: number
@@ -117,18 +140,17 @@ export const pgGetRecipeById = async (
 
 export const pgGetRecipesByIds = async (
   publicIds: string[],
-  userId?: number
+  userId?: number, 
 ): Promise<FullRecipeResponse[]> => {
   const recipes = await prisma.recipe.findMany({
     where: {
-      publicId: {
-        in: publicIds,  
-      },
+      publicId: { in: publicIds },
+      ...(userId ? {} : { isPublic: true }),
     },
     include: {
       author: {
         select: {
-          publicId: true, 
+          publicId: true,
         },
       },
       ingredients: true,
