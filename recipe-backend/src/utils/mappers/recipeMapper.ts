@@ -2,7 +2,7 @@ import {
   PreviewRecipeDto,
   RecipeResponseDto,
   SearchRecipeDto,
-} from "../../dto/recipe.dto";
+} from "../../dto/recipeDto";
 import {
   FullRecipeResponse,
   PreviewRecipesResponse,

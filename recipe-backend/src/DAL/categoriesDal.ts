@@ -1,11 +1,35 @@
 import { CategoryType } from "@prisma/client";
 import prisma from "../config/database";
 import { ICategory } from "../models/recipeModel";
+import { CategoriesResponse } from "../types/responses";
 
 export const pgGetAllCategories = async (): Promise<ICategory[]> => {
   const categories: ICategory[] = await prisma.category.findMany();
   return categories;
 };
+
+export const pgGetCategoriesName = async (
+  searchQuery: string
+): Promise<CategoriesResponse[]> => {
+  const categories = await prisma.category.findMany({
+    where: {
+      ...(searchQuery && {
+        name: {
+          contains: searchQuery,
+          mode: "insensitive",
+        },
+      }),
+    },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+    },
+    take: 5,
+  });
+  return categories;
+};
+
 
 export const pgGetCategoryById = async (
   id: number

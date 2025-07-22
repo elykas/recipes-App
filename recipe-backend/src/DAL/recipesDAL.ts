@@ -5,12 +5,13 @@ import {
   FullRecipeResponse,
   PreviewRecipesResponse,
   RecipeIdResonse,
+  RecipeImageResponse,
   SearchRecipeResponse,
 } from "../types/responses";
 
-export const pgGetAllRecipesName = async (
-  publicAuthorId?: string,
-  searchQuery: string
+export const pgGetRecipesName = async (
+  searchQuery: string,
+  publicAuthorId?: string
 ): Promise<SearchRecipeResponse[]> => {
   const recipes: SearchRecipeResponse[] = await prisma.recipe.findMany({
     where: {
@@ -271,7 +272,9 @@ export const pgUpdateRecipeCategories = async (
   });
 };
 
-export const pgDeleteRecipe = async (publiRecipeId: string): Promise<RecipeIdResonse> => {
+export const pgDeleteRecipe = async (
+  publiRecipeId: string
+): Promise<RecipeIdResonse> => {
   const recipe = await prisma.recipe.delete({
     where: { publicId: publiRecipeId },
     select: {
@@ -281,21 +284,64 @@ export const pgDeleteRecipe = async (publiRecipeId: string): Promise<RecipeIdRes
   return recipe;
 };
 
-export const pgGetRecipesByCategory = async (
+export const pgGetImageOfRecipeByPublicId = async (
+  publicId: string
+): Promise<string> => {
+  const user = await prisma.recipe.findUnique({
+    where: { publicId },
+    select: { imageUrl: true },
+  });
+  return user?.imageUrl ?? "";
+};
+
+export const pgUpdateRecipeImage = async (
+  publicRecipeId: string,
+  imageUrl: string
+): Promise<RecipeImageResponse> => {
+  const updatedImage = await prisma.recipe.update({
+    where: { publicId: publicRecipeId },
+    data: {
+      imageUrl,
+    },
+    select: {
+      imageUrl: true,
+    },
+  });
+  return updatedImage;
+};
+
+export const pgGetPreviewRecipesByCategory = async (
   categoryId: number,
-  authorId?: number
+  cursor?: string,
+  pageSize: number = 10,
+  publicAuthorId?: string
 ): Promise<PreviewRecipesResponse[]> => {
   const recipes = await prisma.recipe.findMany({
     where: {
+      ...(publicAuthorId && { author: { publicId: publicAuthorId } }),
+      ...(!publicAuthorId && { isPublic: true }),
       categories: {
         some: {
           id: categoryId,
         },
       },
-      ...(authorId ? { authorId } : {}),
+    },
+    select: {
+      title: true,
+      publicId: true,
+      imageUrl: true,
+      isPublic: true,
+      categories: true,
+      _count: {
+        select: { likes: true },
+      },
     },
     orderBy: { createdAt: "desc" },
-    include: { ingredients: true, categories: true },
+    take: pageSize,
+    ...(cursor && {
+      cursor: { publicId: cursor },
+      skip: 1,
+    }),
   });
   return recipes;
 };

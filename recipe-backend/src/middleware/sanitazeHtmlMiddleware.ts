@@ -40,6 +40,5 @@ export const sanitizeRequestMiddleware = (
   if (req.params) {
     req.params = sanitizeValue(req.params);
   }
-
   next();
 };

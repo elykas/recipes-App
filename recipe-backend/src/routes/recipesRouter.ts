@@ -3,28 +3,26 @@ import {
   createRecipe,
   deleteRecipe,
   editRecipe,
-  getAllRecipesName,
   getPreviewRecipes,
   getRecipeById,
-  getRecipesByCategory,
+  getRecipesName,
+  getRecipesPreviewByCategory,
   getSomeRecipesById,
-  getUserRecipesByCategory,
 } from "../controllers/recipesController";
 import {
   authenticateToken,
-  authorizeAdmin,
   authorizeUserAndExist,
   checkRecipeOwnerShip,
 } from "../middleware/authMiddleware";
+import { searchLimiter } from "../middleware/rateLimiterMiddleware";
+import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
+import { singleImageUpload } from "../middleware/uploadMiddleware";
 import {
   validateRecipe,
   validateRecipeIdBody,
   validateRecipeIdParams,
   validateSearchQuery,
 } from "../middleware/validateMiddleware";
-import { singleImageUpload } from "../middleware/uploadMiddleware";
-import { searchLimiter } from "../middleware/rateLimiterMiddleware";
-import { sanitizeBodyMiddleware, sanitizeParamsMiddleware, sanitizeQueryMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 
 const router = express.Router();
 
@@ -33,24 +31,24 @@ router.get(
   authenticateToken,
   authorizeUserAndExist,
   searchLimiter,
-  sanitizeQueryMiddleware,
+  sanitizeRequestMiddleware,
   validateSearchQuery,
-  getAllRecipesName(true)
+  getRecipesName(true)
 );
 router.get(
   "/search",
   authenticateToken,
   authorizeUserAndExist,
   searchLimiter,
-  sanitizeQueryMiddleware,
+  sanitizeRequestMiddleware,
   validateSearchQuery,
-  getAllRecipesName(false)
+  getRecipesName(false)
 );
 router.get(
   "/recipe/:recipeId",
   authenticateToken,
   authorizeUserAndExist,
-  sanitizeParamsMiddleware,
+  sanitizeRequestMiddleware,
   searchLimiter,
   validateRecipeIdParams,
   getRecipeById
@@ -60,16 +58,16 @@ router.post(
   authenticateToken,
   authorizeUserAndExist,
   searchLimiter,
-  sanitizeBodyMiddleware,
+  sanitizeRequestMiddleware,
   validateRecipeIdBody,
   getSomeRecipesById
-)
+);
 router.get(
   "/me/preview",
   authenticateToken,
   authorizeUserAndExist,
   searchLimiter,
-  sanitizeQueryMiddleware,
+  sanitizeRequestMiddleware,
   validateSearchQuery,
   getPreviewRecipes(true)
 );
@@ -78,7 +76,7 @@ router.get(
   authenticateToken,
   authorizeUserAndExist,
   searchLimiter,
-  sanitizeQueryMiddleware,
+  sanitizeRequestMiddleware,
   validateSearchQuery,
   getPreviewRecipes(false)
 );
@@ -88,7 +86,7 @@ router.post(
   authorizeUserAndExist,
   searchLimiter,
   singleImageUpload,
-  sanitizeBodyMiddleware,
+  sanitizeRequestMiddleware,
   validateRecipe,
   createRecipe
 );
@@ -98,8 +96,8 @@ router.put(
   authorizeUserAndExist,
   checkRecipeOwnerShip,
   searchLimiter,
-  sanitizeBodyMiddleware,
-  sanitizeParamsMiddleware,
+  sanitizeRequestMiddleware,
+  sanitizeRequestMiddleware,
   validateRecipeIdParams,
   validateRecipe,
   editRecipe
@@ -110,21 +108,30 @@ router.delete(
   authorizeUserAndExist,
   checkRecipeOwnerShip,
   searchLimiter,
-  sanitizeParamsMiddleware,
+  sanitizeRequestMiddleware,
   validateRecipeIdParams,
   deleteRecipe
 );
-router.get(
-  "/get-user-recipes-by-category/:categoryId",
+router.put(
+  "/image/:recipeId",
   authenticateToken,
   authorizeUserAndExist,
-  getUserRecipesByCategory
+  checkRecipeOwnerShip,
+  searchLimiter,
+  singleImageUpload,
+  sanitizeRequestMiddleware,
+  validateRecipeIdParams,
+  editRecipe
 );
 router.get(
-  "/get-by-category/:categoryId",
+  "/category/:categoryId",
   authenticateToken,
-  authorizeAdmin,
-  getRecipesByCategory
+  authorizeUserAndExist,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateRecipeIdParams,
+  validateSearchQuery,
+  getRecipesPreviewByCategory
 );
 
 export default router;

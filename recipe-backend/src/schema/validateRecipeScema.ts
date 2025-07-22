@@ -25,7 +25,15 @@ export const RecipeSchema = z.object({
 })
 
 export const searchQuerySchema = z.object({
-  query: z.string().min(2, "Query too short").max(50, "Query too long"),
+  query: z.string().min(2, "Query too short").max(50, "Query too long").optional(),
+  cursor: z.string().optional(),
+  pageSize: z
+    .string()
+    .optional()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val) && val > 0 && val <= 100, {
+      message: "Invalid page size",
+    }),
 });
 
 export const recipeIdParamsSchema = z.object({

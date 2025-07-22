@@ -15,7 +15,7 @@ export interface RecipeResponseDto {
   isPublic: boolean;
   steps: ISteps[];
   prepTime?: number | null;
-  imageUrl?: string | null;
+  imageUrl: string;
   description?: string | null;
   tip?: string[] | null;
   likes?: IRecipeLikes[];
@@ -41,3 +41,7 @@ export type PreviewRecipeDto = {
   isPublic: boolean;
   likes: number;
 };
+
+export interface ImageRecipeDto {
+  imageUrl: string;
+}

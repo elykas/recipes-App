@@ -2,27 +2,31 @@ import prisma from "../config/database";
 import {
   pgCreateRecipe,
   pgDeleteRecipe,
-  pgGetAllRecipesName,
   pgGetAuthorsPublicIdsByRecipeIds,
+  pgGetImageOfRecipeByPublicId,
   pgGetPreviewRecipes,
+  pgGetPreviewRecipesByCategory,
   pgGetPublicUserIdByPublicRecipeId,
   pgGetRecipeById,
-  pgGetRecipesByCategory,
   pgGetRecipesByIds,
+  pgGetRecipesName,
   pgUpdateRecipe,
   pgUpdateRecipeCategories,
+  pgUpdateRecipeImage,
 } from "../dal/recipesDAL";
 import {
+  ImageRecipeDto,
   PreviewRecipeDto,
   RecipeIdDto,
   RecipeResponseDto,
   SearchRecipeDto,
-} from "../dto/recipe.dto";
+} from "../dto/recipeDto";
 import { IRecipe } from "../models/recipeModel";
 import {
   FullRecipeResponse,
   PreviewRecipesResponse,
   RecipeIdResonse,
+  RecipeImageResponse,
   SearchRecipeResponse,
 } from "../types/responses";
 import {
@@ -37,15 +41,15 @@ import {
 } from "../utils/mappers/recipeMapper";
 import { updateRecipeIngredientsService } from "./ingredientsService";
 import { updateRecipeStepsService } from "./stepsService";
-import { uploadSingleImage } from "./storageService";
+import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 
-export const getAllRecipesNameService = async (
+export const getRecipesNameService = async (
   searchQuery: string,
   publicAuthorId?: string
 ): Promise<SearchRecipeDto[]> => {
-  const recipes: SearchRecipeResponse[] = await pgGetAllRecipesName(
-    publicAuthorId,
-    searchQuery
+  const recipes: SearchRecipeResponse[] = await pgGetRecipesName(
+    searchQuery,
+    publicAuthorId
   );
   const recipesDto: SearchRecipeDto[] = recipes.map(mapSearchRecipeToDto);
   return recipesDto;
@@ -199,23 +203,51 @@ export const deleteRecipeService = async (
   return recipeIdDto;
 };
 
-export const getUserRecipesByCategoryService = async (
-  categoryId: number,
-  authorId: number
-): Promise<RecipeResponseDto[]> => {
-  const recipes: PreviewRecipesResponse[] = await pgGetRecipesByCategory(
-    categoryId,
-    authorId
+export const updateRecipeImageService = async (
+  publicRecipeId: string,
+  publicUserId: string,
+  image?: any
+): Promise<ImageRecipeDto> => {
+  let imageUrl: string = "/placeholder.jpg";
+  const oldImagePath: string =
+    await pgGetImageOfRecipeByPublicId(publicRecipeId);
+  if (oldImagePath) {
+    await deleteImageFromStorage(oldImagePath);
+  }
+
+  if (image) {
+    const imagePath: string = await uploadSingleImage(
+      image.image,
+      publicUserId,
+      image.image.mimetype,
+      "recipe"
+    );
+    imageUrl = imagePath;
+  }
+  const updatedImage: RecipeImageResponse = await pgUpdateRecipeImage(
+    publicRecipeId,
+    imageUrl
   );
-  const recipesDto: RecipeResponseDto[] = recipes.map(mapFullRecipeToDTO);
-  return recipesDto;
+  const imageRecipeDto: ImageRecipeDto = {
+    imageUrl: updatedImage.imageUrl,
+  };
+  return imageRecipeDto;
 };
 
-export const getRecipesByCategoryService = async (
-  categoryId: number
-): Promise<RecipeResponseDto[]> => {
-  const recipes: PreviewRecipesResponse[] =
-    await pgGetRecipesByCategory(categoryId);
-  const recipesDto: RecipeResponseDto[] = recipes.map(mapFullRecipeToDTO);
+export const getRecipesPreviewByCategoryService = async (
+  categoryId: number,
+  cursor?: string,
+  pageSize: number = 10,
+  publicUserId?: string
+): Promise<PreviewRecipeDto[]> => {
+  const recipes: PreviewRecipesResponse[] = await pgGetPreviewRecipesByCategory(
+    categoryId,
+    cursor,
+    pageSize,
+    publicUserId
+  );
+
+  const recipesDto: PreviewRecipeDto[] = recipes.map(mapPreviewRecipeToDto);
+
   return recipesDto;
 };

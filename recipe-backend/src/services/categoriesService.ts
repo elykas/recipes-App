@@ -1,17 +1,33 @@
+import { CategoryType } from "@prisma/client";
 import {
   pgCreateCategory,
   pgDeleteCategory,
   pgGetAllCategories,
+  pgGetCategoriesName,
   pgGetCategoryById,
   pgUpdateCategory,
 } from "../DAL/categoriesDal";
 import { ICategory } from "../models/recipeModel";
+import { CategoriesResponse } from "../types/responses";
 import errorResponse from "../utils/errors/errors";
-import { CategoryType } from "@prisma/client";
+import { CategoryDto } from "../dto/categoryDto";
 
 export const getAllCategoriesService = async (): Promise<ICategory[]> => {
   const categories: ICategory[] = await pgGetAllCategories();
   return categories;
+};
+
+export const getCategoriesNameService = async (
+  searchQuery: string
+): Promise<CategoryDto[]> => {
+  const categories: CategoriesResponse[] =
+    await pgGetCategoriesName(searchQuery);
+  const categoriesDto: CategoryDto[] = categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    type: category.type,
+  }));
+  return categoriesDto;
 };
 
 export const getCategoryByIdService = async (

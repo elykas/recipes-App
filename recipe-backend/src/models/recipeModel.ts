@@ -24,7 +24,7 @@ export interface IRecipe {
   difficulty: DifficultyLevel;
   isPublic: boolean;
   prepTime?: number | null;
-  imageUrl?: string | null;
+  imageUrl: string;
   description?: string | null;
   tip?: string[];
   favoriteRecipe:IFavoriteRecipes[]

@@ -2,7 +2,7 @@ import {
   pgAddUserImage,
   pgDeleteUser,
   pgGetAllUsers,
-  pgGetImageByPublicId,
+  pgGetImageOfUserByPublicId,
   pgGetUserById,
   pgGetUserIdByPublicId,
   pgUpdateUser,
@@ -50,23 +50,28 @@ export const deleteUserService = async (publicId: string): Promise<UserDto> => {
   return userDto;
 };
 //have to add function for delete image without update
-export const addUserImageService = async (
+export const updateUserImageService = async (
   publicId: string,
   image: any
 ): Promise<UserDto> => {
-  const oldImagePath: string = await pgGetImageByPublicId(publicId);
+  let imageUrl: string = "/placeholder.jpg";
+  const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath);
   }
-  const imagePath: string = await uploadSingleImage(
-    image.image,
-    publicId,
-    image.image.mimetype,
-    "user"
-  );
+  
+  if (image) {
+    const imagePath: string = await uploadSingleImage(
+      image.image,
+      publicId,
+      image.image.mimetype,
+      "user"
+    );
+    imageUrl = imagePath;
+  }
   const userWithImage: UserWithoutRecipes = await pgAddUserImage(
     publicId,
-    imagePath
+    imageUrl
   );
   const userDto: UserDto = mapUserToDto(userWithImage);
   return userDto;

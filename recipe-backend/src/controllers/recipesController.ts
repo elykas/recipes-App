@@ -1,39 +1,50 @@
 import { NextFunction, Request, Response } from "express";
+import { CategoryDto } from "../dto/categoryDto";
 import {
+  ImageRecipeDto,
   PreviewRecipeDto,
   RecipeIdDto,
   RecipeResponseDto,
   SearchRecipeDto,
-} from "../dto/recipe.dto";
+} from "../dto/recipeDto";
 import IRecipe from "../models/recipeModel";
+import { getCategoriesNameService } from "../services/categoriesService";
 import {
   createRecipeService,
   deleteRecipeService,
-  getAllRecipesNameService,
   getPreviewRecipesService,
   getRecipeByIdService,
-  getRecipesByCategoryService,
+  getRecipesNameService,
+  getRecipesPreviewByCategoryService,
   getSomeRecipesByIdsService,
-  getUserRecipesByCategoryService,
+  updateRecipeImageService,
   updateRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
 
-export const getAllRecipesName =
+export const getRecipesName =
   (isUserScoped: boolean) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { publicId } = req as AuthenticatedRequest;
       const searchQuery = req.query.query as string;
+      const onlyRecipes = req.query.onlyRecipes === "true";
 
-      const recipes: SearchRecipeDto[] = await getAllRecipesNameService(
+      const recipes: SearchRecipeDto[] = await getRecipesNameService(
         searchQuery,
         isUserScoped ? publicId : undefined
       );
+      const categories: CategoryDto[] | false =
+        !onlyRecipes && (await getCategoriesNameService(searchQuery));
+
+      const data = onlyRecipes ? recipes : { recipes, categories };
+
       res.status(200).json({
-        data: recipes,
+        data,
         success: true,
-        message: "Recipes of user fetched successfully",
+        message: onlyRecipes
+          ? "Recipes fetched successfully"
+          : "Recipes and categories fetched successfully",
       });
     } catch (error) {
       next(error);
@@ -166,8 +177,7 @@ export const deleteRecipe = async (
 ) => {
   try {
     const { recipeId } = req.params;
-    const deletedRecipe: RecipeIdDto =
-      await deleteRecipeService(recipeId);
+    const deletedRecipe: RecipeIdDto = await deleteRecipeService(recipeId);
     res.status(200).json({
       data: deletedRecipe,
       success: true,
@@ -178,44 +188,55 @@ export const deleteRecipe = async (
   }
 };
 
-export const getUserRecipesByCategory = async (
+export const editRecipeImage = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { categoryId } = req.params;
-    const { userId } = req as AuthenticatedRequest;
+    const { recipeId: publicRecipeId } = req.params;
+    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const imageFile = req.file;
+    const imageRecipe: ImageRecipeDto = await updateRecipeImageService(
+      publicRecipeId,
+      publicUserId,
+      imageFile
+    );
+    res.status(200).json({
+      data: imageRecipe,
+      success: true,
+      message: "Recipe image updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-    if (!categoryId) {
-      throw new Error("Category id is required");
+export const getRecipesPreviewByCategory =
+  (isUserScoped: boolean) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { categoryId } = req.params;
+      const { publicId: userPublicId } = req as AuthenticatedRequest;
+      const cursor = req.query.cursor as string | undefined;
+      const pageSize = Number(req.query.pageSize) || 10;
+
+      if (!categoryId) {
+        throw new Error("Category id is required");
+      }
+
+      const recipes = await getRecipesPreviewByCategoryService(
+        +categoryId,
+        cursor,
+        pageSize,
+        isUserScoped ? userPublicId : undefined
+      );
+      res.status(200).json({
+        data: recipes,
+        success: true,
+        message: "Recipes by category fetched successfully",
+      });
+    } catch (error) {
+      next(error);
     }
-
-    const recipes = await getUserRecipesByCategoryService(+categoryId, userId);
-    res.status(200).json({
-      data: recipes,
-      success: true,
-      message: "Recipes by category fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getRecipesByCategory = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { categoryId } = req.params;
-    const recipes = await getRecipesByCategoryService(+categoryId);
-    res.status(200).json({
-      data: recipes,
-      success: true,
-      message: "Recipes by category fetched successfully",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  };

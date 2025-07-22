@@ -73,3 +73,17 @@ export type RecipeIdResonse = Prisma.RecipeGetPayload<{
     publicId: true;
   };
 }>;
+
+export type RecipeImageResponse = Prisma.RecipeGetPayload<{
+  select: {
+    imageUrl: true;
+  };
+}>;
+
+export type CategoriesResponse = Prisma.CategoryGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    type: true;
+  };
+}>;

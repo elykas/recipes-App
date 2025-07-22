@@ -3,7 +3,7 @@ import { supabase } from "../config/supabaseStorageConfig";
 
 export const uploadSingleImage = async (
   buffer: Buffer,
-  userId: number | string,
+  userId: string,
   mimeType: string,
   folder: "user" | "recipe"
 ): Promise<string> => {

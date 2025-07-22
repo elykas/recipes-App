@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
+import { UpdateUserDto, UserDto } from "../dto/userDto";
 import {
-  addUserImageService,
   deleteUserService,
   getAllUsersService,
   getUserByIdService,
+  updateUserImageService,
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
-import { UpdateUserDto, UserDto } from "../dto/userDto";
 export const getAllUsers = async (
   req: Request,
   res: Response,
@@ -50,7 +50,7 @@ export const updateUser = async (
 ) => {
   try {
     const { publicId } = req as AuthenticatedRequest;
-    const user:UpdateUserDto = req.body;
+    const user: UpdateUserDto = req.body;
 
     const updatedUser = await updateUserService(publicId, user);
     res.status(200).json({
@@ -88,7 +88,7 @@ export const addUserImage = async (
   try {
     const { publicId } = req as AuthenticatedRequest;
     const image = req.file;
-    const userWithImage = await addUserImageService(publicId, { image });
+    const userWithImage = await updateUserImageService(publicId, { image });
     res.status(200).json({
       success: true,
       user: userWithImage,
@@ -98,4 +98,3 @@ export const addUserImage = async (
     next(error);
   }
 };
-
