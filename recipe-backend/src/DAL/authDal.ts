@@ -4,7 +4,6 @@ import { UserWithoutRecipes } from "../types/responses";
 export const pgCreateUser = async (
   publicId: string,
   userRegisterDetails: any,
-  imagePlaceholder: string
 ): Promise<UserWithoutRecipes> => {
   const {username, email, fullName, locale, birthDate, headLine, agreedToPolicy
 } = userRegisterDetails;
@@ -15,7 +14,6 @@ export const pgCreateUser = async (
       username,
       fullName,
       locale,
-      imageUrl: imagePlaceholder,
       birthDate,
       headLine,
       agreedToPolicy,  

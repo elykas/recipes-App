@@ -137,7 +137,7 @@ export const createRecipeService = async (
   image: any,
   publicUserId: string
 ): Promise<RecipeIdDto> => {
-  let imageUrl: string = "/placeholder.jpg";
+  let imageUrl: string | undefined = undefined;
   if (image) {
     const imagePath: string = await uploadSingleImage(
       image.image,
@@ -208,13 +208,7 @@ export const updateRecipeImageService = async (
   publicUserId: string,
   image?: any
 ): Promise<ImageRecipeDto> => {
-  let imageUrl: string = "/placeholder.jpg";
-  const oldImagePath: string =
-    await pgGetImageOfRecipeByPublicId(publicRecipeId);
-  if (oldImagePath) {
-    await deleteImageFromStorage(oldImagePath);
-  }
-
+  let imageUrl: string | undefined = undefined;
   if (image) {
     const imagePath: string = await uploadSingleImage(
       image.image,
@@ -228,6 +222,13 @@ export const updateRecipeImageService = async (
     publicRecipeId,
     imageUrl
   );
+
+  const oldImagePath: string =
+    await pgGetImageOfRecipeByPublicId(publicRecipeId);
+  if (oldImagePath) {
+    await deleteImageFromStorage(oldImagePath);
+  }
+
   const imageRecipeDto: ImageRecipeDto = {
     imageUrl: updatedImage.imageUrl,
   };

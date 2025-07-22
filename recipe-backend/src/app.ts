@@ -7,6 +7,7 @@ import authRouter from './routes/authRouter';
 import userRouter from './routes/userRouter';
 import aiRouter from './routes/aiRouter';
 import categoryRouter from './routes/categoryRouter';
+import groupRouter from './routes/groupRouter';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
@@ -46,6 +47,7 @@ app.use('/api/auth',authRouter);
 app.use('/api/user', userRouter)
 app.use("/api/ai-recipes", aiRouter)
 app.use("/api/categories", categoryRouter)
+app.use("/api/groups", groupRouter)
 
 app.use(errorHandler);
 

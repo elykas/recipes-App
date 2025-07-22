@@ -6,7 +6,7 @@ export interface IGroup {
     publicId: string;
     name: string;
     description?: string | null;
-    imageUrl?: string | null;
+    imageUrl?: string;
     creatorId?: number | null;
     creator?: IUser | null;
     members?: IGroupMember[]

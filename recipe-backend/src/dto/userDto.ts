@@ -13,7 +13,7 @@ export type UserDto = {
   username: string;
   fullName?: string | null;
   phone?: string | null;
-  imageUrl: string;
+  imageUrl?: string | null;
   bio?: string | null;
   headLine?: string | null;
   birthDate?: Date | null;

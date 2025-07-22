@@ -5,7 +5,7 @@ export const uploadSingleImage = async (
   buffer: Buffer,
   userId: string,
   mimeType: string,
-  folder: "user" | "recipe"
+  folder: "user" | "recipe" | "group" | "post"
 ): Promise<string> => {
   const bucket = "recipes-app-media";
   const fileName = `${folder}/${userId}/${uuid()}`;

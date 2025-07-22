@@ -16,7 +16,7 @@ model User {
   username              String            @unique
   fullName              String?
   phone                 String?           @unique
-  imageUrl              String
+  imageUrl              String?
   bio                   String?
   headLine              String?
   birthDate             DateTime?
@@ -55,7 +55,7 @@ model Recipe {
   prepTime       Int?              @default(30)
   difficulty     DifficultyLevel   @default(Easy)
   isPublic       Boolean           @default(false)
-  imageUrl       String
+  imageUrl       String?
   description    String?
   tip            String[]
   score          Float?            @default(0)

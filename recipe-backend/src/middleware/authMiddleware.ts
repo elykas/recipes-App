@@ -11,6 +11,9 @@ import {
   verifyAuthToken as verifyAuthToken,
   VerifyUserToken,
 } from "../utils/authUtils/jwt";
+import { get } from "http";
+import { getPublicUserIdByGroupPublicIdService } from "../services/groupService";
+import { GroupMembersIdByGroupIdResponse } from "../types/responses";
 
 declare module "express" {
   interface Request {
@@ -165,3 +168,48 @@ export const checkRecipeOwnerShip = async (
     return;
   }
 };
+
+
+export const checkGroupOwnerShip = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const groupPublicId = req.params.groupId;
+    const authorRecipePublicId: GroupMembersIdByGroupIdResponse =
+      await getPublicUserIdByGroupPublicIdService(groupPublicId);
+
+    if (!authorRecipePublicId) {
+      res.status(404).json({ message: "Group not found", success: false });
+      return;
+    }
+
+    const userPublicId = req.publicId;
+    if (!userPublicId) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: User not authenticated", success: false });
+      return;
+    }
+    
+    const isMember = authorRecipePublicId.members.some(
+      (member: any) => member.publicId === userPublicId
+    );
+    
+    if (!isMember) {
+      res.status(403).json({
+        message: "Forbidden: User doesn't own this group",
+        success: false,
+      });
+      return;    
+    }
+    next();
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error while checking group ownership",
+      success: false,
+    });
+    return; 
+    }
+  }

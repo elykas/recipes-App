@@ -1,6 +1,7 @@
 export const errorHandler = (err: any, req: any, res: any, next: any) => {
-  if (process.env.NODE_ENV === "test") {
+  if (process.env.NODE_ENV === "test" || process.env.NODE_ENV === "production") {
     console.error(err.stack);
+    console.error(err.message);
   }
 
   const response = {

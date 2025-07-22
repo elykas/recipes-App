@@ -1,8 +1,17 @@
-import {UserSchema} from "../schema/validateUserSchema";
-import {recipeIdParamsSchema, RecipeSchema, recipesIdBodySchema, searchQuerySchema} from "../schema/validateRecipeScema";
-import {Request, Response, NextFunction} from "express";
+import { NextFunction, Request, Response } from "express";
+import {
+  IdParamsSchema,
+  RecipeSchema,
+  recipesIdBodySchema,
+  searchQuerySchema,
+} from "../schema/validateRecipeScema";
+import { UserSchema } from "../schema/validateUserSchema";
 
-export const validateUser = (req: Request, res: Response, next: NextFunction) => {
+export const validateUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const result = UserSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -14,8 +23,11 @@ export const validateUser = (req: Request, res: Response, next: NextFunction) =>
   next();
 };
 
-
-export const validateRecipe = (req: Request, res: Response, next: NextFunction) => {
+export const validateRecipe = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const result = RecipeSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -43,12 +55,12 @@ export const validateSearchQuery = (
   next();
 };
 
-export const validateRecipeIdParams = (
+export const validateIdParams = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const result = recipeIdParamsSchema.safeParse(req.params);
+  const result = IdParamsSchema.safeParse(req.params);
   if (!result.success) {
     return res.status(400).json({
       success: false,

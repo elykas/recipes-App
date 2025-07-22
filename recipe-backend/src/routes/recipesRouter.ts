@@ -18,9 +18,9 @@ import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import {
+  validateIdParams,
   validateRecipe,
   validateRecipeIdBody,
-  validateRecipeIdParams,
   validateSearchQuery,
 } from "../middleware/validateMiddleware";
 
@@ -50,7 +50,7 @@ router.get(
   authorizeUserAndExist,
   sanitizeRequestMiddleware,
   searchLimiter,
-  validateRecipeIdParams,
+  validateIdParams,
   getRecipeById
 );
 router.post(
@@ -98,7 +98,7 @@ router.put(
   searchLimiter,
   sanitizeRequestMiddleware,
   sanitizeRequestMiddleware,
-  validateRecipeIdParams,
+  validateIdParams,
   validateRecipe,
   editRecipe
 );
@@ -109,7 +109,7 @@ router.delete(
   checkRecipeOwnerShip,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateRecipeIdParams,
+  validateIdParams,
   deleteRecipe
 );
 router.put(
@@ -120,7 +120,7 @@ router.put(
   searchLimiter,
   singleImageUpload,
   sanitizeRequestMiddleware,
-  validateRecipeIdParams,
+  validateIdParams,
   editRecipe
 );
 router.get(
@@ -129,7 +129,7 @@ router.get(
   authorizeUserAndExist,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateRecipeIdParams,
+  validateIdParams,
   validateSearchQuery,
   getRecipesPreviewByCategory
 );
