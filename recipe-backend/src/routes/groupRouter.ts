@@ -10,12 +10,11 @@ import {
   authenticateToken,
   authorizeUserAndExist,
   checkGroupOwnerShip,
-  checkUserIsAdminOfGRoup,
+  checkUserIsAdminOfGroup,
 } from "../middleware/authMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 import { validateIdParams } from "../middleware/validateMiddleware";
-import de from "zod/v4/locales/de.cjs";
 
 const router = express.Router();
 
@@ -48,7 +47,7 @@ router.put(
   "/:groupId",
   authenticateToken,
   authorizeUserAndExist,
-  checkUserIsAdminOfGRoup,
+  checkUserIsAdminOfGroup,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
@@ -58,11 +57,12 @@ router.delete(
   "/:groupId",
   authenticateToken,
   authorizeUserAndExist,
-  checkUserIsAdminOfGRoup,
+  checkUserIsAdminOfGroup,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
   deleteGroup
 );
+router.post("/:groupId/recipe/:recipeId", authenticateToken, authorizeUserAndExist, checkUserIsAdminOfGroup, searchLimiter, sanitizeRequestMiddleware, validateIdParams);
 
 export default router;

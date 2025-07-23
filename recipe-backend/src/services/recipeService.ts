@@ -75,8 +75,8 @@ export const getPreviewRecipesService = async (
 
 export const getPublicUserIdByRecipeIdService = async (
   recipePublicId: string
-) => {
-  const publicUserId = await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
+): Promise<string> => {
+  const publicUserId: string | null = await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
   if (!publicUserId) throw errorResponse("Recipe not found", 404);
   return publicUserId;
 };

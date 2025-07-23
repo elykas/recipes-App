@@ -52,9 +52,9 @@ export const deleteUserService = async (publicId: string): Promise<UserDto> => {
 //have to add function for delete image without update
 export const updateUserImageService = async (
   publicId: string,
-  image: any
+  image: Express.Multer.File | undefined
 ): Promise<UserDto> => {
-  let imageUrl: string = "/placeholder.jpg";
+  let imageUrl: string | undefined = undefined;
   const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath);
@@ -62,9 +62,9 @@ export const updateUserImageService = async (
   
   if (image) {
     const imagePath: string = await uploadSingleImage(
-      image.image,
+      image.buffer,
       publicId,
-      image.image.mimetype,
+      image.mimetype,
       "user"
     );
     imageUrl = imagePath;

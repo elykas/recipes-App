@@ -34,21 +34,24 @@ export interface GroupRecipesPreviewDto {
   recipes: GroupRecipeDto[];
 }
 
+interface GroupBaseDto {
+  publicId: string;
+}
+
 export type CreateGroupDto = {
   name: string;
   description?: string;
 };
 
-export interface NewGroupDto {
-    publicId: string
-}
+export interface NewGroupDto extends GroupBaseDto {}
 
-export interface UpdatedGroupDto {
-  publicId: string;
+export interface UpdatedGroupDto extends GroupBaseDto {
   name: string;
   description: string | null;
 }
 
-export interface DeleteGroupDto {
-  publicId: string;
-}
+export interface DeleteGroupDto extends GroupBaseDto {}
+
+export interface AddRecipeToGroupDto extends GroupBaseDto {}
+
+export interface RemoveRecipeFromGroupDto extends GroupBaseDto {}

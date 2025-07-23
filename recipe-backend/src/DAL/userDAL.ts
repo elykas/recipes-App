@@ -59,7 +59,7 @@ export const pgDeleteUser = async (
 
 export const pgAddUserImage = async (
   publicId: string,
-  imageUrl: string
+  imageUrl: string | undefined
 ): Promise<UserWithoutRecipes> => {
   const updatedUser = await prisma.user.update({
     where: { publicId },

@@ -1,5 +1,7 @@
-import errorResponse from "../errors/errors";
+import { pgGetPublicUserIdByPublicGroupId } from "../../dal/groupDal";
 import { getUserIdByPublicIdService } from "../../services/userService";
+import { GroupMembersIdByGroupIdResponse } from "../../types/responses";
+import errorResponse, { ErrorResponse } from "../errors/errors";
 export const checkUserIsOwnerAndGetId = async (
   currentUserPublicId: string,
   targetUserPublicId: string
@@ -41,4 +43,21 @@ export const checkUserIsOwnerAndGetIds = async (
   }
 
   throw errorResponse("Ownership mismatch or inconsistent authors", 400);
+};
+
+export const checkIfUserIsAdminOfGroup = async (
+  currentUserPublicId: string
+): Promise<boolean> => {
+  const groupMembersId: GroupMembersIdByGroupIdResponse | null =
+    await pgGetPublicUserIdByPublicGroupId(currentUserPublicId);
+
+  if (!groupMembersId) throw ErrorResponse("Group not found", 404);
+
+  const user = groupMembersId.members.find(
+    (m:{ user: { publicId: string;}, admin: boolean; }) => m.user.publicId === currentUserPublicId
+  );
+
+  if (!user || !user.admin) throw ErrorResponse("Unauthorized", 401);
+
+  return true;
 };

@@ -148,14 +148,105 @@ export const pgEditGroupDetails = async (
   return updatedGroup;
 };
 
-export const pgDeleteGroup = async (publicGroupId: string): Promise<GroupIdResponse> => {
+export const pgDeleteGroup = async (
+  publicGroupId: string
+): Promise<GroupIdResponse> => {
   const deletedGroup: GroupIdResponse = await prisma.group.delete({
     where: {
       publicId: publicGroupId,
     },
     select: {
       publicId: true,
-    }
+    },
   });
   return deletedGroup;
+};
+
+export const pgAddRecipeToGroup = async (
+  publicRecipeId: string,
+  publicGroupId: string
+): Promise<GroupIdResponse> => {
+  const recipeAdded = await prisma.group.update({
+    where: {
+      publicId: publicGroupId,
+    },
+    data: {
+      recipes: {
+        connect: {
+          publicId: publicRecipeId,
+        },
+      },
+    },
+    select: {
+      publicId: true,
+    },
+  });
+  return recipeAdded;
+};
+
+export const pgRemoveRecipeFromGroup = async (
+  publicRecipeId: string,
+  publicGroupId: string
+): Promise<GroupIdResponse> => {
+  const recipeAdded = await prisma.group.update({
+    where: {
+      publicId: publicGroupId,
+    },
+    data: {
+      recipes: {
+        disconnect: {
+          publicId: publicRecipeId,
+        },
+      },
+    },
+    select: {
+      publicId: true,
+    },
+  });
+  return recipeAdded;
+};
+
+export const pgGetImageOfGroupByPublicId = async (
+  publicId: string
+): Promise<string> => {
+  const group = await prisma.group.findUnique({
+    where: { publicId },
+    select: { imageUrl: true },
+  });
+  return group?.imageUrl ?? "";
+};
+
+export const pgAddImageToGroup = async (
+  publicGroupId: string,
+  imageUrl: string
+): Promise<GroupIdResponse> => {
+  const recipeAdded: GroupIdResponse = await prisma.group.update({
+    where: {
+      publicId: publicGroupId,
+    },
+    data: {
+      imageUrl: imageUrl,
+    },
+    select: {
+      publicId: true,
+    },
+  });
+  return recipeAdded;
+};
+
+export const pgRemoveImageFromGroup = async (
+  publicGroupId: string
+): Promise<GroupIdResponse> => {
+  const recipeAdded: GroupIdResponse = await prisma.group.update({
+    where: {
+      publicId: publicGroupId,
+    },
+    data: {
+      imageUrl: null,
+    },
+    select: {
+      publicId: true,
+    },
+  });
+  return recipeAdded;
 };

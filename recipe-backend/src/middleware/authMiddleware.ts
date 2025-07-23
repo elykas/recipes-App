@@ -1,19 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  getPublicUserIdByRecipeIdService,
-  getRecipeByIdService,
-} from "../services/recipeService";
-import {
-  getUserByIdService,
-  getUserIdByPublicIdService,
-} from "../services/userService";
-import {
-  verifyAuthToken as verifyAuthToken,
-  VerifyUserToken,
-} from "../utils/authUtils/jwt";
-import { get } from "http";
 import { getPublicUserIdByGroupPublicIdService } from "../services/groupService";
+import { getPublicUserIdByRecipeIdService } from "../services/recipeService";
+import { getUserByIdService } from "../services/userService";
 import { GroupMembersIdByGroupIdResponse } from "../types/responses";
+import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
 
 declare module "express" {
   interface Request {
@@ -214,7 +204,7 @@ export const checkGroupOwnerShip = async (
   }
 };
 
-export const checkUserIsAdminOfGRoup = async (
+export const checkUserIsAdminOfGroup = async (
   req: Request,
   res: Response,
   next: NextFunction
