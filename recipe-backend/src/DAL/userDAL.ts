@@ -1,6 +1,6 @@
 import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/responses";
+import { UserWithoutRecipes } from "../types/response/responses";
 
 export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
   const users = await prisma.user.findMany();

@@ -1,7 +1,7 @@
-import { pgGetPublicUserIdByPublicGroupId } from "../../dal/groupDal";
+import { pgGetMembersPublicIdByPublicGroupId } from "../../dal/groupDal";
 import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
 import { getUserIdByPublicIdService } from "../../services/userService";
-import { GroupMembersIdByGroupIdResponse } from "../../types/responses";
+import { GroupMembersIdByGroupIdResponse } from "../../types/response/groupResponse";
 import errorResponse, { ErrorResponse } from "../errors/errors";
 export const checkUserIsOwnerAndGetId = async (
   currentUserPublicId: string,
@@ -44,44 +44,4 @@ export const checkUserIsOwnerAndGetIds = async (
   }
 
   throw errorResponse("Ownership mismatch or inconsistent authors", 400);
-};
-
-export const checkIfUserIsAdminOfGroup = async (
-  currentUserPublicId: string
-): Promise<boolean> => {
-  const groupMembersId: GroupMembersIdByGroupIdResponse | null =
-    await pgGetPublicUserIdByPublicGroupId(currentUserPublicId);
-
-  if (!groupMembersId) throw ErrorResponse("Group not found", 404);
-
-  const user = groupMembersId.members.find(
-    (m: { user: { publicId: string }; admin: boolean }) =>
-      m.user.publicId === currentUserPublicId
-  );
-
-  if (!user || !user.admin) throw ErrorResponse("Unauthorized", 401);
-
-  return true;
-};
-
-export const checkIfUserIsMemberOfGroup = async (
-  groupPublicId: string,
-  userPublicId: string
-): Promise<GroupMembersIdByGroupIdResponse> => {
-  const groupMembersPublicId: GroupMembersIdByGroupIdResponse =
-    await getGroupMembersByGroupPublicIdService(groupPublicId);
-
-  if (!groupMembersPublicId) {
-    throw errorResponse("Group not found", 404);
-  }
-
-  const isMember = groupMembersPublicId.members.some(
-    (member) => member.user.publicId === userPublicId
-  );
-
-  if (!isMember) {
-    throw errorResponse("Unauthorized: User is not a member of the group", 401);
-  }
-
-  return groupMembersPublicId;
 };

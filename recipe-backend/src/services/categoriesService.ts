@@ -8,7 +8,7 @@ import {
   pgUpdateCategory,
 } from "../DAL/categoriesDal";
 import { ICategory } from "../models/recipeModel";
-import { CategoriesResponse } from "../types/responses";
+import { CategoriesResponse } from "../types/response/responses";
 import errorResponse from "../utils/errors/errors";
 import { CategoryDto } from "../dto/categoryDto";
 

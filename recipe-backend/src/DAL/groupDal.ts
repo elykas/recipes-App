@@ -6,7 +6,7 @@ import {
   GroupRecipesResponse,
   UpdatedGroupResponse,
   UserGroupsResponse,
-} from "../types/responses";
+} from "../types/response/responses";
 
 export const pgGetUserGroups = async (
   publicUserId: string
@@ -75,7 +75,7 @@ export const pgGetGroupRecipesPreview = async (
   return GroupRecipes;
 };
 
-export const pgGetPublicUserIdByPublicGroupId = async (
+export const pgGetMembersPublicIdByPublicGroupId = async (
   publicGroupId: string
 ): Promise<GroupMembersIdByGroupIdResponse | null> => {
   const groupMembers = await prisma.group.findUnique({

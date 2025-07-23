@@ -6,14 +6,43 @@ import {
   getCategoryById,
   updateCategory,
 } from "../controllers/categoryController";
-import { authenticateToken, authorizeAdmin, authorizeUserAndExist } from "../middleware/authMiddleware";
+import {
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  authorizeUserAndExistMiddleware,
+} from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.get("/", authenticateToken, authorizeUserAndExist, getAllCategories);
-router.get("/:categoryId", authenticateToken, authorizeAdmin, getCategoryById);
-router.post("/", authenticateToken, authorizeAdmin, createCategory);
-router.put("/:categoryId", authenticateToken, authorizeAdmin, updateCategory);
-router.delete("/:categoryId", authenticateToken, authorizeAdmin, deleteCategory);
+router.get(
+  "/",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  getAllCategories
+);
+router.get(
+  "/:categoryId",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  getCategoryById
+);
+router.post(
+  "/",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  createCategory
+);
+router.put(
+  "/:categoryId",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  updateCategory
+);
+router.delete(
+  "/:categoryId",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  deleteCategory
+);
 
 export default router;

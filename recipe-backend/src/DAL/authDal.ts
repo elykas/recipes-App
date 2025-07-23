@@ -1,12 +1,19 @@
 import prisma from "../config/database";
-import { UserWithoutRecipes } from "../types/responses";
+import { UserWithoutRecipes } from "../types/response/responses";
 
 export const pgCreateUser = async (
   publicId: string,
-  userRegisterDetails: any,
+  userRegisterDetails: any
 ): Promise<UserWithoutRecipes> => {
-  const {username, email, fullName, locale, birthDate, headLine, agreedToPolicy
-} = userRegisterDetails;
+  const {
+    username,
+    email,
+    fullName,
+    locale,
+    birthDate,
+    headLine,
+    agreedToPolicy,
+  } = userRegisterDetails;
   const user: UserWithoutRecipes = await prisma.user.create({
     data: {
       publicId,
@@ -16,7 +23,7 @@ export const pgCreateUser = async (
       locale,
       birthDate,
       headLine,
-      agreedToPolicy,  
+      agreedToPolicy,
       agreedToPolicyDate: new Date(),
     },
   });
@@ -24,7 +31,7 @@ export const pgCreateUser = async (
 };
 
 export const pgCheckUserExist = async (
-   publicId: string
+  publicId: string
 ): Promise<UserWithoutRecipes | null> => {
   const user: UserWithoutRecipes | null = await prisma.user.findUnique({
     where: { publicId },

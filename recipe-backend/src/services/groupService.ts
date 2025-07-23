@@ -5,7 +5,7 @@ import {
   pgDeleteGroup,
   pgEditGroupDetails,
   pgGetGroupRecipesPreview,
-  pgGetPublicUserIdByPublicGroupId,
+  pgGetMembersPublicIdByPublicGroupId,
   pgGetUserGroups,
   pgRemoveRecipeFromGroup,
   pgGetImageOfGroupByPublicId,
@@ -29,14 +29,14 @@ import {
   GroupRecipesResponse,
   UpdatedGroupResponse,
   UserGroupsResponse,
-} from "../types/responses";
-import { checkIfUserIsAdminOfGroup } from "../utils/checkUtils/checkUserUtils";
+} from "../types/response/groupResponse";
+import { checkIfUserIsAdminOfGroup } from "../utils/checkUtils/checkGroupUtils";
 import ErrorResponse from "../utils/errors/errors";
 import {
   groupRecipesPreviewMapper,
   userGroupsMapper,
 } from "../utils/mappers/groupMapper";
-import { getPublicUserIdByRecipeIdService } from "./recipeService";
+import { getUserPublicIdByRecipeIdService } from "./recipeService";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 
 export const getUserGroupsService = async (
@@ -67,7 +67,7 @@ export const getGroupMembersByGroupPublicIdService = async (
   publicGroupId: string
 ): Promise<GroupMembersIdByGroupIdResponse> => {
   const groupMembersId: GroupMembersIdByGroupIdResponse | null =
-    await pgGetPublicUserIdByPublicGroupId(publicGroupId);
+    await pgGetMembersPublicIdByPublicGroupId(publicGroupId);
 
   if (!groupMembersId || groupMembersId.members.length === 0)
     throw ErrorResponse("Group not found", 404);
@@ -130,7 +130,7 @@ export const addRecipeToGroupService = async (
   publicUserId: string
 ): Promise<AddRecipeToGroupDto> => {
   const userIdByRecipeId =
-    await getPublicUserIdByRecipeIdService(publicRecipeId);
+    await getUserPublicIdByRecipeIdService(publicRecipeId);
 
   if (userIdByRecipeId !== publicUserId) {
     throw ErrorResponse("Unauthorized add recipe to group", 401);
@@ -153,7 +153,7 @@ export const removeRecipeFromGroupService = async (
   publicUserId: string
 ) => {
   const userIdByRecipeId =
-    await getPublicUserIdByRecipeIdService(publicRecipeId);
+    await getUserPublicIdByRecipeIdService(publicRecipeId);
 
   const isAdmin: boolean = await checkIfUserIsAdminOfGroup(publicUserId);
 

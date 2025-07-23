@@ -1,7 +1,7 @@
 import { CategoryType } from "@prisma/client";
 import prisma from "../config/database";
 import { ICategory } from "../models/recipeModel";
-import { CategoriesResponse } from "../types/responses";
+import { CategoriesResponse } from "../types/response/responses";
 
 export const pgGetAllCategories = async (): Promise<ICategory[]> => {
   const categories: ICategory[] = await prisma.category.findMany();
@@ -30,7 +30,6 @@ export const pgGetCategoriesName = async (
   return categories;
 };
 
-
 export const pgGetCategoryById = async (
   id: number
 ): Promise<ICategory | null> => {
@@ -40,7 +39,10 @@ export const pgGetCategoryById = async (
   return category;
 };
 
-export const pgCreateCategory = async (name: string, type: CategoryType): Promise<ICategory> => {
+export const pgCreateCategory = async (
+  name: string,
+  type: CategoryType
+): Promise<ICategory> => {
   const category: ICategory = await prisma.category.create({
     data: { name, type },
   });

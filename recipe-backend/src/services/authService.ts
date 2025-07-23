@@ -1,16 +1,14 @@
-import {
-  pgCheckUserExist,
-  pgCreateUser,
-} from "../dal/authDAL";
+import { pgCheckUserExist, pgCreateUser } from "../dal/authDAL";
 import { UserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/responses";
+import { UserWithoutRecipes } from "../types/response/responses";
 import errorResponse from "../utils/errors/errors";
 import { mapUserToDto } from "../utils/mappers/userMapper";
 
 export const checkUserExist = async (
   publicId: string
 ): Promise<UserDto | null> => {
-  const userByEmail: UserWithoutRecipes | null = await pgCheckUserExist(publicId);
+  const userByEmail: UserWithoutRecipes | null =
+    await pgCheckUserExist(publicId);
   if (!userByEmail) return null;
   const userDto: UserDto = mapUserToDto(userByEmail);
   return userDto;
@@ -20,7 +18,8 @@ export const createNewUserService = async (
   publicId: string,
   userRegisterDetails: any
 ): Promise<UserDto> => {
-  const isUserExist: UserWithoutRecipes | null = await pgCheckUserExist(publicId);
+  const isUserExist: UserWithoutRecipes | null =
+    await pgCheckUserExist(publicId);
   if (isUserExist) {
     throw errorResponse("User already exists", 400);
   }
@@ -28,4 +27,3 @@ export const createNewUserService = async (
   const userDto: UserDto = mapUserToDto(newUser);
   return userDto;
 };
-

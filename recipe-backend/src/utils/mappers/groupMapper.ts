@@ -1,14 +1,16 @@
 import { GroupRecipesPreviewDto } from "../../dto/groupDto";
-import { UserGroupsResponse } from "../../types/responses";
+import { UserGroupsResponse } from "../../types/response/responses";
 
 export const userGroupsMapper = (userGroups: UserGroupsResponse) => ({
-    publicId: userGroups.group.publicId,
-    name: userGroups.group.name,
-    imageUrl: userGroups.group.imageUrl,
-    admin: userGroups.admin
-})
+  publicId: userGroups.group.publicId,
+  name: userGroups.group.name,
+  imageUrl: userGroups.group.imageUrl,
+  admin: userGroups.admin,
+});
 
-export const groupRecipesPreviewMapper = (data: any): GroupRecipesPreviewDto => ({
+export const groupRecipesPreviewMapper = (
+  data: any
+): GroupRecipesPreviewDto => ({
   publicId: data.publicId,
   name: data.name,
   imageUrl: data.imageUrl,

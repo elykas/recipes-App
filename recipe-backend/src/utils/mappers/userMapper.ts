@@ -1,5 +1,8 @@
 import { UserDto } from "../../dto/userDto";
-import { UserWithoutRecipes, UserWithRecipes } from "../../types/responses";
+import {
+  UserWithoutRecipes,
+  UserWithRecipes,
+} from "../../types/response/responses";
 
 export const mapUserToDto = (
   user: UserWithRecipes | UserWithoutRecipes

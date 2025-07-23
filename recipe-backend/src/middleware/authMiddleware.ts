@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { getGroupMembersByGroupPublicIdService } from "../services/groupService";
-import { getPublicUserIdByRecipeIdService } from "../services/recipeService";
+import { getUserPublicIdByRecipeIdService } from "../services/recipeService";
 import { getUserByIdService } from "../services/userService";
-import { GroupMembersIdByGroupIdResponse } from "../types/responses";
+import { GroupMembersIdByGroupIdResponse } from "../types/response/groupResponse";
 import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
-import { checkIfUserIsMemberOfGroup } from "../utils/checkUtils/checkUserUtils";
-import { Auth } from "mongodb";
+import { checkIfUserIsMemberOfGroup as checkIfUserIsMemberOfGroupMiddleware } from "../utils/checkUtils/checkGroupUtils";
 
 declare module "express" {
   interface Request {
@@ -13,7 +12,7 @@ declare module "express" {
   }
 }
 
-export const authenticateToken = (
+export const authenticateTokenMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
@@ -64,7 +63,7 @@ export const verifyAuthTokenMiddleware = (
   }
 };
 
-export const authorizeAdmin = async (
+export const authorizeAdminMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -93,7 +92,7 @@ export const authorizeAdmin = async (
   }
 };
 
-export const authorizeUserAndExist = async (
+export const authorizeUserAndExistMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -122,24 +121,25 @@ export const authorizeUserAndExist = async (
   }
 };
 
-export const checkRecipeOwnerShip = async (
+export const checkRecipeOwnerShipMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const recipePublicId = req.params.recipeId;
-    const authorRecipePublicId: string =
-      await getPublicUserIdByRecipeIdService(recipePublicId);
-    if (!authorRecipePublicId) {
-      res.status(404).json({ message: "Recipe not found", success: false });
-      return;
-    }
     const userPublicId = req.publicId;
-    if (!userPublicId) {
+    if (!userPublicId || !recipePublicId) {
       res
         .status(403)
         .json({ message: "Forbidden: User not authenticated", success: false });
+      return;
+    }
+
+    const authorRecipePublicId: string =
+      await getUserPublicIdByRecipeIdService(recipePublicId);
+    if (!authorRecipePublicId) {
+      res.status(404).json({ message: "Recipe not found", success: false });
       return;
     }
 
@@ -161,7 +161,7 @@ export const checkRecipeOwnerShip = async (
   }
 };
 
-export const checkGroupOwnerShip = async (
+export const checkIsGroupMemberShipMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -169,7 +169,7 @@ export const checkGroupOwnerShip = async (
   try {
     const groupPublicId = req.params.groupId;
     const userPublicId = req.publicId;
-    if (!userPublicId) {
+    if (!userPublicId || !groupPublicId) {
       res.status(403).json({
         message: "Forbidden: User not authenticated",
         success: false,
@@ -177,7 +177,7 @@ export const checkGroupOwnerShip = async (
       return;
     }
 
-    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+    await checkIfUserIsMemberOfGroupMiddleware(groupPublicId, userPublicId);
 
     next();
   } catch (error: any) {
@@ -189,26 +189,26 @@ export const checkGroupOwnerShip = async (
   }
 };
 
-export const checkUserIsAdminOfGroup = async (
+export const checkUserIsAdminOfGroupMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const groupPublicId = req.params.groupId;
+    const userPublicId = req.publicId;
+    if (!userPublicId || !groupPublicId) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: User not authenticated", success: false });
+      return;
+    }
+
     const groupMembers: GroupMembersIdByGroupIdResponse =
       await getGroupMembersByGroupPublicIdService(groupPublicId);
 
     if (!groupMembers) {
       res.status(404).json({ message: "Group not found", success: false });
-      return;
-    }
-
-    const userPublicId = req.publicId;
-    if (!userPublicId) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: User not authenticated", success: false });
       return;
     }
 
@@ -235,7 +235,7 @@ export const checkUserIsAdminOfGroup = async (
   }
 };
 
-export const checkIsGroupMemberAndOwnerRecipe = async (
+export const checkIsGroupMemberAndOwnerRecipeMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -253,10 +253,10 @@ export const checkIsGroupMemberAndOwnerRecipe = async (
       return;
     }
 
-    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+    await checkIfUserIsMemberOfGroupMiddleware(groupPublicId, userPublicId);
 
     const authorRecipePublicId: string =
-      await getPublicUserIdByRecipeIdService(recipePublicId);
+      await getUserPublicIdByRecipeIdService(recipePublicId);
 
     if (authorRecipePublicId !== userPublicId) {
       res.status(403).json({
@@ -276,7 +276,7 @@ export const checkIsGroupMemberAndOwnerRecipe = async (
   }
 };
 
-export const checkIsGroupMemberAndOwnerRecipeOrAdmin = async (
+export const checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -308,7 +308,7 @@ export const checkIsGroupMemberAndOwnerRecipeOrAdmin = async (
     );
 
     const authorRecipePublicId: string =
-      await getPublicUserIdByRecipeIdService(recipePublicId);
+      await getUserPublicIdByRecipeIdService(recipePublicId);
 
     if (authorRecipePublicId !== userPublicId && !user?.admin) {
       res.status(403).json({

@@ -4,10 +4,10 @@ import { ICategory, IRecipe } from "../models/recipeModel";
 import {
   FullRecipeResponse,
   PreviewRecipesResponse,
-  RecipeIdResonse,
+  RecipeIdResponse,
   RecipeImageResponse,
   SearchRecipeResponse,
-} from "../types/responses";
+} from "../types/response/responses";
 
 export const pgGetRecipesName = async (
   searchQuery: string,
@@ -82,7 +82,7 @@ export const pgGetPreviewRecipes = async (
   return recipesPreview;
 };
 
-export const pgGetPublicUserIdByPublicRecipeId = async (
+export const pgGetUserPublicIdByPublicRecipeId = async (
   publicId: string
 ): Promise<string | null> => {
   const userId = await prisma.recipe.findUnique({
@@ -177,8 +177,8 @@ export const pgGetRecipesByIds = async (
 export const pgCreateRecipe = async (
   recipeData: IRecipe,
   publicAuthorId: string,
-  imageUrl: string | null 
-): Promise<RecipeIdResonse> => {
+  imageUrl: string | null
+): Promise<RecipeIdResponse> => {
   const newRecipe = await prisma.recipe.create({
     data: {
       title: recipeData.title,
@@ -274,7 +274,7 @@ export const pgUpdateRecipeCategories = async (
 
 export const pgDeleteRecipe = async (
   publicRecipeId: string
-): Promise<RecipeIdResonse> => {
+): Promise<RecipeIdResponse> => {
   const recipe = await prisma.recipe.delete({
     where: { publicId: publicRecipeId },
     select: {

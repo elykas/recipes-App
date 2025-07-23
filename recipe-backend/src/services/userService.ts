@@ -8,7 +8,7 @@ import {
   pgUpdateUser,
 } from "../dal/userDal";
 import { UpdateUserDto, UserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/responses";
+import { UserWithoutRecipes } from "../types/response/responses";
 import errorResponse from "../utils/errors/errors";
 import { mapUserToDto } from "../utils/mappers/userMapper";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
@@ -55,7 +55,7 @@ export const updateUserImageService = async (
   image: Express.Multer.File | undefined
 ): Promise<UserDto> => {
   let imageUrl: string | null = null;
-  
+
   if (image) {
     const imagePath: string = await uploadSingleImage(
       image.buffer,
@@ -74,7 +74,7 @@ export const updateUserImageService = async (
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath);
   }
-  
+
   const userDto: UserDto = mapUserToDto(userWithImage);
   return userDto;
 };

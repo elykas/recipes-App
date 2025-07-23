@@ -6,7 +6,7 @@ import {
   pgGetImageOfRecipeByPublicId,
   pgGetPreviewRecipes,
   pgGetPreviewRecipesByCategory,
-  pgGetPublicUserIdByPublicRecipeId,
+  pgGetUserPublicIdByPublicRecipeId,
   pgGetRecipeById,
   pgGetRecipesByIds,
   pgGetRecipesName,
@@ -25,10 +25,10 @@ import { IRecipe } from "../models/recipeModel";
 import {
   FullRecipeResponse,
   PreviewRecipesResponse,
-  RecipeIdResonse as RecipeIdResponse,
+  RecipeIdResponse as RecipeIdResponse,
   RecipeImageResponse,
   SearchRecipeResponse,
-} from "../types/responses";
+} from "../types/response/responses";
 import {
   checkUserIsOwnerAndGetId,
   checkUserIsOwnerAndGetIds as checkUserIsOwnerByIds,
@@ -73,11 +73,11 @@ export const getPreviewRecipesService = async (
   return recipesDto;
 };
 
-export const getPublicUserIdByRecipeIdService = async (
+export const getUserPublicIdByRecipeIdService = async (
   recipePublicId: string
 ): Promise<string> => {
   const publicUserId: string | null =
-    await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
+    await pgGetUserPublicIdByPublicRecipeId(recipePublicId);
   if (!publicUserId) throw errorResponse("Recipe not found", 404);
   return publicUserId;
 };
@@ -95,7 +95,7 @@ export const getRecipeByIdService = async (
   currentUserPublicId: string
 ): Promise<RecipeResponseDto> => {
   const targetUserPublicId: string =
-    await getPublicUserIdByRecipeIdService(recipePublicId);
+    await getUserPublicIdByRecipeIdService(recipePublicId);
 
   const userId: number | undefined = await checkUserIsOwnerAndGetId(
     currentUserPublicId,
@@ -222,7 +222,7 @@ export const updateRecipeImageService = async (
     );
     imageUrl = imagePath;
   }
-  
+
   const updatedImage: RecipeImageResponse = await pgUpdateRecipeImage(
     publicRecipeId,
     imageUrl

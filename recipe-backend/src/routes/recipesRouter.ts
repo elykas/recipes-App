@@ -11,9 +11,9 @@ import {
   getSomeRecipesById,
 } from "../controllers/recipesController";
 import {
-  authenticateToken,
-  authorizeUserAndExist,
-  checkRecipeOwnerShip,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
 } from "../middleware/authMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
@@ -29,8 +29,8 @@ const router = express.Router();
 
 router.get(
   "/my/search",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateSearchQuery,
@@ -38,8 +38,8 @@ router.get(
 );
 router.get(
   "/search",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateSearchQuery,
@@ -47,8 +47,8 @@ router.get(
 );
 router.get(
   "/recipe/:recipeId",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   sanitizeRequestMiddleware,
   searchLimiter,
   validateIdParams,
@@ -56,8 +56,8 @@ router.get(
 );
 router.post(
   "/recipes",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateRecipeIdBody,
@@ -65,8 +65,8 @@ router.post(
 );
 router.get(
   "/me/preview",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateSearchQuery,
@@ -74,8 +74,8 @@ router.get(
 );
 router.get(
   "/preview",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateSearchQuery,
@@ -83,8 +83,8 @@ router.get(
 );
 router.post(
   "/",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   singleImageUpload,
   sanitizeRequestMiddleware,
@@ -93,9 +93,9 @@ router.post(
 );
 router.put(
   "/:recipeId",
-  authenticateToken,
-  authorizeUserAndExist,
-  checkRecipeOwnerShip,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   sanitizeRequestMiddleware,
@@ -105,9 +105,9 @@ router.put(
 );
 router.delete(
   "/:recipeId",
-  authenticateToken,
-  authorizeUserAndExist,
-  checkRecipeOwnerShip,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
@@ -115,9 +115,9 @@ router.delete(
 );
 router.put(
   "/image/:recipeId",
-  authenticateToken,
-  authorizeUserAndExist,
-  checkRecipeOwnerShip,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
   searchLimiter,
   singleImageUpload,
   sanitizeRequestMiddleware,
@@ -126,8 +126,8 @@ router.put(
 );
 router.get(
   "/category/:categoryId",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,

@@ -7,7 +7,7 @@ import {
   FullRecipeResponse,
   PreviewRecipesResponse,
   SearchRecipeResponse,
-} from "../../types/responses";
+} from "../../types/response/responses";
 
 export const mapFullRecipeToDTO = (
   recipe: FullRecipeResponse

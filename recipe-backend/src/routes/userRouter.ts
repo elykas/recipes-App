@@ -7,31 +7,46 @@ import {
   updateUser,
 } from "../controllers/userController";
 import {
-  authenticateToken,
-  authorizeAdmin,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  authorizeUserAndExistMiddleware,
 } from "../middleware/authMiddleware";
 import { validateUser } from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 
 const router = express.Router();
 
-router.get("/get-user/", authenticateToken, authorizeUserAndExist, getUserById);
-router.get("/", authenticateToken, authorizeAdmin, getAllUsers);
+router.get(
+  "/get-user/",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  getUserById
+);
+router.get(
+  "/",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  getAllUsers
+);
 router.put(
   "/",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   validateUser,
   updateUser
 );
 router.post(
   "/add-image",
-  authenticateToken,
-  authorizeUserAndExist,
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
   singleImageUpload,
   updateUserImage
 );
-router.delete("/", authenticateToken, authorizeUserAndExist, deleteUser);
+router.delete(
+  "/",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  deleteUser
+);
 
 export default router;
