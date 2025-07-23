@@ -1,12 +1,11 @@
 import { Category } from "@prisma/client";
 
 export interface UserGroupsDto {
-    publicId: string;
-    name: string;
-    imageUrl: string | null;
-    admin: boolean;
+  publicId: string;
+  name: string;
+  imageUrl: string | null;
+  admin: boolean;
 }
-
 
 export interface GroupMemberDto {
   publicId: string;
@@ -15,7 +14,6 @@ export interface GroupMemberDto {
   headLine: string;
   imageUrl: string | null;
 }
-
 
 export interface GroupRecipeDto {
   title: string;
@@ -55,3 +53,7 @@ export interface DeleteGroupDto extends GroupBaseDto {}
 export interface AddRecipeToGroupDto extends GroupBaseDto {}
 
 export interface RemoveRecipeFromGroupDto extends GroupBaseDto {}
+
+export interface UpdatedImageGroupDto extends GroupBaseDto {}
+
+export interface addGroupMemberDto extends GroupBaseDto {}

@@ -3,6 +3,7 @@ import {
   createRecipe,
   deleteRecipe,
   editRecipe,
+  editRecipeImage,
   getPreviewRecipes,
   getRecipeById,
   getRecipesName,
@@ -121,7 +122,7 @@ router.put(
   singleImageUpload,
   sanitizeRequestMiddleware,
   validateIdParams,
-  editRecipe
+  editRecipeImage
 );
 router.get(
   "/category/:categoryId",

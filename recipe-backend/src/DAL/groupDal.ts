@@ -216,9 +216,9 @@ export const pgGetImageOfGroupByPublicId = async (
   return group?.imageUrl ?? "";
 };
 
-export const pgAddImageToGroup = async (
+export const pgUpdateImageOfGroup = async (
   publicGroupId: string,
-  imageUrl: string
+  imageUrl: string | null
 ): Promise<GroupIdResponse> => {
   const recipeAdded: GroupIdResponse = await prisma.group.update({
     where: {
@@ -234,19 +234,37 @@ export const pgAddImageToGroup = async (
   return recipeAdded;
 };
 
-export const pgRemoveImageFromGroup = async (
-  publicGroupId: string
-): Promise<GroupIdResponse> => {
-  const recipeAdded: GroupIdResponse = await prisma.group.update({
-    where: {
-      publicId: publicGroupId,
-    },
+export const pgAddGroupMember = async (groupId: string, memberId: string): Promise<GroupIdResponse> => {
+  const groupMember = await prisma.groupMember.create({
     data: {
-      imageUrl: null,
+      group: {
+        connect: { publicId: groupId },
+      },
+      user: {
+        connect: { publicId: memberId },
+      },
     },
     select: {
-      publicId: true,
+      admin: true,
+      user: {
+        publicId: true,
+        
+      }
     },
   });
-  return recipeAdded;
+  return groupMember;
+};
+
+export const pgRemoveGroupMember = async (
+  groupId: string,
+  memberId: string
+): Promise<GroupIdResponse> => {
+  const groupMember = wait prisma.groupMember.deleteMany({
+    where: {
+      group: { publicId: groupId },
+      user: { publicId: memberId },
+    },
+  });
+
+  return groupMember;
 };

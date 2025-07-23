@@ -1,5 +1,5 @@
 import {
-  pgAddImageToGroup,
+  pgUpdateImageOfGroup,
   pgAddRecipeToGroup,
   pgCreateGroup,
   pgDeleteGroup,
@@ -8,8 +8,11 @@ import {
   pgGetPublicUserIdByPublicGroupId,
   pgGetUserGroups,
   pgRemoveRecipeFromGroup,
+  pgGetImageOfGroupByPublicId,
+  pgAddGroupMember,
 } from "../dal/groupDal";
 import {
+  addGroupMemberDto,
   AddRecipeToGroupDto,
   CreateGroupDto,
   DeleteGroupDto,
@@ -17,6 +20,7 @@ import {
   NewGroupDto,
   RemoveRecipeFromGroupDto,
   UpdatedGroupDto,
+  UpdatedImageGroupDto,
   UserGroupsDto,
 } from "../dto/groupDto";
 import {
@@ -33,6 +37,7 @@ import {
   userGroupsMapper,
 } from "../utils/mappers/groupMapper";
 import { getPublicUserIdByRecipeIdService } from "./recipeService";
+import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 
 export const getUserGroupsService = async (
   publicUserId: string
@@ -58,7 +63,7 @@ export const getGroupRecipesPreviewService = async (
   return GroupRecipesDto;
 };
 
-export const getPublicUserIdByGroupPublicIdService = async (
+export const getGroupMembersByGroupPublicIdService = async (
   publicGroupId: string
 ): Promise<GroupMembersIdByGroupIdResponse> => {
   const groupMembersId: GroupMembersIdByGroupIdResponse | null =
@@ -168,22 +173,62 @@ export const removeRecipeFromGroupService = async (
   return recipeRemovedDto;
 };
 
-export const pgAddImageToGroupService = async (
+export const updateImageToGroupService = async (
   publicGroupId: string,
-  image: string
+  publicUserId: string,
+  image: Express.Multer.File | undefined
 ) => {
   const isAdmin: boolean = await checkIfUserIsAdminOfGroup(publicUserId);
 
   if (!isAdmin) throw ErrorResponse("Unauthorized edit group details", 401);
 
-  const recipeAdded: GroupIdResponse = await pgAddImageToGroup(
+  let imageUrl: string | null = null;
+  const oldImagePath: string = await pgGetImageOfGroupByPublicId(publicGroupId);
+
+  if (image) {
+    const imagePath: string = await uploadSingleImage(
+      image.buffer,
+      publicUserId,
+      image.mimetype,
+      "group"
+    );
+    imageUrl = imagePath;
+  }
+
+  const imageAdded: GroupIdResponse = await pgUpdateImageOfGroup(
     publicGroupId,
-    image
+    imageUrl
   );
-  return recipeAdded;
+
+  if (oldImagePath) {
+    await deleteImageFromStorage(oldImagePath);
+  }
+
+  const imageAddedDto: UpdatedImageGroupDto = {
+    publicId: imageAdded.publicId,
+  };
+
+  return imageAddedDto;
 };
 
-export const addGroupMember = async (g, userId) => {};
+export const addGroupMemberService = async (
+  publicGroupId: string,
+  publicUserId: string,
+  memberPublicId: string
+) => {
+  const admin: boolean = await checkIfUserIsAdminOfGroup(publicUserId);
+
+  if (!admin) throw ErrorResponse("Unauthorized add group member", 401);
+
+  const memberAdded: GroupIdResponse = await pgAddGroupMember(
+    publicGroupId,
+    memberPublicId
+  );
+  const groupOfMemberDto: addGroupMemberDto = {
+    publicId: memberAdded.publicId,
+  };
+  return groupOfMemberDto;
+};
 
 export const removeGroupMember = async (groupId, userId) => {};
 

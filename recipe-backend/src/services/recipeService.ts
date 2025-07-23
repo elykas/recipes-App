@@ -25,7 +25,7 @@ import { IRecipe } from "../models/recipeModel";
 import {
   FullRecipeResponse,
   PreviewRecipesResponse,
-  RecipeIdResonse,
+  RecipeIdResonse as RecipeIdResponse,
   RecipeImageResponse,
   SearchRecipeResponse,
 } from "../types/responses";
@@ -76,7 +76,8 @@ export const getPreviewRecipesService = async (
 export const getPublicUserIdByRecipeIdService = async (
   recipePublicId: string
 ): Promise<string> => {
-  const publicUserId: string | null = await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
+  const publicUserId: string | null =
+    await pgGetPublicUserIdByPublicRecipeId(recipePublicId);
   if (!publicUserId) throw errorResponse("Recipe not found", 404);
   return publicUserId;
 };
@@ -134,21 +135,21 @@ export const getSomeRecipesByIdsService = async (
 
 export const createRecipeService = async (
   recipeData: IRecipe,
-  image: any,
+  image: Express.Multer.File | undefined,
   publicUserId: string
 ): Promise<RecipeIdDto> => {
-  let imageUrl: string | undefined = undefined;
+  let imageUrl: string | null = null;
   if (image) {
     const imagePath: string = await uploadSingleImage(
-      image.image,
+      image.buffer,
       publicUserId,
-      image.image.mimetype,
+      image.mimetype,
       "recipe"
     );
     imageUrl = imagePath;
   }
 
-  const newRecipe: RecipeIdResonse = await pgCreateRecipe(
+  const newRecipe: RecipeIdResponse = await pgCreateRecipe(
     recipeData,
     publicUserId,
     imageUrl
@@ -196,7 +197,7 @@ export const updateRecipeService = async (
 export const deleteRecipeService = async (
   publicRecipeId: string
 ): Promise<RecipeIdDto> => {
-  const recipe: RecipeIdResonse = await pgDeleteRecipe(publicRecipeId);
+  const recipe: RecipeIdResponse = await pgDeleteRecipe(publicRecipeId);
   const recipeIdDto: RecipeIdDto = {
     publicId: recipe.publicId,
   };
@@ -206,25 +207,27 @@ export const deleteRecipeService = async (
 export const updateRecipeImageService = async (
   publicRecipeId: string,
   publicUserId: string,
-  image?: any
+  image: Express.Multer.File | undefined
 ): Promise<ImageRecipeDto> => {
-  let imageUrl: string | undefined = undefined;
+  let imageUrl: string | null = null;
+  const oldImagePath: string =
+    await pgGetImageOfRecipeByPublicId(publicRecipeId);
+
   if (image) {
     const imagePath: string = await uploadSingleImage(
-      image.image,
+      image.buffer,
       publicUserId,
-      image.image.mimetype,
+      image.mimetype,
       "recipe"
     );
     imageUrl = imagePath;
   }
+  
   const updatedImage: RecipeImageResponse = await pgUpdateRecipeImage(
     publicRecipeId,
     imageUrl
   );
 
-  const oldImagePath: string =
-    await pgGetImageOfRecipeByPublicId(publicRecipeId);
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath);
   }

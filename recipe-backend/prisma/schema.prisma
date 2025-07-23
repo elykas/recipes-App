@@ -38,6 +38,7 @@ model User {
   following             Follow[]          @relation("UserFollowing")
   createdGroups         Group[]           @relation("UserCreatedGroups")
   userGroups            GroupMember[]     @relation("UserGroups")
+  groupRecipes          GroupRecipe[]     @relation("UserAddedRecipes")
   notifications         Notification[]    @relation("UserNotifications")
   posts                 Post[]            @relation("UserPosts")
   postLike              PostLike[]        @relation("UserPostLikes")
@@ -73,7 +74,7 @@ model Recipe {
   reports        Report[]          @relation("ReportedRecipes")
   steps          Step[]
   categories     Category[]        @relation("CategoryToRecipe")
-  groups         Group[]           @relation("GroupRecipes")
+  groupRecipes GroupRecipe[]
 
   @@index([title])
 }
@@ -116,7 +117,7 @@ model Group {
   updatedAt   DateTime      @updatedAt
   creator     User?         @relation("UserCreatedGroups", fields: [creatorId], references: [id])
   members     GroupMember[]
-  recipes     Recipe[]      @relation("GroupRecipes")
+  groupRecipes GroupRecipe[]
 }
 
 model GroupMember {
@@ -131,6 +132,18 @@ model GroupMember {
   @@unique([userId, groupId])
 }
 
+model GroupRecipe {
+  id         Int      @id @default(autoincrement())
+  groupId    Int
+  recipeId   Int
+  addedById  Int?
+  addedAt    DateTime @default(now())
+
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  addedBy    User?    @relation("UserAddedRecipes", fields: [addedById], references: [id], onDelete: SetNull)
+  @@unique([groupId, recipeId])
+}
 model FavoriteRecipes {
   id        Int      @id @default(autoincrement())
   userId    Int

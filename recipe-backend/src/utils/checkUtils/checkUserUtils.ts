@@ -1,4 +1,5 @@
 import { pgGetPublicUserIdByPublicGroupId } from "../../dal/groupDal";
+import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
 import { getUserIdByPublicIdService } from "../../services/userService";
 import { GroupMembersIdByGroupIdResponse } from "../../types/responses";
 import errorResponse, { ErrorResponse } from "../errors/errors";
@@ -54,10 +55,33 @@ export const checkIfUserIsAdminOfGroup = async (
   if (!groupMembersId) throw ErrorResponse("Group not found", 404);
 
   const user = groupMembersId.members.find(
-    (m:{ user: { publicId: string;}, admin: boolean; }) => m.user.publicId === currentUserPublicId
+    (m: { user: { publicId: string }; admin: boolean }) =>
+      m.user.publicId === currentUserPublicId
   );
 
   if (!user || !user.admin) throw ErrorResponse("Unauthorized", 401);
 
   return true;
+};
+
+export const checkIfUserIsMemberOfGroup = async (
+  groupPublicId: string,
+  userPublicId: string
+): Promise<GroupMembersIdByGroupIdResponse> => {
+  const groupMembersPublicId: GroupMembersIdByGroupIdResponse =
+    await getGroupMembersByGroupPublicIdService(groupPublicId);
+
+  if (!groupMembersPublicId) {
+    throw errorResponse("Group not found", 404);
+  }
+
+  const isMember = groupMembersPublicId.members.some(
+    (member) => member.user.publicId === userPublicId
+  );
+
+  if (!isMember) {
+    throw errorResponse("Unauthorized: User is not a member of the group", 401);
+  }
+
+  return groupMembersPublicId;
 };

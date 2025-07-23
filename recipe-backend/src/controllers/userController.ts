@@ -80,7 +80,7 @@ export const deleteUser = async (
   }
 };
 
-export const addUserImage = async (
+export const updateUserImage = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -88,7 +88,7 @@ export const addUserImage = async (
   try {
     const { publicId } = req as AuthenticatedRequest;
     const image = req.file;
-    const userWithImage = await updateUserImageService(publicId, { image });
+    const userWithImage = await updateUserImageService(publicId,  image );
     res.status(200).json({
       success: true,
       user: userWithImage,

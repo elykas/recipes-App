@@ -1,5 +1,5 @@
 import {
-  pgAddUserImage,
+  pgUpdateUserImage,
   pgDeleteUser,
   pgGetAllUsers,
   pgGetImageOfUserByPublicId,
@@ -54,11 +54,7 @@ export const updateUserImageService = async (
   publicId: string,
   image: Express.Multer.File | undefined
 ): Promise<UserDto> => {
-  let imageUrl: string | undefined = undefined;
-  const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
-  if (oldImagePath) {
-    await deleteImageFromStorage(oldImagePath);
-  }
+  let imageUrl: string | null = null;
   
   if (image) {
     const imagePath: string = await uploadSingleImage(
@@ -69,10 +65,16 @@ export const updateUserImageService = async (
     );
     imageUrl = imagePath;
   }
-  const userWithImage: UserWithoutRecipes = await pgAddUserImage(
+  const userWithImage: UserWithoutRecipes = await pgUpdateUserImage(
     publicId,
     imageUrl
   );
+
+  const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
+  if (oldImagePath) {
+    await deleteImageFromStorage(oldImagePath);
+  }
+  
   const userDto: UserDto = mapUserToDto(userWithImage);
   return userDto;
 };

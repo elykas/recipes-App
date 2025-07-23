@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { getPublicUserIdByGroupPublicIdService } from "../services/groupService";
+import { getGroupMembersByGroupPublicIdService } from "../services/groupService";
 import { getPublicUserIdByRecipeIdService } from "../services/recipeService";
 import { getUserByIdService } from "../services/userService";
 import { GroupMembersIdByGroupIdResponse } from "../types/responses";
 import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
+import { checkIfUserIsMemberOfGroup } from "../utils/checkUtils/checkUserUtils";
+import { Auth } from "mongodb";
 
 declare module "express" {
   interface Request {
@@ -166,41 +168,24 @@ export const checkGroupOwnerShip = async (
 ) => {
   try {
     const groupPublicId = req.params.groupId;
-    const authorRecipePublicId: GroupMembersIdByGroupIdResponse =
-      await getPublicUserIdByGroupPublicIdService(groupPublicId);
-
-    if (!authorRecipePublicId) {
-      res.status(404).json({ message: "Group not found", success: false });
-      return;
-    }
-
     const userPublicId = req.publicId;
     if (!userPublicId) {
-      res
-        .status(403)
-        .json({ message: "Forbidden: User not authenticated", success: false });
-      return;
-    }
-
-    const isMember = authorRecipePublicId.members.some(
-      (member: { admin: boolean; user: { publicId: string } }) =>
-        member.user.publicId === userPublicId
-    );
-
-    if (!isMember) {
       res.status(403).json({
-        message: "Forbidden: User doesn't own this group",
+        message: "Forbidden: User not authenticated",
         success: false,
       });
       return;
     }
+
+    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+
     next();
-  } catch (error) {
-    res.status(500).json({
-      message: "Internal server error while checking group ownership",
+  } catch (error: any) {
+    res.status(error.status || 500).json({
+      message:
+        error.message || "Internal server error while checking group ownership",
       success: false,
     });
-    return;
   }
 };
 
@@ -211,10 +196,10 @@ export const checkUserIsAdminOfGroup = async (
 ) => {
   try {
     const groupPublicId = req.params.groupId;
-    const authorRecipePublicId: GroupMembersIdByGroupIdResponse =
-      await getPublicUserIdByGroupPublicIdService(groupPublicId);
+    const groupMembers: GroupMembersIdByGroupIdResponse =
+      await getGroupMembersByGroupPublicIdService(groupPublicId);
 
-    if (!authorRecipePublicId) {
+    if (!groupMembers) {
       res.status(404).json({ message: "Group not found", success: false });
       return;
     }
@@ -227,7 +212,7 @@ export const checkUserIsAdminOfGroup = async (
       return;
     }
 
-    const user = authorRecipePublicId.members.find(
+    const user = groupMembers.members.find(
       (member: { admin: boolean; user: { publicId: string } }) =>
         member.user.publicId === userPublicId
     );
@@ -247,5 +232,98 @@ export const checkUserIsAdminOfGroup = async (
       success: false,
     });
     return;
+  }
+};
+
+export const checkIsGroupMemberAndOwnerRecipe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const groupPublicId = req.params.groupId;
+    const userPublicId = req.publicId;
+    const recipePublicId = req.params.recipeId;
+
+    if (!userPublicId || !recipePublicId || !groupPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User not authenticated",
+        success: false,
+      });
+      return;
+    }
+
+    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+
+    const authorRecipePublicId: string =
+      await getPublicUserIdByRecipeIdService(recipePublicId);
+
+    if (authorRecipePublicId !== userPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User doesn't own this recipe",
+        success: false,
+      });
+      return;
+    }
+
+    next();
+  } catch (error: any) {
+    res.status(error.status || 500).json({
+      message:
+        error.message || "Internal server error while checking group ownership",
+      success: false,
+    });
+  }
+};
+
+export const checkIsGroupMemberAndOwnerRecipeOrAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const groupPublicId = req.params.groupId;
+    const userPublicId = req.publicId;
+    const recipePublicId = req.params.recipeId;
+
+    if (!userPublicId || !recipePublicId || !groupPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User not authenticated",
+        success: false,
+      });
+      return;
+    }
+
+    const groupMembers: GroupMembersIdByGroupIdResponse =
+      await getGroupMembersByGroupPublicIdService(groupPublicId);
+
+    if (!groupMembers) {
+      res.status(404).json({ message: "Group not found", success: false });
+      return;
+    }
+
+    const user = groupMembers.members.find(
+      (member: { admin: boolean; user: { publicId: string } }) =>
+        member.user.publicId === userPublicId
+    );
+
+    const authorRecipePublicId: string =
+      await getPublicUserIdByRecipeIdService(recipePublicId);
+
+    if (authorRecipePublicId !== userPublicId && !user?.admin) {
+      res.status(403).json({
+        message: "Forbidden: User doesn't own this recipe",
+        success: false,
+      });
+      return;
+    }
+
+    next();
+  } catch (error: any) {
+    res.status(error.status || 500).json({
+      message:
+        error.message || "Internal server error while checking group ownership",
+      success: false,
+    });
   }
 };

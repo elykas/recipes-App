@@ -177,7 +177,7 @@ export const pgGetRecipesByIds = async (
 export const pgCreateRecipe = async (
   recipeData: IRecipe,
   publicAuthorId: string,
-  imageUrl?: string 
+  imageUrl: string | null 
 ): Promise<RecipeIdResonse> => {
   const newRecipe = await prisma.recipe.create({
     data: {
@@ -273,10 +273,10 @@ export const pgUpdateRecipeCategories = async (
 };
 
 export const pgDeleteRecipe = async (
-  publiRecipeId: string
+  publicRecipeId: string
 ): Promise<RecipeIdResonse> => {
   const recipe = await prisma.recipe.delete({
-    where: { publicId: publiRecipeId },
+    where: { publicId: publicRecipeId },
     select: {
       publicId: true,
     },
@@ -296,7 +296,7 @@ export const pgGetImageOfRecipeByPublicId = async (
 
 export const pgUpdateRecipeImage = async (
   publicRecipeId: string,
-  imageUrl: string | undefined
+  imageUrl: string | null
 ): Promise<RecipeImageResponse> => {
   const updatedImage = await prisma.recipe.update({
     where: { publicId: publicRecipeId },

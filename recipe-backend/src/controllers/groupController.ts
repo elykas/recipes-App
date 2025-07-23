@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../types/requests";
 import {
-    addRecipeToGroupService,
+  addRecipeToGroupService,
   createGroupService,
   deleteGroupService,
   editGroupDetailsService,
   getGroupRecipesPreviewService,
   getUserGroupsService,
+  removeRecipeFromGroupService,
+  updateImageToGroupService,
 } from "../services/groupService";
 import {
   CreateGroupDto,
@@ -133,9 +135,81 @@ export const addRecipeToGroup = async (
       publicRecipeId,
       publicGroupId,
       publicUserId
-    )
+    );
     res.status(200).json({
       data: recipeAdded,
+      success: true,
+      message: "Groups deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeRecipeFromGroup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: publicGroupId, recipeId: publicRecipeId } = req.params;
+    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const recipeRemoved = await removeRecipeFromGroupService(
+      publicRecipeId,
+      publicGroupId,
+      publicUserId
+    );
+    res.status(200).json({
+      data: recipeRemoved,
+      success: true,
+      message: "Recipes removed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateImageOfGroup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: publicGroupId } = req.params;
+    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const image = req.file;
+    const recipeAdded = await updateImageToGroupService(
+      publicGroupId,
+      publicUserId,
+      image
+    );
+    res.status(200).json({
+      data: recipeAdded,
+      success: true,
+      message: "Groups deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addGroupMember = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: publicGroupId } = req.params;
+    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const memberPublicId = req.params.userId;
+
+    const memberAdded = await addGroupMemberService(
+      publicGroupId,
+      publicUserId,
+      memberPublicId
+    );
+    res.status(200).json({
+      data: memberAdded,
       success: true,
       message: "Groups deleted successfully",
     });
