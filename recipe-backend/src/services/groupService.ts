@@ -1,14 +1,16 @@
 import {
     pgCreateGroup,
+  pgEditGroupDetails,
   pgGetGroupRecipesPreview,
   pgGetPublicUserIdByPublicGroupId,
   pgGetUserGroups,
 } from "../dal/groupDal";
-import { CreateGroupDto, GroupRecipesPreviewDto, NewGroupDto, UserGroupsDto } from "../dto/groupDto";
+import { CreateGroupDto, DeleteGroupDto, GroupRecipesPreviewDto, NewGroupDto, UpdatedGroupDto, UserGroupsDto } from "../dto/groupDto";
 import {
     GroupIdResponse,
   GroupMembersIdByGroupIdResponse,
   GroupRecipesResponse,
+  UpdatedGroupResponse,
   UserGroupsResponse,
 } from "../types/responses";
 import ErrorResponse from "../utils/errors/errors";
@@ -60,6 +62,23 @@ export const createGroupService = async (
   const newGroup: GroupIdResponse = await pgCreateGroup(groupData, publicUserId);
   const newGroupDto: NewGroupDto = { publicId: newGroup.publicId };
   return newGroupDto;
+};
+
+export const editGroupDetailsService = async (groupData: CreateGroupDto, publicGroupId: string) => {
+  const updatedGroup: UpdatedGroupResponse = await pgEditGroupDetails(groupData, publicGroupId);
+
+  const updatedGroupDto: UpdatedGroupDto = { 
+    publicId: updatedGroup.publicId,
+    name: updatedGroup.name,
+    description: updatedGroup.description
+   };
+  return updatedGroup;
+};
+
+export const deleteGroupService = async (publicGroupId: string): Promise<DeleteGroupDto> => {
+  const deletedGroup: NewGroupDto = { publicId: publicGroupId };  
+  const deletedGroupDto: DeleteGroupDto = { publicId: deletedGroup.publicId };
+  return deletedGroupDto;
 };
 
 export const addGroupMember = async (g, userId) => {};

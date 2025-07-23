@@ -169,7 +169,6 @@ export const checkRecipeOwnerShip = async (
   }
 };
 
-
 export const checkGroupOwnerShip = async (
   req: Request,
   res: Response,
@@ -192,17 +191,18 @@ export const checkGroupOwnerShip = async (
         .json({ message: "Forbidden: User not authenticated", success: false });
       return;
     }
-    
+
     const isMember = authorRecipePublicId.members.some(
-      (member: any) => member.publicId === userPublicId
+      (member: { admin: boolean; user: { publicId: string } }) =>
+        member.user.publicId === userPublicId
     );
-    
+
     if (!isMember) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this group",
         success: false,
       });
-      return;    
+      return;
     }
     next();
   } catch (error) {
@@ -210,6 +210,52 @@ export const checkGroupOwnerShip = async (
       message: "Internal server error while checking group ownership",
       success: false,
     });
-    return; 
-    }
+    return;
   }
+};
+
+export const checkUserIsAdminOfGRoup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const groupPublicId = req.params.groupId;
+    const authorRecipePublicId: GroupMembersIdByGroupIdResponse =
+      await getPublicUserIdByGroupPublicIdService(groupPublicId);
+
+    if (!authorRecipePublicId) {
+      res.status(404).json({ message: "Group not found", success: false });
+      return;
+    }
+
+    const userPublicId = req.publicId;
+    if (!userPublicId) {
+      res
+        .status(403)
+        .json({ message: "Forbidden: User not authenticated", success: false });
+      return;
+    }
+
+    const user = authorRecipePublicId.members.find(
+      (member: { admin: boolean; user: { publicId: string } }) =>
+        member.user.publicId === userPublicId
+    );
+
+    if (!user || !user.admin) {
+      res.status(403).json({
+        message: "Forbidden: User is not an admin of this group",
+        success: false,
+      });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error while checking group ownership",
+      success: false,
+    });
+    return;
+  }
+};

@@ -1,9 +1,10 @@
 import prisma from "../config/database";
 import { CreateGroupDto } from "../dto/groupDto";
 import {
-    GroupIdResponse,
+  GroupIdResponse,
   GroupMembersIdByGroupIdResponse,
   GroupRecipesResponse,
+  UpdatedGroupResponse,
   UserGroupsResponse,
 } from "../types/responses";
 
@@ -84,6 +85,7 @@ export const pgGetPublicUserIdByPublicGroupId = async (
     select: {
       members: {
         select: {
+          admin: true,
           user: {
             select: {
               publicId: true,
@@ -113,7 +115,7 @@ export const pgCreateGroup = async (
           user: {
             connect: { publicId: publicUserId },
           },
-          admin: true, 
+          admin: true,
         },
       },
     },
@@ -123,4 +125,37 @@ export const pgCreateGroup = async (
   });
 
   return newGroup;
+};
+
+export const pgEditGroupDetails = async (
+  groupData: CreateGroupDto,
+  publicGroupId: string
+): Promise<UpdatedGroupResponse> => {
+  const updatedGroup: UpdatedGroupResponse = await prisma.group.update({
+    where: {
+      publicId: publicGroupId,
+    },
+    data: {
+      name: groupData.name,
+      description: groupData.description,
+    },
+    select: {
+      publicId: true,
+      name: true,
+      description: true,
+    },
+  });
+  return updatedGroup;
+};
+
+export const pgDeleteGroup = async (publicGroupId: string): Promise<GroupIdResponse> => {
+  const deletedGroup: GroupIdResponse = await prisma.group.delete({
+    where: {
+      publicId: publicGroupId,
+    },
+    select: {
+      publicId: true,
+    }
+  });
+  return deletedGroup;
 };

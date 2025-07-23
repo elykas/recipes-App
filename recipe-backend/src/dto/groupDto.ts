@@ -42,3 +42,13 @@ export type CreateGroupDto = {
 export interface NewGroupDto {
     publicId: string
 }
+
+export interface UpdatedGroupDto {
+  publicId: string;
+  name: string;
+  description: string | null;
+}
+
+export interface DeleteGroupDto {
+  publicId: string;
+}
