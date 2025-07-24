@@ -1,12 +1,17 @@
 import prisma from "../config/database";
 import { CreateGroupDto } from "../dto/groupDto";
 import {
+  AddGroupMemberResponse,
+  RecipeGroupResponse,
+  UpdateGroupRecipeResponse,
+} from "../types/response/groupResponse";
+import {
   GroupIdResponse,
   GroupMembersIdByGroupIdResponse,
-  GroupRecipesResponse,
+  GroupRecipesPreviewResponse,
   UpdatedGroupResponse,
   UserGroupsResponse,
-} from "../types/response/responses";
+} from "../types/response/groupResponse";
 
 export const pgGetUserGroups = async (
   publicUserId: string
@@ -34,24 +39,26 @@ export const pgGetUserGroups = async (
 };
 
 export const pgGetGroupRecipesPreview = async (
-  publicGroupId: string
-): Promise<GroupRecipesResponse | null> => {
-  const GroupRecipes: GroupRecipesResponse | null =
+  groupPublicId: string
+): Promise<GroupRecipesPreviewResponse | null> => {
+  const group: GroupRecipesPreviewResponse | null =
     await prisma.group.findUnique({
-      where: {
-        publicId: publicGroupId,
-      },
+      where: { publicId: groupPublicId },
       include: {
-        recipes: {
+        groupRecipes: {
           select: {
-            title: true,
-            publicId: true,
-            imageUrl: true,
-            categories: true,
-            isPublic: true,
-            _count: {
+            recipe: {
               select: {
-                likes: true,
+                title: true,
+                publicId: true,
+                imageUrl: true,
+                categories: true,
+                isPublic: true,
+                _count: {
+                  select: {
+                    likes: true,
+                  },
+                },
               },
             },
           },
@@ -71,8 +78,9 @@ export const pgGetGroupRecipesPreview = async (
         },
       },
     });
+  if (!group) return null;
 
-  return GroupRecipes;
+  return group;
 };
 
 export const pgGetMembersPublicIdByPublicGroupId = async (
@@ -88,6 +96,7 @@ export const pgGetMembersPublicIdByPublicGroupId = async (
           admin: true,
           user: {
             select: {
+              id: true,
               publicId: true,
             },
           },
@@ -97,6 +106,20 @@ export const pgGetMembersPublicIdByPublicGroupId = async (
   });
 
   return groupMembers;
+};
+
+export const pgGetGroupIdByPublicId = async (
+  publicGroupId: string
+): Promise<number | null> => {
+  const groupId = await prisma.group.findUnique({
+    where: {
+      publicId: publicGroupId,
+    },
+    select: {
+      id: true,
+    },
+  });
+  return groupId?.id ?? null;
 };
 
 export const pgCreateGroup = async (
@@ -163,47 +186,63 @@ export const pgDeleteGroup = async (
 };
 
 export const pgAddRecipeToGroup = async (
-  publicRecipeId: string,
-  publicGroupId: string
-): Promise<GroupIdResponse> => {
-  const recipeAdded = await prisma.group.update({
-    where: {
-      publicId: publicGroupId,
-    },
-    data: {
-      recipes: {
-        connect: {
-          publicId: publicRecipeId,
+  recipePublicId: string,
+  groupPublicId: string,
+  addedByPublicId: string
+): Promise<UpdateGroupRecipeResponse> => {
+  const groupRecipe: UpdateGroupRecipeResponse =
+    await prisma.groupRecipe.create({
+      data: {
+        recipe: {
+          connect: { publicId: recipePublicId },
+        },
+        group: {
+          connect: { publicId: groupPublicId },
+        },
+        addedBy: {
+          connect: { publicId: addedByPublicId },
         },
       },
-    },
-    select: {
-      publicId: true,
-    },
-  });
-  return recipeAdded;
+      select: {
+        group: {
+          select: { publicId: true },
+        },
+      },
+    });
+
+  return groupRecipe;
 };
 
 export const pgRemoveRecipeFromGroup = async (
-  publicRecipeId: string,
-  publicGroupId: string
-): Promise<GroupIdResponse> => {
-  const recipeAdded = await prisma.group.update({
-    where: {
-      publicId: publicGroupId,
-    },
-    data: {
-      recipes: {
-        disconnect: {
-          publicId: publicRecipeId,
+  recipePublicId: string,
+  groupPublicId: string
+): Promise<UpdateGroupRecipeResponse> => {
+  const groupRecipe: UpdateGroupRecipeResponse =
+    await prisma.groupRecipe.delete({
+      where: {
+        groupId_recipeId: {
+          groupId: (
+            await prisma.group.findUniqueOrThrow({
+              where: { publicId: groupPublicId },
+              select: { id: true },
+            })
+          ).id,
+          recipeId: (
+            await prisma.recipe.findUniqueOrThrow({
+              where: { publicId: recipePublicId },
+              select: { id: true },
+            })
+          ).id,
         },
       },
-    },
-    select: {
-      publicId: true,
-    },
-  });
-  return recipeAdded;
+      select: {
+        group: {
+          select: { publicId: true },
+        },
+      },
+    });
+
+  return groupRecipe;
 };
 
 export const pgGetImageOfGroupByPublicId = async (
@@ -234,37 +273,115 @@ export const pgUpdateImageOfGroup = async (
   return recipeAdded;
 };
 
-export const pgAddGroupMember = async (groupId: string, memberId: string): Promise<GroupIdResponse> => {
-  const groupMember = await prisma.groupMember.create({
+export const pgAddGroupMember = async (
+  groupPublicId: string,
+  memberPublicId: string
+): Promise<AddGroupMemberResponse> => {
+  const groupMember: AddGroupMemberResponse = await prisma.groupMember.create({
     data: {
       group: {
-        connect: { publicId: groupId },
+        connect: { publicId: groupPublicId },
       },
       user: {
-        connect: { publicId: memberId },
+        connect: { publicId: memberPublicId },
       },
     },
     select: {
-      admin: true,
-      user: {
-        publicId: true,
-        
-      }
+      group: {
+        select: {
+          publicId: true,
+        },
+      },
     },
   });
+
   return groupMember;
 };
 
 export const pgRemoveGroupMember = async (
-  groupId: string,
-  memberId: string
-): Promise<GroupIdResponse> => {
-  const groupMember = wait prisma.groupMember.deleteMany({
+  groupPublicId: string,
+  memberPublicId: string
+): Promise<number> => {
+  const result = await prisma.groupMember.deleteMany({
     where: {
-      group: { publicId: groupId },
-      user: { publicId: memberId },
+      group: { publicId: groupPublicId },
+      user: { publicId: memberPublicId },
     },
   });
 
-  return groupMember;
+  return result.count;
+};
+
+export const pgGetGroupPublicIdByRecipeId = async (
+  recipeId: number,
+  groupId: number
+) => {
+  const groupRecipe = await prisma.groupRecipe.findUnique({
+    where: {
+      groupId_recipeId: {
+        groupId,
+        recipeId,
+      },
+    },
+    select: {
+      group: {
+        select: { publicId: true },
+      },
+    },
+  });
+
+  return groupRecipe?.group.publicId ?? "";
+};
+
+export const pgGetGroupRecipeById = async (
+  recipePublicId: string,
+  groupPublicId: string
+): Promise<RecipeGroupResponse> => {
+  const groupRecipe: RecipeGroupResponse =
+    await prisma.groupRecipe.findFirstOrThrow({
+      where: {
+        recipe: { publicId: recipePublicId },
+        group: { publicId: groupPublicId },
+      },
+      select: {
+        recipe: {
+          include: {
+            ingredients: true,
+            categories: true,
+            steps: true,
+          },
+        },
+      },
+    });
+
+  return groupRecipe;
+};
+
+export const pgUpdateAdminStatus = async (
+  groupId: number,
+  memberId: number,
+  adminStatus: boolean
+): Promise<GroupIdResponse> => {
+  const memberStatusUpdated: GroupIdResponse = await prisma.group.update({
+    where: {
+      id: groupId, 
+    },
+    data: {
+      members: {
+        update: {
+          where: {
+            id: memberId, 
+          },
+          data: {
+            admin: adminStatus,
+          },
+        },
+      },
+    },
+    select: {
+      publicId: true,
+    },
+  });
+
+  return memberStatusUpdated;
 };

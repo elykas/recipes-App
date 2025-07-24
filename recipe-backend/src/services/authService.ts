@@ -1,6 +1,6 @@
 import { pgCheckUserExist, pgCreateUser } from "../dal/authDAL";
 import { UserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/response/responses";
+import { UserWithoutRecipes } from "../types/response/recipeResponses";
 import errorResponse from "../utils/errors/errors";
 import { mapUserToDto } from "../utils/mappers/userMapper";
 

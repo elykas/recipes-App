@@ -46,9 +46,11 @@ export const searchQuerySchema = z.object({
     }),
 });
 
-export const IdParamsSchema = z.object({
-  recipeId: z.uuid("Invalid recipe ID format"),
-});
+export const IdParamsSchema = z.record(
+  z.string(),
+  z.uuid("Invalid ID format")
+);
+
 
 export const recipesIdBodySchema = z.object({
   recipesId: z.array(z.uuid("Invalid recipe ID format")),

@@ -6,6 +6,7 @@ import {
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
 import { UserSchema } from "../schema/validateUserSchema";
+import {groupBodySchema} from "../schema/validateGroupSchema"
 
 export const validateUser = (
   req: Request,
@@ -77,6 +78,22 @@ export const validateRecipeIdBody = (
   next: NextFunction
 ) => {
   const result = recipesIdBodySchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid recipe ID parameter",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateGroupBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = groupBodySchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
       success: false,

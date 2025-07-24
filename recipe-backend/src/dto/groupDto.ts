@@ -1,4 +1,5 @@
-import { Category } from "@prisma/client";
+import { Category, DifficultyLevel } from "@prisma/client";
+import { ICategory, IIngredient, ISteps } from "../models/recipeModel";
 
 export interface UserGroupsDto {
   publicId: string;
@@ -24,10 +25,24 @@ export interface GroupRecipeDto {
   likesCount: number;
 }
 
+export interface FullRecipeGroupDto {
+  publicId: string;
+  title: string;
+  categories: ICategory[];
+  ingredients: IIngredient[];
+  difficulty: DifficultyLevel;
+  isPublic: boolean;
+  steps: ISteps[];
+  prepTime?: number | null;
+  imageUrl?: string | null;
+  description?: string | null;
+  tip?: string[] | null;
+}
+
 export interface GroupRecipesPreviewDto {
   publicId: string;
   name: string;
-  imageUrl: string;
+  imageUrl: string | null;
   members: GroupMemberDto[];
   recipes: GroupRecipeDto[];
 }
@@ -56,4 +71,6 @@ export interface RemoveRecipeFromGroupDto extends GroupBaseDto {}
 
 export interface UpdatedImageGroupDto extends GroupBaseDto {}
 
-export interface addGroupMemberDto extends GroupBaseDto {}
+export interface AddGroupMemberDto extends GroupBaseDto {}
+
+export interface GroupOfMemberDto extends GroupBaseDto {}

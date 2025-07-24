@@ -7,10 +7,13 @@ import {
   RecipeIdResponse,
   RecipeImageResponse,
   SearchRecipeResponse,
-} from "../types/response/responses";
+} from "../types/response/recipeResponses";
+import { error } from "console";
+import ErrorResponse from "../utils/errors/errors";
 
 export const pgGetRecipesName = async (
   searchQuery: string,
+  limit: number,
   publicAuthorId?: string
 ): Promise<SearchRecipeResponse[]> => {
   const recipes: SearchRecipeResponse[] = await prisma.recipe.findMany({
@@ -30,7 +33,7 @@ export const pgGetRecipesName = async (
       isPublic: true,
     },
     orderBy: { createdAt: "desc" },
-    take: 5,
+    take: limit,
   });
   return recipes;
 };
@@ -344,4 +347,26 @@ export const pgGetPreviewRecipesByCategory = async (
     }),
   });
   return recipes;
+};
+
+export const pgToggleRecipePrivacy = async (recipePublicId: string): Promise<RecipeIdResponse> => {
+  const privacyStatus = await prisma.recipe.findUnique({
+    where: { publicId: recipePublicId },
+    select: {
+      isPublic: true,
+    },
+  })
+  if (!privacyStatus) {
+    throw ErrorResponse("Recipe not found", 404);
+  }
+  const recipe: RecipeIdResponse = await prisma.recipe.update({
+    where: { publicId: recipePublicId },
+    data: {
+      isPublic:!privacyStatus.isPublic
+    },
+    select: {
+      publicId: true,
+    },
+  });
+  return recipe;
 };

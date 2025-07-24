@@ -1,26 +1,34 @@
 import express from "express";
 import {
+  addGroupMember,
   addRecipeToGroup,
   createGroup,
   deleteGroup,
   editGroupDetails,
+  getGroupRecipeById,
   getGroupRecipesPreview,
   getUserGroups,
+  removeGroupMember,
   removeRecipeFromGroup,
+  updateAdminStatus,
   updateImageOfGroup,
 } from "../controllers/groupController";
 import {
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIsGroupMemberShipMiddleware,
+  checkIsUserGroupMemberMiddleware,
   checkIsGroupMemberAndOwnerRecipeMiddleware,
-  checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware,
+  checkIsGroupMemberAndOwnerOrAdminMiddleware,
   checkUserIsAdminOfGroupMiddleware,
+  checkIsRecipeAndUserGroupMemberMiddleware,
+  checkIsMemberGroupMemberMiddleware,
 } from "../middleware/authMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
-import { validateIdParams } from "../middleware/validateMiddleware";
-import { checkIfUserIsMemberOfGroup } from "../utils/checkUtils/checkUserUtils";
+import {
+  validateGroupBody,
+  validateIdParams,
+} from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 
 const router = express.Router();
@@ -36,7 +44,7 @@ router.get(
   "/:groupId",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIsGroupMemberShipMiddleware,
+  checkIsUserGroupMemberMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
@@ -48,6 +56,7 @@ router.post(
   authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
+  validateGroupBody,
   createGroup
 );
 router.put(
@@ -58,6 +67,7 @@ router.put(
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
+  validateGroupBody,
   editGroupDetails
 );
 router.delete(
@@ -84,7 +94,7 @@ router.put(
   "/:groupId/recipe/:recipeId/remove",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware,
+  checkIsGroupMemberAndOwnerOrAdminMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
@@ -105,20 +115,43 @@ router.put(
   "/:groupId/user/:userId/add",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIsGroupMemberAndOwnerRecipeMiddleware,
+  checkUserIsAdminOfGroupMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateIdParams
+  validateIdParams,
+  addGroupMember
 );
 
 router.put(
   "/:groupId/user/:userId/remove",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware,
+  checkIsGroupMemberAndOwnerOrAdminMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateIdParams
+  validateIdParams,
+  removeGroupMember
+);
+router.get(
+  ":groupId/recipe/:recipeId",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkIsRecipeAndUserGroupMemberMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  getGroupRecipeById
+);
+router.put(
+  "a/:groupId/member/:memberId/",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkUserIsAdminOfGroupMiddleware,
+  checkIsMemberGroupMemberMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  updateAdminStatus
 );
 
 export default router;

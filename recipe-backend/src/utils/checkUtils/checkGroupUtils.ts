@@ -1,23 +1,18 @@
-import  ErrorResponse  from "../../utils/errors/errors";
-import {GroupMembersIdByGroupIdResponse} from "../../types/response/groupResponse";
+import ErrorResponse from "../../utils/errors/errors";
+import { GroupMembersIdByGroupIdResponse } from "../../types/response/groupResponse";
 import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
 
 export const checkIfUserIsAdminOfGroup = async (
-  currentUserPublicId: string
+  userPublicId: string,
+  groupPublicId: string
 ): Promise<boolean> => {
-  const groupMembersId: GroupMembersIdByGroupIdResponse | null =
-    await getGroupMembersByGroupPublicIdService(currentUserPublicId);
+  const groupMembers: GroupMembersIdByGroupIdResponse =
+    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
 
-  if (!groupMembersId) throw ErrorResponse("Group not found", 404);
-
-  const user = groupMembersId.members.find(
-    (m: { user: { publicId: string }; admin: boolean }) =>
-      m.user.publicId === currentUserPublicId
-  );
-
+  const user = findUserInGroupMembers(groupMembers, userPublicId);
   if (!user || !user.admin) throw ErrorResponse("Unauthorized", 401);
 
-  return true;
+  return user.admin;
 };
 
 export const checkIfUserIsMemberOfGroup = async (
@@ -32,7 +27,8 @@ export const checkIfUserIsMemberOfGroup = async (
   }
 
   const isMember = groupMembersPublicId.members.some(
-    (member: { user: { publicId: string }, admin: boolean }) => member.user.publicId === userPublicId
+    (member: { user: { publicId: string; id: number }; admin: boolean }) =>
+      member.user.publicId === userPublicId
   );
 
   if (!isMember) {
@@ -41,3 +37,12 @@ export const checkIfUserIsMemberOfGroup = async (
 
   return groupMembersPublicId;
 };
+
+export const findUserInGroupMembers = (
+  groupMembers: GroupMembersIdByGroupIdResponse,
+  userPublicId: string
+): { admin: boolean; user: { publicId: string; id: number } } | undefined =>
+  groupMembers.members.find(
+    (member: { user: { publicId: string; id: number } }) =>
+      member.user.publicId === userPublicId
+  );

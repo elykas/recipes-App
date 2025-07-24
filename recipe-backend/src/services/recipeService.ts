@@ -13,6 +13,8 @@ import {
   pgUpdateRecipe,
   pgUpdateRecipeCategories,
   pgUpdateRecipeImage,
+  pgGetRecipeIdByPublicId,
+  pgToggleRecipePrivacy,
 } from "../dal/recipesDAL";
 import {
   ImageRecipeDto,
@@ -28,7 +30,7 @@ import {
   RecipeIdResponse as RecipeIdResponse,
   RecipeImageResponse,
   SearchRecipeResponse,
-} from "../types/response/responses";
+} from "../types/response/recipeResponses";
 import {
   checkUserIsOwnerAndGetId,
   checkUserIsOwnerAndGetIds as checkUserIsOwnerByIds,
@@ -45,14 +47,26 @@ import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 
 export const getRecipesNameService = async (
   searchQuery: string,
+  limit: number,
   publicAuthorId?: string
 ): Promise<SearchRecipeDto[]> => {
   const recipes: SearchRecipeResponse[] = await pgGetRecipesName(
     searchQuery,
+    limit,
     publicAuthorId
   );
   const recipesDto: SearchRecipeDto[] = recipes.map(mapSearchRecipeToDto);
   return recipesDto;
+};
+
+export const getRecipeIdByPublicIdService = async (
+  publicRecipeId: string
+): Promise<number> => {
+  const recipeId: number | null = await pgGetRecipeIdByPublicId(
+    publicRecipeId
+  );
+  if (!recipeId) throw errorResponse("Recipe not found", 404);
+  return recipeId;
 };
 
 export const getPreviewRecipesService = async (
@@ -254,4 +268,20 @@ export const getRecipesPreviewByCategoryService = async (
   const recipesDto: PreviewRecipeDto[] = recipes.map(mapPreviewRecipeToDto);
 
   return recipesDto;
+};
+
+export const toggleRecipePrivacyService = async (
+  publicUserId: string,
+  publicRecipeId: string
+): Promise<RecipeIdDto> => {
+  const authorPublicId = await getUserPublicIdByRecipeIdService(publicRecipeId);
+
+  if (authorPublicId !== publicUserId) throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+
+  const recipe: RecipeIdResponse = await pgToggleRecipePrivacy(publicRecipeId);
+
+  const recipeIdDto: RecipeIdDto = {
+    publicId: recipe.publicId,
+  };
+  return recipeIdDto;
 };

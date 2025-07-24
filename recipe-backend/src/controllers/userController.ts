@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { UpdateUserDto, UserDto } from "../dto/userDto";
+import { UpdateUserDto, UserDto, UsernameDto } from "../dto/userDto";
 import {
   deleteUserService,
+  getAllUsernamesService,
   getAllUsersService,
   getUserByIdService,
   updateUserImageService,
@@ -24,6 +25,25 @@ export const getAllUsers = async (
     next(error);
   }
 };
+
+export const getAllUsernames = async(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const searchQuery = req.query.query as string;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const usernames: UsernameDto[] = await getAllUsernamesService(searchQuery, limit);
+    res.status(200).json({
+      data: usernames,
+      success: true,
+      message: "Usernames fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const getUserById = async (
   req: Request,

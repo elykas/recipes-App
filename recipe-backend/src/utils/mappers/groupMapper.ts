@@ -1,5 +1,9 @@
-import { GroupRecipesPreviewDto } from "../../dto/groupDto";
-import { UserGroupsResponse } from "../../types/response/responses";
+import { GroupRecipesPreviewDto, FullRecipeGroupDto } from "../../dto/groupDto";
+import {
+  GroupRecipesPreviewResponse,
+  RecipeGroupResponse,
+  UserGroupsResponse,
+} from "../../types/response/groupResponse";
 
 export const userGroupsMapper = (userGroups: UserGroupsResponse) => ({
   publicId: userGroups.group.publicId,
@@ -9,7 +13,7 @@ export const userGroupsMapper = (userGroups: UserGroupsResponse) => ({
 });
 
 export const groupRecipesPreviewMapper = (
-  data: any
+  data: GroupRecipesPreviewResponse
 ): GroupRecipesPreviewDto => ({
   publicId: data.publicId,
   name: data.name,
@@ -21,16 +25,50 @@ export const groupRecipesPreviewMapper = (
     headLine: m.user.headLine,
     imageUrl: m.user.imageUrl,
   })),
-  recipes: data.recipes.map((r: any) => ({
-    title: r.title,
-    publicId: r.publicId,
-    imageUrl: r.imageUrl,
-    categories: r.categories.map((c: any) => ({
-      id: c.id,
-      name: c.name,
-      type: c.type,
-    })),
-    isPublic: r.isPublic,
-    likesCount: r._count.likes,
+  recipes: data.groupRecipes.map((gr: any) => {
+    const r = gr.recipe;
+    return {
+      title: r.title,
+      publicId: r.publicId,
+      imageUrl: r.imageUrl,
+      categories: r.categories.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        type: c.type,
+      })),
+      isPublic: r.isPublic,
+      likesCount: r._count.likes,
+    };
+  }),
+});
+
+export const recipeGroupMapper = (
+  recipe: RecipeGroupResponse
+): FullRecipeGroupDto => ({
+  publicId: recipe.recipe.publicId,
+  title: recipe.recipe.title,
+  difficulty: recipe.recipe.difficulty,
+  isPublic: recipe.recipe.isPublic,
+  tip: recipe.recipe.tip,
+  prepTime: recipe.recipe.prepTime,
+  imageUrl: recipe.recipe.imageUrl,
+  description: recipe.recipe.description,
+  categories: recipe.recipe.categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    type: c.type,
+  })),
+  steps: recipe.recipe.steps.map((s) => ({
+    id: s.id,
+    title: s.title,
+    description: s.description,
+    duration: s.duration,
+    order: s.order,
+  })),
+  ingredients: recipe.recipe.ingredients.map((ing) => ({
+    id: ing.id,
+    name: ing.name,
+    quantity: ing.quantity,
+    unit: ing.unit,
   })),
 });

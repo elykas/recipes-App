@@ -49,3 +49,10 @@ export type UpdateUserDto = {
   headLine?: string | null;
   bio?: string | null;
 };
+
+export type UsernameDto = {
+  username: string;
+  publicId: string;
+  fullName?: string | null;
+  imageUrl?: string | null;
+};

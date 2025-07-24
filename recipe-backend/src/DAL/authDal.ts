@@ -1,5 +1,5 @@
 import prisma from "../config/database";
-import { UserWithoutRecipes } from "../types/response/responses";
+import { UserWithoutRecipes } from "../types/response/recipeResponses";
 
 export const pgCreateUser = async (
   publicId: string,

@@ -6,9 +6,13 @@ import {
   pgGetUserById,
   pgGetUserIdByPublicId,
   pgUpdateUser,
+  pgGetAllUsernames,
 } from "../dal/userDal";
-import { UpdateUserDto, UserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/response/responses";
+import { UpdateUserDto, UserDto, UsernameDto } from "../dto/userDto";
+import {
+  UsernamesResponse,
+  UserWithoutRecipes,
+} from "../types/response/userResponse";
 import errorResponse from "../utils/errors/errors";
 import { mapUserToDto } from "../utils/mappers/userMapper";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
@@ -17,6 +21,20 @@ export const getAllUsersService = async (): Promise<UserDto[]> => {
   const users: UserWithoutRecipes[] = await pgGetAllUsers();
   const recipesDto: UserDto[] = users.map(mapUserToDto);
   return recipesDto;
+};
+
+export const getAllUsernamesService = async (
+  searchQuery: string,
+  limit: number
+): Promise<UsernameDto[]> => {
+  const usernames: UsernamesResponse = await pgGetAllUsernames(
+    searchQuery,
+    limit
+  );
+  const usernamesDto: UsernameDto[] = usernames.map((user: UsernameDto) => ({
+    ...user,
+  }));
+  return usernamesDto;
 };
 
 export const getUserByIdService = async (

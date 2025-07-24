@@ -9,6 +9,7 @@ import {
   getRecipesName,
   getRecipesPreviewByCategory,
   getSomeRecipesById,
+  toggleRecipePrivacy,
 } from "../controllers/recipesController";
 import {
   authenticateTokenMiddleware,
@@ -134,5 +135,15 @@ router.get(
   validateSearchQuery,
   getRecipesPreviewByCategory
 );
+router.put(
+  "/t/:recipeId",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  toggleRecipePrivacy
+)
 
 export default router;

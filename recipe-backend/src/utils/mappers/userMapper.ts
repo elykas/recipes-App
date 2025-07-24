@@ -1,8 +1,8 @@
-import { UserDto } from "../../dto/userDto";
+import { UserDto, UsernameDto } from "../../dto/userDto";
 import {
-  UserWithoutRecipes,
-  UserWithRecipes,
-} from "../../types/response/responses";
+ 
+} from "../../types/response/recipeResponses";
+import { UsernamesResponse, UserWithoutRecipes, UserWithRecipes } from "../../types/response/userResponse";
 
 export const mapUserToDto = (
   user: UserWithRecipes | UserWithoutRecipes
@@ -12,7 +12,6 @@ export const mapUserToDto = (
     username,
     email,
     fullName,
-    phone,
     imageUrl,
     bio,
     headLine,
@@ -24,7 +23,6 @@ export const mapUserToDto = (
     username,
     email,
     fullName,
-    phone,
     imageUrl,
     bio,
     headLine,
@@ -32,3 +30,5 @@ export const mapUserToDto = (
   };
   return dto;
 };
+
+

@@ -25,6 +25,15 @@ export type UserWithRecipes = Prisma.UserGetPayload<{
   };
 }>;
 
+export type UsernamesResponse = Prisma.UserGetPayload<{
+  select: {
+    username: true;
+    publicId: true;
+    fullName: true;
+    imageUrl: true;
+  };
+}>[];
+
 export type UserWithoutRecipes = Prisma.UserGetPayload<{
   include: {
     recipes: false;

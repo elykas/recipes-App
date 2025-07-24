@@ -13,18 +13,22 @@ export type UserGroupsResponse = Prisma.GroupMemberGetPayload<{
   };
 }>;
 
-export type GroupRecipesResponse = Prisma.GroupGetPayload<{
+export type GroupRecipesPreviewResponse = Prisma.GroupGetPayload<{
   include: {
-    recipes: {
+    groupRecipes: {
       select: {
-        title: true;
-        publicId: true;
-        imageUrl: true;
-        categories: true;
-        isPublic: true;
-        _count: {
+        recipe: {
           select: {
-            likes: true;
+            title: true;
+            publicId: true;
+            imageUrl: true;
+            categories: true;
+            isPublic: true;
+            _count: {
+              select: {
+                likes: true;
+              };
+            };
           };
         };
       };
@@ -37,12 +41,25 @@ export type GroupRecipesResponse = Prisma.GroupGetPayload<{
             fullName: true;
             username: true;
             headLine: true;
+            imageUrl: true;
           };
         };
       };
     };
   };
 }>;
+
+export type RecipeGroupResponse = Prisma.GroupRecipeGetPayload<{
+  select: {
+      recipe: {
+        include: {
+          ingredients: true,
+          categories: true,
+          steps: true,
+        },
+      },
+    },
+  }>;
 
 export type GroupMembersIdByGroupIdResponse = Prisma.GroupGetPayload<{
   select: {
@@ -51,6 +68,7 @@ export type GroupMembersIdByGroupIdResponse = Prisma.GroupGetPayload<{
         admin: true;
         user: {
           select: {
+            id: true;
             publicId: true;
           };
         };
@@ -69,6 +87,26 @@ export type UpdatedGroupResponse = Prisma.GroupGetPayload<{
   select: {
     publicId: true;
     name: true;
-    description: true
+    description: true;
+  };
+}>;
+
+export type AddGroupMemberResponse = Prisma.GroupMemberGetPayload<{
+  select: {
+    group: {
+      select: {
+        publicId: true;
+      };
+    };
+  };
+}>;
+
+export type UpdateGroupRecipeResponse = Prisma.GroupRecipeGetPayload<{
+  select: {
+    group: {
+      select: {
+        publicId: true;
+      };
+    };
   };
 }>;

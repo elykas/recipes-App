@@ -17,6 +17,7 @@ import {
   getRecipesNameService,
   getRecipesPreviewByCategoryService,
   getSomeRecipesByIdsService,
+  toggleRecipePrivacyService,
   updateRecipeImageService,
   updateRecipeService,
 } from "../services/recipeService";
@@ -28,10 +29,12 @@ export const getRecipesName =
     try {
       const { publicId } = req as AuthenticatedRequest;
       const searchQuery = req.query.query as string;
+      const limit = parseInt(req.query.limit as string) || 10;
       const onlyRecipes = req.query.onlyRecipes === "true";
 
       const recipes: SearchRecipeDto[] = await getRecipesNameService(
         searchQuery,
+        limit,
         isUserScoped ? publicId : undefined
       );
       const categories: CategoryDto[] | false =
@@ -240,3 +243,25 @@ export const getRecipesPreviewByCategory =
       next(error);
     }
   };
+
+export const toggleRecipePrivacy = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const { recipeId } = req.params;
+    const updatedRecipe = await toggleRecipePrivacyService(
+      userPublicId,
+      recipeId
+    );
+    res.status(200).json({
+      data: updatedRecipe,
+      success: true,
+      message: "Recipe privacy updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

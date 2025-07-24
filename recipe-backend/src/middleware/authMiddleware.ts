@@ -1,10 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { getGroupMembersByGroupPublicIdService } from "../services/groupService";
+import {
+  getGroupMembersByGroupPublicIdService,
+  getGroupPublicIdByRecipeIdService,
+} from "../services/groupService";
 import { getUserPublicIdByRecipeIdService } from "../services/recipeService";
 import { getUserByIdService } from "../services/userService";
 import { GroupMembersIdByGroupIdResponse } from "../types/response/groupResponse";
 import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
-import { checkIfUserIsMemberOfGroup as checkIfUserIsMemberOfGroupMiddleware } from "../utils/checkUtils/checkGroupUtils";
+import {
+  checkIfUserIsMemberOfGroup,
+  findUserInGroupMembers,
+} from "../utils/checkUtils/checkGroupUtils";
 
 declare module "express" {
   interface Request {
@@ -161,7 +167,7 @@ export const checkRecipeOwnerShipMiddleware = async (
   }
 };
 
-export const checkIsGroupMemberShipMiddleware = async (
+export const checkIsUserGroupMemberMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -177,7 +183,7 @@ export const checkIsGroupMemberShipMiddleware = async (
       return;
     }
 
-    await checkIfUserIsMemberOfGroupMiddleware(groupPublicId, userPublicId);
+    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
 
     next();
   } catch (error: any) {
@@ -253,7 +259,7 @@ export const checkIsGroupMemberAndOwnerRecipeMiddleware = async (
       return;
     }
 
-    await checkIfUserIsMemberOfGroupMiddleware(groupPublicId, userPublicId);
+    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
 
     const authorRecipePublicId: string =
       await getUserPublicIdByRecipeIdService(recipePublicId);
@@ -276,7 +282,7 @@ export const checkIsGroupMemberAndOwnerRecipeMiddleware = async (
   }
 };
 
-export const checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware = async (
+export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -284,9 +290,9 @@ export const checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware = async (
   try {
     const groupPublicId = req.params.groupId;
     const userPublicId = req.publicId;
-    const recipePublicId = req.params.recipeId;
+    const { userId, recipeId } = req.params;
 
-    if (!userPublicId || !recipePublicId || !groupPublicId) {
+    if (!userPublicId || !groupPublicId) {
       res.status(403).json({
         message: "Forbidden: User not authenticated",
         success: false,
@@ -302,20 +308,34 @@ export const checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware = async (
       return;
     }
 
-    const user = groupMembers.members.find(
-      (member: { admin: boolean; user: { publicId: string } }) =>
-        member.user.publicId === userPublicId
-    );
-
-    const authorRecipePublicId: string =
-      await getUserPublicIdByRecipeIdService(recipePublicId);
-
-    if (authorRecipePublicId !== userPublicId && !user?.admin) {
+    const user = findUserInGroupMembers(groupMembers, userPublicId);
+    if (!user) {
       res.status(403).json({
-        message: "Forbidden: User doesn't own this recipe",
+        message: "Forbidden: User is not a member of the group",
         success: false,
       });
       return;
+    }
+
+    if (recipeId) {
+      const authorRecipePublicId =
+        await getUserPublicIdByRecipeIdService(recipeId);
+
+      if (authorRecipePublicId !== userPublicId && !user.admin) {
+        return res.status(403).json({
+          message: "Forbidden: User doesn't own this recipe or is not admin",
+          success: false,
+        });
+      }
+    }
+
+    if (userId) {
+      if (!user.admin && userPublicId !== userId) {
+        return res.status(403).json({
+          message: "Forbidden: Only admins can modify other members",
+          success: false,
+        });
+      }
     }
 
     next();
@@ -325,5 +345,69 @@ export const checkIsGroupMemberAndOwnerRecipeOrAdminMiddleware = async (
         error.message || "Internal server error while checking group ownership",
       success: false,
     });
+  }
+};
+
+export const checkIsRecipeAndUserGroupMemberMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const recipePublicId = req.params.recipeId;
+    const userPublicId = req.publicId;
+    const groupPublicId = req.params.groupId;
+
+    if (!userPublicId || !recipePublicId || !groupPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User not authenticated",
+        success: false,
+      });
+      return;
+    }
+    const groupRecipePublicId = await getGroupPublicIdByRecipeIdService(
+      recipePublicId,
+      groupPublicId
+    );
+
+    await checkIfUserIsMemberOfGroup(
+      groupRecipePublicId,
+      userPublicId
+    );
+    next();
+  } catch (error) {
+    res.status(403).json({
+      message: "Forbidden: User is not a member of the group",
+      success: false,
+    });
+    return;
+  }
+};
+
+export const checkIsMemberGroupMemberMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const groupPublicId = req.params.groupId;
+    const memberPublicId = req.params.memberId;
+
+    if (!memberPublicId || !groupPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User not authenticated",
+        success: false,
+      });
+      return;
+    }
+
+    await checkIfUserIsMemberOfGroup(groupPublicId, memberPublicId);
+    next();
+  } catch (error) {
+    res.status(403).json({
+      message: "Forbidden: User is not a member of the group",
+      success: false,
+    });
+    return;
   }
 };

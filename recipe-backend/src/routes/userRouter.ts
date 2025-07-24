@@ -5,6 +5,7 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
+  getAllUsernames,
 } from "../controllers/userController";
 import {
   authenticateTokenMiddleware,
@@ -48,5 +49,11 @@ router.delete(
   authorizeUserAndExistMiddleware,
   deleteUser
 );
+router.get(
+  "usernames",
+  authenticateTokenMiddleware,
+  authorizeAdminMiddleware,
+  getAllUsernames
+)
 
 export default router;

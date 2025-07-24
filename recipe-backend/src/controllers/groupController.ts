@@ -1,18 +1,24 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../types/requests";
 import {
+  addGroupMemberService,
   addRecipeToGroupService,
   createGroupService,
   deleteGroupService,
   editGroupDetailsService,
+  getGroupRecipeByIdService,
   getGroupRecipesPreviewService,
   getUserGroupsService,
+  removeGroupMemberService,
   removeRecipeFromGroupService,
+  updateAdminStatusService,
   updateImageToGroupService,
 } from "../services/groupService";
 import {
+  AddGroupMemberDto,
   CreateGroupDto,
   DeleteGroupDto,
+  GroupOfMemberDto,
   GroupRecipesPreviewDto,
   NewGroupDto,
   UserGroupsDto,
@@ -199,17 +205,89 @@ export const addGroupMember = async (
   next: NextFunction
 ) => {
   try {
-    const { groupId: publicGroupId } = req.params;
-    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const { groupId: groupPublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
     const memberPublicId = req.params.userId;
 
-    const memberAdded = await addGroupMemberService(
-      publicGroupId,
-      publicUserId,
+    const groupOfMember: AddGroupMemberDto = await addGroupMemberService(
+      groupPublicId,
+      userPublicId,
       memberPublicId
     );
     res.status(200).json({
-      data: memberAdded,
+      data: groupOfMember,
+      success: true,
+      message: "Groups deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeGroupMember = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: groupPublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const memberPublicId = req.params.userId;
+
+    const groupOfMember: number = await removeGroupMemberService(
+      groupPublicId,
+      userPublicId,
+      memberPublicId
+    );
+    res.status(200).json({
+      data: groupOfMember,
+      success: true,
+      message: "Groups deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getGroupRecipeById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { recipeId: recipePublicId } = req.params;
+    const { groupId: groupPublicId } = req.params;
+    const recipe = await getGroupRecipeByIdService(
+      recipePublicId,
+      groupPublicId
+    );
+    res.status(200).json({
+      data: recipe,
+      success: true,
+      message: "Recipe fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAdminStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: groupPublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const memberPublicId = req.params.userId;
+
+    const groupOfMember: GroupOfMemberDto = await updateAdminStatusService(
+      groupPublicId,
+      userPublicId,
+      memberPublicId
+    );
+    res.status(200).json({
+      data: groupOfMember,
       success: true,
       message: "Groups deleted successfully",
     });

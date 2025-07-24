@@ -1,7 +1,7 @@
 import { CategoryType } from "@prisma/client";
 import prisma from "../config/database";
 import { ICategory } from "../models/recipeModel";
-import { CategoriesResponse } from "../types/response/responses";
+import { CategoriesResponse } from "../types/response/recipeResponses";
 
 export const pgGetAllCategories = async (): Promise<ICategory[]> => {
   const categories: ICategory[] = await prisma.category.findMany();

@@ -1,10 +1,25 @@
 import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
-import { UserWithoutRecipes } from "../types/response/responses";
+import {
+  UsernamesResponse,
+  UserWithoutRecipes,
+} from "../types/response/userResponse";
 
 export const pgGetAllUsers = async (): Promise<UserWithoutRecipes[]> => {
   const users = await prisma.user.findMany();
   return users;
+};
+
+export const pgGetAllUsernames = async (
+  searchQuery: string,
+  limit: number
+): Promise<UsernamesResponse> => {
+  const usernames = await prisma.user.findMany({
+    where: { username: { contains: searchQuery, mode: "insensitive" } },
+    select: { username: true, publicId: true, fullName: true, imageUrl: true },
+    take: limit,
+  });
+  return usernames;
 };
 
 export const pgGetUserById = async (
