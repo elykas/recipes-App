@@ -1,4 +1,4 @@
-import { pgGetMembersPublicIdByPublicGroupId } from "../../dal/groupDal";
+import { pgGetMembersOfGroupByPublicGroupId } from "../../dal/groupDal";
 import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
 import { getUserIdByPublicIdService } from "../../services/userService";
 import { GroupMembersIdByGroupIdResponse } from "../../types/response/groupResponse";

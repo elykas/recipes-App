@@ -2,12 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import {
   getGroupMembersByGroupPublicIdService,
   getGroupPublicIdByRecipeIdService,
+  getMemberOfGroupService,
 } from "../services/groupService";
 import { getUserPublicIdByRecipeIdService } from "../services/recipeService";
 import { getUserByIdService } from "../services/userService";
-import { GroupMembersIdByGroupIdResponse } from "../types/response/groupResponse";
+import {
+  GroupMembersIdByGroupIdResponse,
+  MemberOfGroupResponse,
+} from "../types/response/groupResponse";
 import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
 import {
+  checkIfUserIsAdminOfGroup,
   checkIfUserIsMemberOfGroup,
   findUserInGroupMembers,
 } from "../utils/checkUtils/checkGroupUtils";
@@ -210,24 +215,18 @@ export const checkUserIsAdminOfGroupMiddleware = async (
       return;
     }
 
-    const groupMembers: GroupMembersIdByGroupIdResponse =
-      await getGroupMembersByGroupPublicIdService(groupPublicId);
+    const groupMember: boolean = await checkIfUserIsAdminOfGroup(
+      userPublicId,
+      groupPublicId
+    )
 
-    if (!groupMembers) {
-      res.status(404).json({ message: "Group not found", success: false });
-      return;
-    }
-
-    const user = groupMembers.members.find(
-      (member: { admin: boolean; user: { publicId: string } }) =>
-        member.user.publicId === userPublicId
-    );
-
-    if (!user || !user.admin) {
-      res.status(403).json({
-        message: "Forbidden: User is not an admin of this group",
-        success: false,
-      });
+    if (!groupMember) {
+      res
+        .status(404)
+        .json({
+          message: "Forbidden: User is not an admin of this group",
+          success: false,
+        });
       return;
     }
 
@@ -259,12 +258,12 @@ export const checkIsGroupMemberAndOwnerRecipeMiddleware = async (
       return;
     }
 
-    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+    const groupMember: MemberOfGroupResponse = await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
 
     const authorRecipePublicId: string =
       await getUserPublicIdByRecipeIdService(recipePublicId);
 
-    if (authorRecipePublicId !== userPublicId) {
+    if (authorRecipePublicId !== groupMember.user.publicId) {
       res.status(403).json({
         message: "Forbidden: User doesn't own this recipe",
         success: false,
@@ -300,16 +299,12 @@ export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
       return;
     }
 
-    const groupMembers: GroupMembersIdByGroupIdResponse =
-      await getGroupMembersByGroupPublicIdService(groupPublicId);
+  const groupMember: MemberOfGroupResponse = await getMemberOfGroupService(
+      userPublicId,
+      groupPublicId
+    );
 
-    if (!groupMembers) {
-      res.status(404).json({ message: "Group not found", success: false });
-      return;
-    }
-
-    const user = findUserInGroupMembers(groupMembers, userPublicId);
-    if (!user) {
+    if (!groupMember) {
       res.status(403).json({
         message: "Forbidden: User is not a member of the group",
         success: false,
@@ -321,7 +316,7 @@ export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
       const authorRecipePublicId =
         await getUserPublicIdByRecipeIdService(recipeId);
 
-      if (authorRecipePublicId !== userPublicId && !user.admin) {
+      if (authorRecipePublicId !== groupMember.user.publicId && !groupMember.admin) {
         return res.status(403).json({
           message: "Forbidden: User doesn't own this recipe or is not admin",
           success: false,
@@ -330,7 +325,7 @@ export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
     }
 
     if (userId) {
-      if (!user.admin && userPublicId !== userId) {
+      if (!groupMember.admin && groupMember.user.publicId !== userId) {
         return res.status(403).json({
           message: "Forbidden: Only admins can modify other members",
           success: false,
@@ -370,10 +365,7 @@ export const checkIsRecipeAndUserGroupMemberMiddleware = async (
       groupPublicId
     );
 
-    await checkIfUserIsMemberOfGroup(
-      groupRecipePublicId,
-      userPublicId
-    );
+    await checkIfUserIsMemberOfGroup(groupRecipePublicId, userPublicId);
     next();
   } catch (error) {
     res.status(403).json({

@@ -1,4 +1,3 @@
-import { get } from "http";
 import {
   pgUpdateImageOfGroup,
   pgAddRecipeToGroup,
@@ -6,7 +5,7 @@ import {
   pgDeleteGroup,
   pgEditGroupDetails,
   pgGetGroupRecipesPreview,
-  pgGetMembersPublicIdByPublicGroupId,
+  pgGetMembersOfGroupByPublicGroupId,
   pgGetUserGroups,
   pgRemoveRecipeFromGroup,
   pgGetImageOfGroupByPublicId,
@@ -16,6 +15,7 @@ import {
   pgGetGroupPublicIdByRecipeId,
   pgGetGroupRecipeById,
   pgUpdateAdminStatus,
+  pgGetMemberOfGroup,
 } from "../dal/groupDal";
 import {
   AddGroupMemberDto,
@@ -40,6 +40,7 @@ import {
   AddGroupMemberResponse,
   UserGroupsResponse,
   UpdateGroupRecipeResponse,
+  MemberOfGroupResponse,
 } from "../types/response/groupResponse";
 import {
   checkIfUserIsAdminOfGroup,
@@ -57,6 +58,7 @@ import {
   getUserPublicIdByRecipeIdService,
 } from "./recipeService";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
+import { getUserIdByPublicIdService } from "./userService";
 
 export const getUserGroupsService = async (
   publicUserId: string
@@ -88,11 +90,22 @@ export const getGroupRecipesPreviewService = async (
   return GroupRecipesDto;
 };
 
+export const getMemberOfGroupService = async (
+  userPublicId: string,
+  groupPublicId: string
+): Promise<MemberOfGroupResponse> => {
+  const userId = await getUserIdByPublicIdService(userPublicId);
+  const groupId = await getGroupIdByPublicIdService(groupPublicId);
+  const memberPublicId = await pgGetMemberOfGroup(userId, groupId);
+  if (!memberPublicId) throw ErrorResponse("User not found in group", 404);
+  return memberPublicId;
+};
+
 export const getGroupMembersByGroupPublicIdService = async (
   groupPublicId: string
 ): Promise<GroupMembersIdByGroupIdResponse> => {
   const groupMembersId: GroupMembersIdByGroupIdResponse | null =
-    await pgGetMembersPublicIdByPublicGroupId(groupPublicId);
+    await pgGetMembersOfGroupByPublicGroupId(groupPublicId);
 
   if (!groupMembersId || groupMembersId.members.length === 0)
     throw ErrorResponse("Group not found", 404);

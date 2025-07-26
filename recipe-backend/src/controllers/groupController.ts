@@ -23,6 +23,7 @@ import {
   NewGroupDto,
   UserGroupsDto,
 } from "../dto/groupDto";
+import { generateInviteToken } from "../utils/authUtils/jwt";
 
 export const getUserGroups = async (
   req: Request,
@@ -197,6 +198,26 @@ export const updateImageOfGroup = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const getInviteLink = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { groupId: groupPublicIdId } = req.params;
+    const token = generateInviteToken(groupPublicIdId)
+    const inviteUrl = `https://yourapp.com/i/${token}`;
+    res.status(200).json({
+      data: inviteUrl,
+      success: true,
+      message: "link generated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+  
 };
 
 export const addGroupMember = async (

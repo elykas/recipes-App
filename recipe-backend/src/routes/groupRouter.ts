@@ -7,6 +7,7 @@ import {
   editGroupDetails,
   getGroupRecipeById,
   getGroupRecipesPreview,
+  getInviteLink,
   getUserGroups,
   removeGroupMember,
   removeRecipeFromGroup,
@@ -111,6 +112,16 @@ router.put(
   validateIdParams,
   updateImageOfGroup
 );
+router.post(
+  "/:groupId/link",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkUserIsAdminOfGroupMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  getInviteLink
+)
 router.put(
   "/:groupId/user/:userId/add",
   authenticateTokenMiddleware,

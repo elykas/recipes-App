@@ -2,6 +2,7 @@ import prisma from "../config/database";
 import { CreateGroupDto } from "../dto/groupDto";
 import {
   AddGroupMemberResponse,
+  MemberOfGroupResponse,
   RecipeGroupResponse,
   UpdateGroupRecipeResponse,
 } from "../types/response/groupResponse";
@@ -83,7 +84,7 @@ export const pgGetGroupRecipesPreview = async (
   return group;
 };
 
-export const pgGetMembersPublicIdByPublicGroupId = async (
+export const pgGetMembersOfGroupByPublicGroupId = async (
   publicGroupId: string
 ): Promise<GroupMembersIdByGroupIdResponse | null> => {
   const groupMembers = await prisma.group.findUnique({
@@ -106,6 +107,30 @@ export const pgGetMembersPublicIdByPublicGroupId = async (
   });
 
   return groupMembers;
+};
+
+export const pgGetMemberOfGroup = async (
+  userId: number,
+  groupId: number
+): Promise<MemberOfGroupResponse | null> => {
+  const memberPublicId = await prisma.groupMember.findUnique({
+    where: {
+      userId_groupId: {
+        userId: userId,
+        groupId: groupId,
+      },
+    },
+    select: {
+      admin: true,
+      user: {
+        select: {
+          id: true,
+          publicId: true,
+        },
+      },
+    },
+  });
+  return memberPublicId;
 };
 
 export const pgGetGroupIdByPublicId = async (
@@ -364,13 +389,13 @@ export const pgUpdateAdminStatus = async (
 ): Promise<GroupIdResponse> => {
   const memberStatusUpdated: GroupIdResponse = await prisma.group.update({
     where: {
-      id: groupId, 
+      id: groupId,
     },
     data: {
       members: {
         update: {
           where: {
-            id: memberId, 
+            id: memberId,
           },
           data: {
             admin: adminStatus,

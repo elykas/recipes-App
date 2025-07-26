@@ -77,6 +77,18 @@ export type GroupMembersIdByGroupIdResponse = Prisma.GroupGetPayload<{
   };
 }>;
 
+export type MemberOfGroupResponse = Prisma.GroupMemberGetPayload<{
+  select: {
+    admin: true;
+    user: {
+      select: {
+        publicId: true;
+        id: true;
+      };
+    };
+  };
+}>;
+
 export type GroupIdResponse = Prisma.GroupGetPayload<{
   select: {
     publicId: true;

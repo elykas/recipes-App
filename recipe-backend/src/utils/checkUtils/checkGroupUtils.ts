@@ -1,41 +1,32 @@
 import ErrorResponse from "../../utils/errors/errors";
-import { GroupMembersIdByGroupIdResponse } from "../../types/response/groupResponse";
-import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
+import { GroupMembersIdByGroupIdResponse, MemberOfGroupResponse } from "../../types/response/groupResponse";
+import { getMemberOfGroupService } from "../../services/groupService";
 
 export const checkIfUserIsAdminOfGroup = async (
   userPublicId: string,
   groupPublicId: string
 ): Promise<boolean> => {
-  const groupMembers: GroupMembersIdByGroupIdResponse =
-    await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+  const groupMember: MemberOfGroupResponse = await getMemberOfGroupService(
+      userPublicId,
+      groupPublicId
+    );
 
-  const user = findUserInGroupMembers(groupMembers, userPublicId);
-  if (!user || !user.admin) throw ErrorResponse("Unauthorized", 401);
+  if (!groupMember || !groupMember.admin) throw ErrorResponse("Unauthorized the user is not admin", 401);
 
-  return user.admin;
+  return groupMember.admin;
 };
 
 export const checkIfUserIsMemberOfGroup = async (
   groupPublicId: string,
   userPublicId: string
-): Promise<GroupMembersIdByGroupIdResponse> => {
-  const groupMembersPublicId: GroupMembersIdByGroupIdResponse =
-    await getGroupMembersByGroupPublicIdService(groupPublicId);
+): Promise<MemberOfGroupResponse> => {
+  const groupMember: MemberOfGroupResponse = await getMemberOfGroupService(
+        userPublicId,
+        groupPublicId
+      );
+  if (!groupMember) throw ErrorResponse("Member not belonging to group", 404);
 
-  if (!groupMembersPublicId) {
-    throw ErrorResponse("Group not found", 404);
-  }
-
-  const isMember = groupMembersPublicId.members.some(
-    (member: { user: { publicId: string; id: number }; admin: boolean }) =>
-      member.user.publicId === userPublicId
-  );
-
-  if (!isMember) {
-    throw ErrorResponse("Unauthorized: User is not a member of the group", 401);
-  }
-
-  return groupMembersPublicId;
+  return groupMember;
 };
 
 export const findUserInGroupMembers = (

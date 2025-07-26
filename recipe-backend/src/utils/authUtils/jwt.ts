@@ -5,6 +5,7 @@ import ErrorResponse from "../errors/errors";
 const SUPABASE_JWT_SECRET: string = process.env.SUPABASE_JWY_SECRET as string;
 const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
+const JWT_SECRET_INVITE_LINK: string = process.env.JWT_SECRET_INVITE_LINK as string;
 
 export const generateAccessToken = (publicId: string, isAdmin: boolean): string => {
   if (!JWT_SECRET) {
@@ -60,4 +61,12 @@ export const verifyAuthToken = (token: string): { sub: string } | null => {
     
 };
 
-
+export const generateInviteToken = (groupPublicId: string): string => {
+  if (!JWT_SECRET_INVITE_LINK) {
+    throw ErrorResponse("JWT_SECRET_INVITE_LINK is not defined", 403);
+  }
+  const inviteToken = jwt.sign({ groupPublicId }, JWT_SECRET_INVITE_LINK, {
+    expiresIn: "1d",
+  });
+  return inviteToken;
+}
