@@ -4,16 +4,43 @@ import {
   DeletedPostDto,
   PostInputCreateDto,
   PostInputUpdateDto,
+  PostLikeResponseDto,
   UpdateImagePostDto,
   UpdatePostResponseDto,
 } from "../dto/postDto";
 import {
+  upsertLikeToPostService,
   createPostService,
   deletePostService,
   updatePostImageService,
   updatePostService,
+  removeLikeFromPostService,
 } from "../services/postService";
 import { AuthenticatedRequest } from "../types/requests";
+import { LikeType } from "@prisma/client";
+
+export const getSomePostsById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const { postsId } = req.body;
+    const { skip, take } = req.query;
+    const posts: PostLikeResponseDto[] = await getSomePostsService(
+      postsId,
+      userPublicId,
+    );
+    res.status(200).json({
+      data: posts,
+      success: true,
+      message: "Posts fetched successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+} 
 
 export const createPost = async (
   req: Request,
@@ -97,13 +124,58 @@ export const deletePost = async (
   try {
     const { postId: postPublicId } = req.params;
     const deletedPost: DeletedPostDto = await deletePostService(postPublicId);
-    res
-      .status(200)
-      .json({
-        data: deletedPost,
-        success: true,
-        message: "Post deleted successfully",
-      });
+    res.status(200).json({
+      data: deletedPost,
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const upsertLikeToPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId: postPublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const like: LikeType = req.body.like;
+
+    const post: PostLikeResponseDto = await upsertLikeToPostService(
+      postPublicId,
+      userPublicId,
+      like
+    );
+    res.status(200).json({
+      data: post,
+      success: true,
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeLikeFromPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId: postPublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const postWithRemovedLike: PostLikeResponseDto = await removeLikeFromPostService(
+      postPublicId,
+      userPublicId,
+    );
+    res.status(200).json({
+      data: postWithRemovedLike,
+      success: true,
+      message: "Post deleted successfully",
+    });
   } catch (error) {
     next(error);
   }

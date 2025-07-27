@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { groupBodySchema } from "../schema/validateGroupSchema";
-import { PostBodySchema } from "../schema/validatePostSchema";
+import { LikeBodySchema, PostBodySchema } from "../schema/validatePostSchema";
 import {
   IdParamsSchema,
   RecipeSchema,
@@ -115,6 +115,22 @@ export const validatePostBody = (
     return res.status(400).json({
       success: false,
       message: "Invalid post",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateLikeBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = LikeBodySchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid like",
       errors: result.error.message,
     });
   }

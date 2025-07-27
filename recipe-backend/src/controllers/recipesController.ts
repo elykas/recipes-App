@@ -117,7 +117,7 @@ export const getSomeRecipesById = async (
     res.status(200).json({
       data: recipe,
       success: true,
-      message: "Recipe by Id fetched successfully",
+      message: "Recipes by Id fetched successfully",
     });
   } catch (error) {
     next(error);

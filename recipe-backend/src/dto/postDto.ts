@@ -19,3 +19,5 @@ export interface UpdatePostResponseDto extends BasicPostDto {}
 export interface UpdateImagePostDto extends BasicPostDto {}
 
 export interface DeletedPostDto extends BasicPostDto {}
+
+export interface PostLikeResponseDto extends BasicPostDto {}

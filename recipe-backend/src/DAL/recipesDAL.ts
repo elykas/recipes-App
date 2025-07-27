@@ -8,7 +8,6 @@ import {
   RecipeImageResponse,
   SearchRecipeResponse,
 } from "../types/response/recipeResponses";
-import { error } from "console";
 import ErrorResponse from "../utils/errors/errors";
 
 export const pgGetRecipesName = async (

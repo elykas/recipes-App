@@ -1,9 +1,15 @@
+import { LikeType } from "@prisma/client";
 import {
+  pgAddLikeToPost,
   pgCreatePost,
   pgDeletePost,
   pgGetImageOfPostByPublicId,
+  pgGetPostIdByPublicId,
   pgGetUserPublicIdByPostId,
+  pgIsLikeExists,
+  pgRemoveLikeFromPost,
   pgUpdateImagePost,
+  pgUpdateLikeToPost,
   pgUpdatePost,
 } from "../dal/postDal";
 import {
@@ -11,15 +17,25 @@ import {
   DeletedPostDto,
   PostInputCreateDto,
   PostInputUpdateDto,
+  PostLikeResponseDto,
   UpdateImagePostDto,
   UpdatePostResponseDto,
 } from "../dto/postDto";
 import {
   AuthorOfPostResponse,
-  PostIdResponse,
+  PostLikeResponse,
+  PostPublicIdResponse,
+  PostResponseWithId,
 } from "../types/response/postResponse";
 import ErrorResponse from "../utils/errors/errors";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
+import { getUserIdByPublicIdService } from "./userService";
+
+export const getSomePostsByIdService = async (postsId: string[], userPublicId: string) => {
+  if(postsId.length === 0) return [];
+  const posts: PostResponseWithId[] = await pgGetSomePostsByIService(postsId, userPublicId);
+  return posts;
+}
 
 export const createPostService = async (
   post: PostInputCreateDto,
@@ -35,7 +51,7 @@ export const createPostService = async (
     "post"
   );
 
-  const newPost: PostIdResponse = await pgCreatePost(
+  const newPost: PostPublicIdResponse = await pgCreatePost(
     post,
     imagePath,
     userPublicId
@@ -83,6 +99,18 @@ export const getUserPublicIdByPostIdService = async (
   return publicUserId;
 };
 
+export const getPostIdByPublicIdService = async (
+  postPublicId: string
+): Promise<PostResponseWithId> => {
+  if (!postPublicId) throw ErrorResponse("postId is required", 404);
+
+  const postId: PostResponseWithId | null =
+    await pgGetPostIdByPublicId(postPublicId);
+  if (!postId) throw ErrorResponse("Post not found", 404);
+
+  return postId;
+};
+
 export const updatePostImageService = async (
   imageFile: Express.Multer.File | undefined,
   postPublicId: string
@@ -105,7 +133,7 @@ export const updatePostImageService = async (
   );
   imageUrl = imagePath;
 
-  const updatedImagePost: PostIdResponse = await pgUpdateImagePost(
+  const updatedImagePost: PostPublicIdResponse = await pgUpdateImagePost(
     imageUrl,
     postPublicId
   );
@@ -122,7 +150,62 @@ export const deletePostService = async (
   postPublicId: string
 ): Promise<DeletedPostDto> => {
   if (!postPublicId) throw ErrorResponse("PostId is required", 400);
-  const deletedPost: PostIdResponse = await pgDeletePost(postPublicId);
+  const deletedPost: PostPublicIdResponse = await pgDeletePost(postPublicId);
   const deletedPostDto: DeletedPostDto = { publicId: deletedPost.publicId };
   return deletedPostDto;
+};
+
+export const upsertLikeToPostService = async (
+  postPublicId: string,
+  userPublicId: string,
+  like: LikeType
+): Promise<PostLikeResponseDto> => {
+  if (!postPublicId || !userPublicId || !like)
+    throw ErrorResponse("PostId and like is required", 400);
+
+  const userId: number = await getUserIdByPublicIdService(userPublicId);
+
+  const { id: postId }: PostResponseWithId =
+    await getPostIdByPublicIdService(postPublicId);
+
+  let postWithLike: PostLikeResponse;
+
+  const likeExists = await pgIsLikeExists(userId, postId);
+
+  if (!likeExists) {
+    postWithLike = await pgAddLikeToPost(userId, postId, like);
+  } else {
+    postWithLike = await pgUpdateLikeToPost(userId, postId, like);
+  }
+
+  const postWithLikeDto: PostLikeResponseDto = {
+    publicId: postWithLike.post.publicId,
+  };
+
+  return postWithLikeDto;
+};
+
+export const removeLikeFromPostService = async (
+  postPublicId: string,
+  userPublicId: string
+): Promise<PostLikeResponseDto> => {
+  if (!postPublicId || !userPublicId)
+    throw ErrorResponse("PostId and like is required", 400);
+
+  const userId: number = await getUserIdByPublicIdService(userPublicId);
+
+  const { id: postId }: PostResponseWithId =
+    await getPostIdByPublicIdService(postPublicId);
+
+  const likeExists = await pgIsLikeExists(userId, postId);
+  if (!likeExists) throw ErrorResponse("Like not found", 404);
+  
+  const postWithLike: PostLikeResponse = await pgRemoveLikeFromPost(
+    userId,
+    postId
+  );
+  const postWithLikeDto: PostLikeResponseDto = {
+    publicId: postWithLike.post.publicId,
+  };
+  return postWithLikeDto;
 };
