@@ -3,17 +3,32 @@ import prisma from "../config/database";
 import { PostInputCreateDto, PostInputUpdateDto } from "../dto/postDto";
 import {
   AuthorOfPostResponse,
+  FullPostResponse,
   PostLikeResponse,
   PostPublicIdResponse,
   PostResponseWithId,
 } from "../types/response/postResponse";
 
-export const pgGetSomePostsById = async (postsPublicId: string[]): Promise<PostResponseWithId[]> => {
-  const posts: PostResponseWithId[] = await prisma.post.findMany({
+export const pgGetSomePostsById = async (postsPublicId: string[]): Promise<FullPostResponse[]> => {
+  const posts: FullPostResponse[] = await prisma.post.findMany({
     where: { publicId: { in: postsPublicId } },
     select: {
-      id: true,
       publicId: true,
+      imageUrl: true,
+      content: true,
+      likes: true,
+      author: {
+        select: {
+          publicId: true,
+          username: true,
+        },
+      },
+      recipe: {
+        select: {
+          publicId: true,
+          title: true,
+        },
+      },
     },
   });
   return posts;

@@ -5,6 +5,7 @@ import {
   pgDeletePost,
   pgGetImageOfPostByPublicId,
   pgGetPostIdByPublicId,
+  pgGetSomePostsById,
   pgGetUserPublicIdByPostId,
   pgIsLikeExists,
   pgRemoveLikeFromPost,
@@ -23,6 +24,7 @@ import {
 } from "../dto/postDto";
 import {
   AuthorOfPostResponse,
+  FullPostResponse,
   PostLikeResponse,
   PostPublicIdResponse,
   PostResponseWithId,
@@ -32,8 +34,9 @@ import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 import { getUserIdByPublicIdService } from "./userService";
 
 export const getSomePostsByIdService = async (postsId: string[], userPublicId: string) => {
-  if(postsId.length === 0) return [];
-  const posts: PostResponseWithId[] = await pgGetSomePostsByIService(postsId, userPublicId);
+  if(postsId.length === 0 || postsId.length > 10) return [];
+
+  const posts: FullPostResponse[] = await pgGetSomePostsById(postsId);
   return posts;
 }
 

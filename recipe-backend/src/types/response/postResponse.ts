@@ -21,3 +21,24 @@ export type PostLikeResponse = Prisma.PostLikeGetPayload<{
     };
   };
 }>;
+
+export type FullPostResponse = Prisma.PostGetPayload<{
+  select: {
+      publicId: true,
+      content: true,
+      imageUrl: true,
+      likes: true,
+      author: {
+        select: {
+          publicId: true,
+          username: true,
+        },
+      },
+      recipe: {
+        select: {
+          publicId: true,
+          title: true,
+        },
+      },
+    },
+}>;
