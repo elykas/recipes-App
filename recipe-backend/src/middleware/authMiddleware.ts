@@ -1,20 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import {
-  getGroupMembersByGroupPublicIdService,
   getGroupPublicIdByRecipeIdService,
   getMemberOfGroupService,
 } from "../services/groupService";
+import { getUserPublicIdByPostIdService } from "../services/postService";
 import { getUserPublicIdByRecipeIdService } from "../services/recipeService";
 import { getUserByIdService } from "../services/userService";
-import {
-  GroupMembersIdByGroupIdResponse,
-  MemberOfGroupResponse,
-} from "../types/response/groupResponse";
+import { MemberOfGroupResponse } from "../types/response/groupResponse";
+import { AuthorOfPostResponse } from "../types/response/postResponse";
 import { verifyAuthToken, VerifyUserToken } from "../utils/authUtils/jwt";
 import {
   checkIfUserIsAdminOfGroup,
   checkIfUserIsMemberOfGroup,
-  findUserInGroupMembers,
 } from "../utils/checkUtils/checkGroupUtils";
 
 declare module "express" {
@@ -218,15 +215,13 @@ export const checkUserIsAdminOfGroupMiddleware = async (
     const groupMember: boolean = await checkIfUserIsAdminOfGroup(
       userPublicId,
       groupPublicId
-    )
+    );
 
     if (!groupMember) {
-      res
-        .status(404)
-        .json({
-          message: "Forbidden: User is not an admin of this group",
-          success: false,
-        });
+      res.status(404).json({
+        message: "Forbidden: User is not an admin of this group",
+        success: false,
+      });
       return;
     }
 
@@ -258,7 +253,10 @@ export const checkIsGroupMemberAndOwnerRecipeMiddleware = async (
       return;
     }
 
-    const groupMember: MemberOfGroupResponse = await checkIfUserIsMemberOfGroup(groupPublicId, userPublicId);
+    const groupMember: MemberOfGroupResponse = await checkIfUserIsMemberOfGroup(
+      groupPublicId,
+      userPublicId
+    );
 
     const authorRecipePublicId: string =
       await getUserPublicIdByRecipeIdService(recipePublicId);
@@ -299,7 +297,7 @@ export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
       return;
     }
 
-  const groupMember: MemberOfGroupResponse = await getMemberOfGroupService(
+    const groupMember: MemberOfGroupResponse = await getMemberOfGroupService(
       userPublicId,
       groupPublicId
     );
@@ -316,7 +314,10 @@ export const checkIsGroupMemberAndOwnerOrAdminMiddleware = async (
       const authorRecipePublicId =
         await getUserPublicIdByRecipeIdService(recipeId);
 
-      if (authorRecipePublicId !== groupMember.user.publicId && !groupMember.admin) {
+      if (
+        authorRecipePublicId !== groupMember.user.publicId &&
+        !groupMember.admin
+      ) {
         return res.status(403).json({
           message: "Forbidden: User doesn't own this recipe or is not admin",
           success: false,
@@ -401,5 +402,43 @@ export const checkIsMemberGroupMemberMiddleware = async (
       success: false,
     });
     return;
+  }
+};
+
+export const checkIfUserOwnerOfPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    
+    const postPublicId = req.params.postId;
+    const userPublicId = req.publicId;
+  
+    if (!userPublicId || !postPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User not authenticated",
+        success: false,
+      });
+      return;
+    }
+  
+    const authorPostPublicId: AuthorOfPostResponse =
+      await getUserPublicIdByPostIdService(postPublicId);
+  
+    if (authorPostPublicId.author.publicId !== userPublicId) {
+      res.status(403).json({
+        message: "Forbidden: User doesn't own this post",
+        success: false,
+      });
+      return;
+    }
+  
+    next();
+  } catch (error) {
+    res.status(403).json({
+      message: "Forbidden: User doesn't own this post",
+      success: false,
+    })
   }
 };

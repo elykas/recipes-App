@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import { groupBodySchema } from "../schema/validateGroupSchema";
+import { PostBodySchema } from "../schema/validatePostSchema";
 import {
   IdParamsSchema,
   RecipeSchema,
@@ -6,7 +8,6 @@ import {
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
 import { UserSchema } from "../schema/validateUserSchema";
-import {groupBodySchema} from "../schema/validateGroupSchema"
 
 export const validateUser = (
   req: Request,
@@ -97,7 +98,23 @@ export const validateGroupBody = (
   if (!result.success) {
     return res.status(400).json({
       success: false,
-      message: "Invalid recipe ID parameter",
+      message: "Invalid group",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validatePostBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = PostBodySchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid post",
       errors: result.error.message,
     });
   }

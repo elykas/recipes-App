@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import {errorHandler} from './middleware/errorHandler';   
+import postRouter from './routes/postRoutet';
 import recipeRouter from './routes/recipesRouter';
 import authRouter from './routes/authRouter';
 import userRouter from './routes/userRouter';
@@ -48,6 +49,7 @@ app.use('/api/user', userRouter)
 app.use("/api/ai-recipes", aiRouter)
 app.use("/api/categories", categoryRouter)
 app.use("/api/groups", groupRouter)
+app.use("/api/posts", postRouter)
 
 app.use(errorHandler);
 

@@ -4,13 +4,12 @@ export interface IPost {
   id?: number | null;
   publicId: string;
   content?: String | null;
-  imageUrl?: String | null;
+  imageUrl: String
   type: PostType;
   author?: IUser | null;
   authorId: number;
   recipeId?: number | null;
   likes?: IPostLike[];
-  title: string;
 }
 
 export enum PostType {
