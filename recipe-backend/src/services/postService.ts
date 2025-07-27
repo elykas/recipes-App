@@ -1,5 +1,6 @@
 import {
   pgCreatePost,
+  pgDeletePost,
   pgGetImageOfPostByPublicId,
   pgGetUserPublicIdByPostId,
   pgUpdateImagePost,
@@ -7,6 +8,7 @@ import {
 } from "../dal/postDal";
 import {
   CreatePostResponseDto,
+  DeletedPostDto,
   PostInputCreateDto,
   PostInputUpdateDto,
   UpdateImagePostDto,
@@ -90,7 +92,7 @@ export const updatePostImageService = async (
   let imageUrl: string;
   const oldImagePath: string | undefined =
     await pgGetImageOfPostByPublicId(postPublicId);
-  
+
   if (oldImagePath === undefined) {
     throw ErrorResponse("Post is not found", 400);
   }
@@ -114,4 +116,13 @@ export const updatePostImageService = async (
     publicId: updatedImagePost.publicId,
   };
   return updatedImagePostDto;
+};
+
+export const deletePostService = async (
+  postPublicId: string
+): Promise<DeletedPostDto> => {
+  if (!postPublicId) throw ErrorResponse("PostId is required", 400);
+  const deletedPost: PostIdResponse = await pgDeletePost(postPublicId);
+  const deletedPostDto: DeletedPostDto = { publicId: deletedPost.publicId };
+  return deletedPostDto;
 };

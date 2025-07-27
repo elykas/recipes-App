@@ -1,6 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { CreatePostResponseDto, PostInputCreateDto, PostInputUpdateDto, UpdateImagePostDto, UpdatePostResponseDto } from "../dto/postDto";
-import { createPostService, updatePostImageService, updatePostService } from "../services/postService";
+import {
+  CreatePostResponseDto,
+  DeletedPostDto,
+  PostInputCreateDto,
+  PostInputUpdateDto,
+  UpdateImagePostDto,
+  UpdatePostResponseDto,
+} from "../dto/postDto";
+import {
+  createPostService,
+  deletePostService,
+  updatePostImageService,
+  updatePostService,
+} from "../services/postService";
 import { AuthenticatedRequest } from "../types/requests";
 
 export const createPost = async (
@@ -72,6 +84,26 @@ export const updatePostImage = async (
       success: true,
       message: "Post image updated successfully",
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deletePost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId: postPublicId } = req.params;
+    const deletedPost: DeletedPostDto = await deletePostService(postPublicId);
+    res
+      .status(200)
+      .json({
+        data: deletedPost,
+        success: true,
+        message: "Post deleted successfully",
+      });
   } catch (error) {
     next(error);
   }

@@ -93,3 +93,13 @@ export const pgUpdateImagePost = async (imageUrl: string, postPublicId: string):
   });
   return updatedImagePost;
 }
+
+export const pgDeletePost = async (postPublicId: string): Promise<PostIdResponse> => {
+  const deletedPost: PostIdResponse = await prisma.post.delete({
+    where: { publicId: postPublicId },
+    select: {
+      publicId: true,
+    },
+  });
+  return deletedPost;
+}

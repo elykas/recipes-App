@@ -3,7 +3,7 @@ import { authenticateTokenMiddleware, authorizeUserAndExistMiddleware, checkIfUs
 import { create } from "domain";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
-import { createPost, likePost, unlikePost, updateImage, updatePost, updatePostImage } from "../controllers/postController";
+import { createPost, deletePost, likePost, unlikePost, updatePost, updatePostImage } from "../controllers/postController";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 import { validateIdParams, validatePostBody } from "../middleware/validateMiddleware";
 
@@ -46,6 +46,15 @@ router.put("img/:postId",
     sanitizeRequestMiddleware,
     validateIdParams,
     updatePostImage
+)
+router.delete("/:postId",
+    authenticateTokenMiddleware,
+    authorizeUserAndExistMiddleware,
+    checkIfUserOwnerOfPost,
+    searchLimiter,
+    sanitizeRequestMiddleware,
+    validateIdParams,
+    deletePost
 )
 
 
