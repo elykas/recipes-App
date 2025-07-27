@@ -1,7 +1,4 @@
-import { pgGetMembersOfGroupByPublicGroupId } from "../../dal/groupDal";
-import { getGroupMembersByGroupPublicIdService } from "../../services/groupService";
 import { getUserIdByPublicIdService } from "../../services/userService";
-import { GroupMembersIdByGroupIdResponse } from "../../types/response/groupResponse";
 import errorResponse, { ErrorResponse } from "../errors/errors";
 export const checkUserIsOwnerAndGetId = async (
   currentUserPublicId: string,

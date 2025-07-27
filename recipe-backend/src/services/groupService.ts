@@ -1,3 +1,4 @@
+import { get } from "http";
 import {
   pgUpdateImageOfGroup,
   pgAddRecipeToGroup,
@@ -44,6 +45,7 @@ import {
 } from "../types/response/groupResponse";
 import {
   checkIfUserIsAdminOfGroup,
+  checkIfUserIsMemberOfGroup,
   findUserInGroupMembers,
 } from "../utils/checkUtils/checkGroupUtils";
 import ErrorResponse from "../utils/errors/errors";
@@ -260,7 +262,28 @@ export const updateImageToGroupService = async (
   return imageAddedDto;
 };
 
-export const addGroupMemberService = async (
+export const addMemberToGroupByLinkService = async (
+  groupPublicId: string,
+  memberPublicId: string
+): Promise<AddGroupMemberDto> => {
+  const isMemberExist: MemberOfGroupResponse = await getMemberOfGroupService(
+    memberPublicId,
+    groupPublicId
+  );
+
+  if (isMemberExist) throw ErrorResponse("Member already exist in group", 400);
+
+  const memberAdded: AddGroupMemberResponse = await pgAddGroupMember(
+    groupPublicId,
+    memberPublicId
+  );
+  const groupOfMemberDto: AddGroupMemberDto = {
+    publicId: memberAdded.group.publicId,
+  };
+  return groupOfMemberDto;
+};
+
+export const adminAddGroupMemberService = async (
   groupPublicId: string,
   userPublicId: string,
   memberPublicId: string

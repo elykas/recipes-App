@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addGroupMember,
+  addMemberToGroupByLink,
   addRecipeToGroup,
   createGroup,
   deleteGroup,
@@ -121,7 +122,15 @@ router.post(
   sanitizeRequestMiddleware,
   validateIdParams,
   getInviteLink
-)
+);
+router.post(
+  "/join",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  addMemberToGroupByLink
+);
 router.put(
   "/:groupId/user/:userId/add",
   authenticateTokenMiddleware,

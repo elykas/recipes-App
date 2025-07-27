@@ -28,12 +28,9 @@ export const VerifyUserToken = (req: Request): JwtPayload => {
     throw new Error("JWT_SECRET is not defined");
   }
 
-  //try {
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     return decoded;
-  // } catch (err) {
-  //   throw new Error("Invalid token");
-  // }
+ 
 };
 
 export const generateRefreshToken = (publicId: string): string => {
@@ -69,4 +66,14 @@ export const generateInviteToken = (groupPublicId: string): string => {
     expiresIn: "1d",
   });
   return inviteToken;
+}
+
+export const verifyGroupInviteToken = (token: string): { groupPublicId: string } | null => {
+  if (!token) {
+    throw ErrorResponse("Token not found", 403);
+  }
+  if (!JWT_SECRET_INVITE_LINK) {
+    throw ErrorResponse("JWT_SECRET_INVITE_LINK is not defined", 403);
+  }
+    return jwt.verify(token, JWT_SECRET_INVITE_LINK) as { groupPublicId: string };
 }

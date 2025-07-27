@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../types/requests";
 import {
-  addGroupMemberService,
+  adminAddGroupMemberService,
   addRecipeToGroupService,
   createGroupService,
   deleteGroupService,
@@ -13,6 +13,7 @@ import {
   removeRecipeFromGroupService,
   updateAdminStatusService,
   updateImageToGroupService,
+  addMemberToGroupByLinkService,
 } from "../services/groupService";
 import {
   AddGroupMemberDto,
@@ -23,7 +24,11 @@ import {
   NewGroupDto,
   UserGroupsDto,
 } from "../dto/groupDto";
-import { generateInviteToken } from "../utils/authUtils/jwt";
+import {
+  generateInviteToken,
+  verifyGroupInviteToken,
+} from "../utils/authUtils/jwt";
+import ErrorResponse from "../utils/errors/errors";
 
 export const getUserGroups = async (
   req: Request,
@@ -207,7 +212,7 @@ export const getInviteLink = async (
 ) => {
   try {
     const { groupId: groupPublicIdId } = req.params;
-    const token = generateInviteToken(groupPublicIdId)
+    const token = generateInviteToken(groupPublicIdId);
     const inviteUrl = `https://yourapp.com/i/${token}`;
     res.status(200).json({
       data: inviteUrl,
@@ -217,7 +222,33 @@ export const getInviteLink = async (
   } catch (error) {
     next(error);
   }
-  
+};
+
+export const addMemberToGroupByLink = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { token } = req.body;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const decoded = verifyGroupInviteToken(token);
+    const groupPublicId = decoded?.groupPublicId;
+
+    if (!groupPublicId) {
+      throw ErrorResponse("Group not found", 404);
+    }
+
+    const groupOfMember: AddGroupMemberDto =
+      await addMemberToGroupByLinkService(groupPublicId, userPublicId);
+    res.status(200).json({
+      data: groupOfMember,
+      success: true,
+      message: "member added to group successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const addGroupMember = async (
@@ -230,7 +261,7 @@ export const addGroupMember = async (
     const { publicId: userPublicId } = req as AuthenticatedRequest;
     const memberPublicId = req.params.userId;
 
-    const groupOfMember: AddGroupMemberDto = await addGroupMemberService(
+    const groupOfMember: AddGroupMemberDto = await adminAddGroupMemberService(
       groupPublicId,
       userPublicId,
       memberPublicId
