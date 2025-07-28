@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const typeDefs = gql`
+export const userTypeDefs = gql`
     type User {
         publicId: String!
         username: String
@@ -11,10 +11,10 @@ export const typeDefs = gql`
         headLine: String
         locale: String
         isAdmin: Boolean!
-        posts: [PostPreview!]
+        posts: [Post!]
     }
 
-    type PostPreview {
+    type Post {
         publicId: String!
         likes: Int
         recipePublicId: String
@@ -23,5 +23,8 @@ export const typeDefs = gql`
 
     type Query {
         getUserProfileByPublicId(publicId: String!): User
+        
     }
+    
+  
 `;

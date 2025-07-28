@@ -4,7 +4,6 @@ import {
   authorizeUserAndExistMiddleware,
   checkIfUserOwnerOfPost,
 } from "../middleware/authMiddleware";
-import { create } from "domain";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import {

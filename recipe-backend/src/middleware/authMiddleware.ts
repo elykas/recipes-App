@@ -40,6 +40,22 @@ export const authenticateTokenMiddleware = (
   }
 };
 
+export const getUserFromReq =(req: Request) => {
+  try {
+    const decoded = VerifyUserToken(req);
+    const userId = decoded.publicId;
+    
+    if (!userId) {
+      return null;
+    }
+    
+    return userId
+  } catch (error) {
+    return null;
+  }
+};
+
+
 export const verifyAuthTokenMiddleware = (
   req: Request,
   res: Response,

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@prisma/client": "^6.12.0",
+    "dayjs": "^1.11.13",
     "prisma": "^6.12.0"
   }
 }
