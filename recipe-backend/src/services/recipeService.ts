@@ -1,3 +1,4 @@
+import { LikeType } from "@prisma/client";
 import prisma from "../config/database";
 import {
   pgCreateRecipe,
@@ -15,11 +16,16 @@ import {
   pgUpdateRecipeImage,
   pgGetRecipeIdByPublicId,
   pgToggleRecipePrivacy,
+  pgIsRecipeLikeExists,
+  pgAddLikeToRecipe,
+  pgUpdateLikeToRecipe,
+  pgRemoveLikeFromRecipe,
 } from "../dal/recipesDAL";
 import {
   ImageRecipeDto,
   PreviewRecipeDto,
   RecipeIdDto,
+  RecipeLikeResponseDto,
   RecipeResponseDto,
   SearchRecipeDto,
 } from "../dto/recipeDto";
@@ -29,6 +35,7 @@ import {
   PreviewRecipesResponse,
   RecipeIdResponse as RecipeIdResponse,
   RecipeImageResponse,
+  RecipeLikeResponse,
   SearchRecipeResponse,
 } from "../types/response/recipeResponses";
 import {
@@ -44,6 +51,8 @@ import {
 import { updateRecipeIngredientsService } from "./ingredientsService";
 import { updateRecipeStepsService } from "./stepsService";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
+import { getUserIdByPublicIdService } from "./userService";
+import { pgRemoveLikeFromPost } from "../dal/postDal";
 
 export const getRecipesNameService = async (
   searchQuery: string,
@@ -284,4 +293,73 @@ export const toggleRecipePrivacyService = async (
     publicId: recipe.publicId,
   };
   return recipeIdDto;
+};
+
+export const upsertLikeToRecipeService = async (
+  recipePublicId: string,
+  userPublicId: string,
+  like: LikeType
+): Promise<RecipeLikeResponseDto> => {
+  if (!recipePublicId || !userPublicId || !like)
+    throw errorResponse("RecipeId and like is required", 400);
+
+  const userId: number = await getUserIdByPublicIdService(userPublicId);
+
+  const recipeId: number = await getRecipeIdByPublicIdService(recipePublicId);
+  
+  const authorRecipeId: string = await getUserPublicIdByRecipeIdService(
+    recipePublicId
+  );
+
+  if (authorRecipeId === userPublicId)
+    throw errorResponse("You can't like your own recipe", 400);
+
+  let recipeWithLike: RecipeLikeResponse;
+
+  const likeExists = await pgIsRecipeLikeExists(userId, recipeId);
+
+  if (!likeExists) {
+    recipeWithLike = await pgAddLikeToRecipe(userId, recipeId, like);
+  } else {
+    recipeWithLike = await pgUpdateLikeToRecipe(userId, recipeId, like);
+  }
+
+  const postWithLikeDto: RecipeLikeResponseDto = {
+    ...recipeWithLike.recipe,
+  };
+
+  return postWithLikeDto;
+};
+
+export const removeLikeFromRecipeService = async (
+  recipePublicId: string,
+  userPublicId: string
+): Promise<RecipeLikeResponseDto> => {
+  if (!recipePublicId || !userPublicId )
+    throw errorResponse("RecipeIdis required", 400);
+
+  const userId: number = await getUserIdByPublicIdService(userPublicId);
+
+  const recipeId: number = await getRecipeIdByPublicIdService(recipePublicId);
+  
+  const authorPostId: string = await getUserPublicIdByRecipeIdService(
+    recipePublicId
+  );
+
+  if (authorPostId === userPublicId)
+    throw errorResponse("You can't dislike your own recipe", 400);
+
+
+  const likeExists = await pgIsRecipeLikeExists(userId, recipeId);
+
+  if (!likeExists) throw errorResponse("Like not found", 404);
+  
+  const postWithLike: RecipeLikeResponse = await pgRemoveLikeFromRecipe(
+    userId,
+    recipeId
+  );
+  const postWithLikeDto: RecipeLikeResponseDto = {
+    ...postWithLike.recipe,
+  };
+  return postWithLikeDto;
 };

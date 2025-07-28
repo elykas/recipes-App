@@ -9,7 +9,9 @@ import {
   PostResponseWithId,
 } from "../types/response/postResponse";
 
-export const pgGetSomePostsById = async (postsPublicId: string[]): Promise<FullPostResponse[]> => {
+export const pgGetSomePostsById = async (
+  postsPublicId: string[]
+): Promise<FullPostResponse[]> => {
   const posts: FullPostResponse[] = await prisma.post.findMany({
     where: { publicId: { in: postsPublicId } },
     select: {
@@ -36,7 +38,7 @@ export const pgGetSomePostsById = async (postsPublicId: string[]): Promise<FullP
     },
   });
   return posts;
-}
+};
 
 export const pgCreatePost = async (
   post: PostInputCreateDto,
@@ -162,21 +164,20 @@ export const pgAddLikeToPost = async (
   postId: number,
   like: LikeType
 ): Promise<PostLikeResponse> => {
-  const updatedPostWithLike: PostLikeResponse =
-    await prisma.postLike.create({
-      data: {
-        userId,
-        postId,
-        type: like,
-      },
-      select: {
-        post: {
-          select: {
-            publicId: true,
-          },
+  const updatedPostWithLike: PostLikeResponse = await prisma.postLike.create({
+    data: {
+      userId,
+      postId,
+      type: like,
+    },
+    select: {
+      post: {
+        select: {
+          publicId: true,
         },
       },
-    });
+    },
+  });
   return updatedPostWithLike;
 };
 
@@ -201,14 +202,11 @@ export const pgUpdateLikeToPost = async (
   return updatedPostWithLike;
 };
 
-export const pgIsLikeExists = async (
-  userId: number,
-  postId: number
-) => {
+export const pgIsPostLikeExists = async (userId: number, postId: number) => {
   const isLikeExists = await prisma.postLike.findFirst({
-    where: { userId, postId},
+    where: { userId, postId },
   });
- return !!isLikeExists;
+  return !!isLikeExists;
 };
 
 export const pgRemoveLikeFromPost = async (userId: number, postId: number) => {

@@ -153,7 +153,7 @@ export const upsertLikeToPost = async (
     res.status(200).json({
       data: postWithAddedLike,
       success: true,
-      message: "like added successfully",
+      message: "like added to post successfully",
     });
   } catch (error) {
     next(error);
@@ -175,7 +175,7 @@ export const removeLikeFromPost = async (
     res.status(200).json({
       data: postWithRemovedLike,
       success: true,
-      message: "like removed successfully",
+      message: "like removed from post successfully",
     });
   } catch (error) {
     next(error);

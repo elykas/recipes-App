@@ -4,6 +4,7 @@ import {
   ImageRecipeDto,
   PreviewRecipeDto,
   RecipeIdDto,
+  RecipeLikeResponseDto,
   RecipeResponseDto,
   SearchRecipeDto,
 } from "../dto/recipeDto";
@@ -17,12 +18,14 @@ import {
   getRecipesNameService,
   getRecipesPreviewByCategoryService,
   getSomeRecipesByIdsService,
+  removeLikeFromRecipeService,
   toggleRecipePrivacyService,
   updateRecipeImageService,
   updateRecipeService,
+  upsertLikeToRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
-import { LikeType } from "@prisma/client";
+import { LikeType, Recipe } from "@prisma/client";
 
 export const getRecipesName =
   (isUserScoped: boolean) =>
@@ -267,7 +270,7 @@ export const toggleRecipePrivacy = async (
   }
 };
 
-export const upsertLikeToPost = async (
+export const upsertLikeToRecipe = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -277,7 +280,7 @@ export const upsertLikeToPost = async (
     const { publicId: userPublicId } = req as AuthenticatedRequest;
     const like: LikeType = req.body.like;
 
-    const recipeWithAddedLike: PostLikeResponseDto = await upsertLikeToRecipeService(
+    const recipeWithAddedLike: RecipeLikeResponseDto = await upsertLikeToRecipeService(
       recipePublicId,
       userPublicId,
       like
@@ -285,14 +288,14 @@ export const upsertLikeToPost = async (
     res.status(200).json({
       data: recipeWithAddedLike,
       success: true,
-      message: "like added successfully",
+      message: "like added to recipe successfully",
     });
   } catch (error) {
     next(error);
   }
 };
 
-export const removeLikeFromPost = async (
+export const removeLikeFromRecipe = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -300,12 +303,12 @@ export const removeLikeFromPost = async (
   try {
     const { recipeId: recipePublicId } = req.params;
     const { publicId: userPublicId } = req as AuthenticatedRequest;
-    const postWithRemovedLike: PostLikeResponseDto =
+    const postWithRemovedLike: RecipeLikeResponseDto =
       await removeLikeFromRecipeService(recipePublicId, userPublicId);
     res.status(200).json({
       data: postWithRemovedLike,
       success: true,
-      message: "Post deleted successfully",
+      message: "like removed from recipe successfully",
     });
   } catch (error) {
     next(error);

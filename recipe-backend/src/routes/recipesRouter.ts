@@ -9,7 +9,9 @@ import {
   getRecipesName,
   getRecipesPreviewByCategory,
   getSomeRecipesById,
+  removeLikeFromRecipe,
   toggleRecipePrivacy,
+  upsertLikeToRecipe,
 } from "../controllers/recipesController";
 import {
   authenticateTokenMiddleware,
@@ -26,6 +28,7 @@ import {
   validateRecipeIdsBody,
   validateSearchQuery,
 } from "../middleware/validateMiddleware";
+import { upsertLikeToRecipeService } from "../services/recipeService";
 
 const router = express.Router();
 

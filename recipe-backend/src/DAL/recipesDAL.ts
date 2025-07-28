@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { LikeType, Prisma } from "@prisma/client";
 import prisma from "../config/database";
 import { ICategory, IRecipe } from "../models/recipeModel";
 import {
@@ -6,6 +6,7 @@ import {
   PreviewRecipesResponse,
   RecipeIdResponse,
   RecipeImageResponse,
+  RecipeLikeResponse,
   SearchRecipeResponse,
 } from "../types/response/recipeResponses";
 import ErrorResponse from "../utils/errors/errors";
@@ -368,4 +369,71 @@ export const pgToggleRecipePrivacy = async (recipePublicId: string): Promise<Rec
     },
   });
   return recipe;
+};
+
+export const pgIsRecipeLikeExists = async (
+  userId: number,
+  recipeId: number
+) => {
+  const isLikeExists = await prisma.recipeLike.findFirst({
+    where: { userId, recipeId},
+  });
+ return !!isLikeExists;
+};
+
+export const pgAddLikeToRecipe = async (
+  userId: number,
+  recipeId: number,
+  like: LikeType
+): Promise<RecipeLikeResponse> => {
+  const updatedRecipeWithLike: RecipeLikeResponse = await prisma.recipeLike.create({
+    data: {
+      userId,
+      recipeId,
+      type: like,
+    },
+    select: {
+      recipe: {
+        select: {
+          publicId: true,
+        },
+      },
+    },
+  });
+  return updatedRecipeWithLike;
+};
+
+export const pgUpdateLikeToRecipe = async (
+  userId: number,
+  recipeId: number,
+  like: LikeType
+): Promise<RecipeLikeResponse> => {
+  const updatedPostWithLike: RecipeLikeResponse = await prisma.recipeLike.update({
+    where: { userId_recipeId: { userId, recipeId } },
+    data: {
+      type: like,
+    },
+    select: {
+      recipe: {
+        select: {
+          publicId: true,
+        },
+      },
+    },
+  });
+  return updatedPostWithLike;
+};
+
+export const pgRemoveLikeFromRecipe = async (userId: number, recipeId: number) => {
+  const recipeWithLike: RecipeLikeResponse = await prisma.recipeLike.delete({
+    where: { userId_recipeId: { userId, recipeId } },
+    select: {
+      recipe: {
+        select: {
+          publicId: true,
+        },
+      },
+    },
+  });
+  return recipeWithLike;
 };

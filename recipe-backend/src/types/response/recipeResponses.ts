@@ -56,3 +56,13 @@ export type CategoriesResponse = Prisma.CategoryGetPayload<{
     type: true;
   };
 }>;
+
+export type RecipeLikeResponse = Prisma.RecipeLikeGetPayload<{
+  select: {
+    recipe:{
+      select: {
+        publicId: true;
+      }
+    }
+  }
+}>;

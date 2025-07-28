@@ -45,3 +45,7 @@ export type PreviewRecipeDto = {
 export interface ImageRecipeDto {
   imageUrl: string | null;
 }
+
+export interface RecipeLikeResponseDto {
+  publicId: string;
+}
