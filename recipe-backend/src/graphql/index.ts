@@ -1,10 +1,13 @@
-// src/graphql/index.ts
-import { ApolloServer } from 'apollo-server';
+import { ApolloServer } from 'apollo-server-express';
+import { Application } from 'express';
 import { typeDefs } from './schemas/userSchema';
 import { userResolvers } from './resolvers/userResolver';
 
-const server = new ApolloServer({ typeDefs, resolvers: userResolvers });
+export const setupGraphQL = async(app: Application) =>{
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers: userResolvers,
+  });
 
-server.listen().then(({ url }) => {
-  console.log(`GraphQL server ready at ${url}`);
-});
+  await server.start();
+}

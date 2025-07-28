@@ -11,6 +11,10 @@ import categoryRouter from './routes/categoryRouter';
 import groupRouter from './routes/groupRouter';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import {expressMiddleware} from '@as-integrations/express4'
+import { typeDefs } from './graphql/schemas/userSchema';
+import { userResolvers } from './graphql/resolvers/userResolver';
+import { ApolloServer } from '@apollo/server';
 
 const environment = process.env.NODE_ENV || 'development';
 if (environment === 'production') {
@@ -24,6 +28,12 @@ if (environment === 'production') {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const server = new ApolloServer({
+    typeDefs,
+    resolvers: userResolvers,
+  });
+
 
 
 app.use(express.json());
@@ -51,8 +61,17 @@ app.use("/api/categories", categoryRouter)
 app.use("/api/groups", groupRouter)
 app.use("/api/posts", postRouter)
 
-app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+async function startServer() {
+  await server.start();
+  app.use('/graphql', expressMiddleware(server));
+
+  app.use(errorHandler);
+  
+  app.listen(PORT, () => {
+      console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
+
+startServer();
+
