@@ -1,8 +1,8 @@
-import { UserDto, UsernameDto } from "../../dto/userDto";
+import { UserDto, UsernameDto, UserProfileDto } from "../../dto/userDto";
 import {
  
 } from "../../types/response/recipeResponses";
-import { UsernamesResponse, UserWithoutRecipes, UserWithRecipes } from "../../types/response/userResponse";
+import { UsernamesResponse, UserProfileWithPostsResponse, UserWithoutRecipes, UserWithRecipes } from "../../types/response/userResponse";
 
 export const mapUserToDto = (
   user: UserWithRecipes | UserWithoutRecipes
@@ -31,4 +31,24 @@ export const mapUserToDto = (
   return dto;
 };
 
-
+export const mapUserProfileToDto = (
+  user: UserProfileWithPostsResponse
+): UserProfileDto => {
+   return {
+    publicId: user.publicId,
+    username: user.username,
+    fullName: user.fullName,
+    imageUrl: user.imageUrl,
+    email: user.email,
+    bio: user.bio,
+    headLine: user.headLine,
+    locale: user.locale,
+    isAdmin: user.isAdmin,
+    posts: user.posts.map(post => ({
+      publicId: post.publicId,
+      imageUrl: post.imageUrl,
+      likes: post.likes.length,
+      recipePublicId: post.recipe?.publicId ?? null,
+    }))
+  };
+};

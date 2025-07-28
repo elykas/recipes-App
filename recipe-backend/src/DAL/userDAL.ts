@@ -2,6 +2,7 @@ import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
 import {
   UsernamesResponse,
+  UserProfileWithPostsResponse,
   UserWithoutRecipes,
 } from "../types/response/userResponse";
 
@@ -20,6 +21,41 @@ export const pgGetAllUsernames = async (
     take: limit,
   });
   return usernames;
+};
+
+export const pgGetUserProfileWithPosts = async (
+  publicId: string,
+  limit: number
+): Promise<UserProfileWithPostsResponse | null> => {
+  const user: UserProfileWithPostsResponse | null = await prisma.user.findUnique({
+    where: { publicId },
+    select: {
+      publicId: true,
+      username: true,
+      fullName: true,
+      imageUrl: true,
+      email: true,
+      bio: true,
+      headLine: true,
+      locale: true,
+      isAdmin: true,
+      posts: {
+        select: {
+          publicId: true,
+          imageUrl: true,
+          likes: true,
+          recipe: {
+            select: {
+              publicId: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+      },
+    },
+  });
+  return user;
 };
 
 export const pgGetUserById = async (

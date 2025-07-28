@@ -39,3 +39,31 @@ export type UserWithoutRecipes = Prisma.UserGetPayload<{
     recipes: false;
   };
 }>;
+
+export type UserProfileWithPostsResponse = Prisma.UserGetPayload<{
+  select: {
+    publicId: true;
+    username: true;
+    fullName: true;
+    imageUrl: true;
+    email: true;
+    bio: true;
+    headLine: true;
+    locale: true;
+    isAdmin: true;
+    posts: {
+      select: {
+        publicId: true;
+        imageUrl: true;
+        likes: true;
+        recipe: {
+          select: {
+            publicId: true;
+          };
+        };
+      };
+      orderBy: { createdAt: "desc" };
+      take: 10;
+    };
+  };
+}>;

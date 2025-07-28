@@ -10,6 +10,7 @@ export interface IPost {
   authorId: number;
   recipeId?: number | null;
   likes?: IPostLike[];
+  createdAt?: Date;
 }
 
 export enum PostType {

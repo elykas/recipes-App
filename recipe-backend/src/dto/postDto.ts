@@ -40,3 +40,10 @@ export interface FullPostDto {
   };
   likes: number;
 }
+
+export interface PostPreviewDto {
+  publicId: string;
+  imageUrl: string | null;
+  likes: number;
+  recipePublicId?: string | null;
+}

@@ -6,6 +6,7 @@ import {
   IRecipeLikes as IRecipeLike,
 } from "../models/recipeModel";
 import { IUserEvents } from "../models/userModel";
+import { PostPreviewDto } from "./postDto";
 
 export type UserDto = {
   publicId: string;
@@ -56,3 +57,16 @@ export type UsernameDto = {
   fullName?: string | null;
   imageUrl?: string | null;
 };
+
+export interface UserProfileDto {
+  publicId: string;
+  username: string;
+  fullName: string | null;
+  imageUrl: string | null;
+  email: string | null;
+  bio: string | null;
+  headLine: string | null;
+  locale: string | null;
+  isAdmin: boolean;
+  posts: PostPreviewDto[];
+}

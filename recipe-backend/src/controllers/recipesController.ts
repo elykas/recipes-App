@@ -25,7 +25,7 @@ import {
   upsertLikeToRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
-import { LikeType, Recipe } from "@prisma/client";
+import { LikeType } from "@prisma/client";
 
 export const getRecipesName =
   (isUserScoped: boolean) =>

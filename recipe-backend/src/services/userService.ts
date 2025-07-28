@@ -1,26 +1,41 @@
 import {
-  pgUpdateUserImage,
   pgDeleteUser,
+  pgGetAllUsernames,
   pgGetAllUsers,
   pgGetImageOfUserByPublicId,
   pgGetUserById,
   pgGetUserIdByPublicId,
+  pgGetUserProfileWithPosts,
   pgUpdateUser,
-  pgGetAllUsernames,
+  pgUpdateUserImage,
 } from "../dal/userDal";
-import { UpdateUserDto, UserDto, UsernameDto } from "../dto/userDto";
+import { UpdateUserDto, UserDto, UsernameDto, UserProfileDto } from "../dto/userDto";
 import {
   UsernamesResponse,
+  UserProfileWithPostsResponse,
   UserWithoutRecipes,
 } from "../types/response/userResponse";
 import errorResponse from "../utils/errors/errors";
-import { mapUserToDto } from "../utils/mappers/userMapper";
+import { mapUserProfileToDto, mapUserToDto } from "../utils/mappers/userMapper";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 
 export const getAllUsersService = async (): Promise<UserDto[]> => {
   const users: UserWithoutRecipes[] = await pgGetAllUsers();
   const recipesDto: UserDto[] = users.map(mapUserToDto);
   return recipesDto;
+};
+
+export const getUserProfileWithPostsService = async (
+  userPublicId: string,
+  limit: number
+): Promise<UserProfileDto> => {
+  const userProfileWithPosts: UserProfileWithPostsResponse | null =
+    await pgGetUserProfileWithPosts(userPublicId, limit);
+
+  if (!userProfileWithPosts) throw errorResponse("User not found", 404);
+
+  const userProfileWithPostsDto: UserProfileDto = mapUserProfileToDto(userProfileWithPosts);
+  return userProfileWithPostsDto;
 };
 
 export const getAllUsernamesService = async (
