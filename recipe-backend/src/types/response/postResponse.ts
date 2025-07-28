@@ -27,7 +27,11 @@ export type FullPostResponse = Prisma.PostGetPayload<{
       publicId: true,
       content: true,
       imageUrl: true,
-      likes: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
       author: {
         select: {
           publicId: true,

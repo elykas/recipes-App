@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   CreatePostResponseDto,
   DeletedPostDto,
+  FullPostDto,
   PostInputCreateDto,
   PostInputUpdateDto,
   PostLikeResponseDto,
@@ -15,6 +16,7 @@ import {
   updatePostImageService,
   updatePostService,
   removeLikeFromPostService,
+  getSomePostsByIdService,
 } from "../services/postService";
 import { AuthenticatedRequest } from "../types/requests";
 import { LikeType } from "@prisma/client";
@@ -27,8 +29,7 @@ export const getSomePostsById = async (
   try {
     const { publicId: userPublicId } = req as AuthenticatedRequest;
     const { postsId } = req.body;
-    const { skip, take } = req.query;
-    const posts: PostLikeResponseDto[] = await getSomePostsService(
+    const posts: FullPostDto[] = await getSomePostsByIdService(
       postsId,
       userPublicId,
     );
@@ -144,15 +145,15 @@ export const upsertLikeToPost = async (
     const { publicId: userPublicId } = req as AuthenticatedRequest;
     const like: LikeType = req.body.like;
 
-    const post: PostLikeResponseDto = await upsertLikeToPostService(
+    const postWithAddedLike: PostLikeResponseDto = await upsertLikeToPostService(
       postPublicId,
       userPublicId,
       like
     );
     res.status(200).json({
-      data: post,
+      data: postWithAddedLike,
       success: true,
-      message: "Post deleted successfully",
+      message: "like added successfully",
     });
   } catch (error) {
     next(error);
@@ -174,7 +175,7 @@ export const removeLikeFromPost = async (
     res.status(200).json({
       data: postWithRemovedLike,
       success: true,
-      message: "Post deleted successfully",
+      message: "like removed successfully",
     });
   } catch (error) {
     next(error);

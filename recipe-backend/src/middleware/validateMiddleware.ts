@@ -4,7 +4,7 @@ import { LikeBodySchema, PostBodySchema } from "../schema/validatePostSchema";
 import {
   IdParamsSchema,
   RecipeSchema,
-  recipesIdBodySchema,
+  IdsBodySchema,
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
 import { UserSchema } from "../schema/validateUserSchema";
@@ -73,12 +73,12 @@ export const validateIdParams = (
   next();
 };
 
-export const validateRecipeIdBody = (
+export const validateRecipeIdsBody = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const result = recipesIdBodySchema.safeParse(req.body);
+  const result = IdsBodySchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
       success: false,
@@ -131,6 +131,22 @@ export const validateLikeBody = (
     return res.status(400).json({
       success: false,
       message: "Invalid like",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validatePostIdsBody = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = IdsBodySchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid recipe ID parameter",
       errors: result.error.message,
     });
   }

@@ -16,6 +16,7 @@ import {
 import {
   CreatePostResponseDto,
   DeletedPostDto,
+  FullPostDto,
   PostInputCreateDto,
   PostInputUpdateDto,
   PostLikeResponseDto,
@@ -32,12 +33,17 @@ import {
 import ErrorResponse from "../utils/errors/errors";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 import { getUserIdByPublicIdService } from "./userService";
+import { mapFullPostResponseToDto} from "../utils/mappers/postMapper";
+import { Auth } from "mongodb";
+
+const maxPostsPerRequest = 10;
 
 export const getSomePostsByIdService = async (postsId: string[], userPublicId: string) => {
-  if(postsId.length === 0 || postsId.length > 10) return [];
+  if(postsId.length === 0 || postsId.length >  maxPostsPerRequest) return [];
 
   const posts: FullPostResponse[] = await pgGetSomePostsById(postsId);
-  return posts;
+  const postsDto: FullPostDto[] = posts.map(mapFullPostResponseToDto);
+  return postsDto;
 }
 
 export const createPostService = async (
@@ -170,6 +176,13 @@ export const upsertLikeToPostService = async (
 
   const { id: postId }: PostResponseWithId =
     await getPostIdByPublicIdService(postPublicId);
+  
+  const authorPostId: AuthorOfPostResponse = await getUserPublicIdByPostIdService(
+    postPublicId
+  );
+
+  if (authorPostId.author.publicId === userPublicId)
+    throw ErrorResponse("You can't like your own post", 400);
 
   let postWithLike: PostLikeResponse;
 
@@ -199,6 +212,13 @@ export const removeLikeFromPostService = async (
 
   const { id: postId }: PostResponseWithId =
     await getPostIdByPublicIdService(postPublicId);
+  
+  const authorPostId: AuthorOfPostResponse = await getUserPublicIdByPostIdService(
+    postPublicId
+  );
+  
+  if (authorPostId.author.publicId === userPublicId)
+    throw ErrorResponse("You can't dislike your own post", 400);
 
   const likeExists = await pgIsLikeExists(userId, postId);
   if (!likeExists) throw ErrorResponse("Like not found", 404);

@@ -14,16 +14,27 @@ import {
   removeLikeFromPost,
   updatePost,
   updatePostImage,
+  getSomePostsById,
 } from "../controllers/postController";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 import {
   validateIdParams,
   validateLikeBody,
   validatePostBody,
+  validatePostIdsBody,
 } from "../middleware/validateMiddleware";
 
 const router = express.Router();
 
+router.get(
+  "/",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validatePostIdsBody,
+  getSomePostsById
+);
 router.post(
   "/",
   authenticateTokenMiddleware,
@@ -49,7 +60,6 @@ router.post(
   "/like/:postId",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIfUserOwnerOfPost,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
@@ -60,7 +70,6 @@ router.delete(
   "/unlike/:postId",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  checkIfUserOwnerOfPost,
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,

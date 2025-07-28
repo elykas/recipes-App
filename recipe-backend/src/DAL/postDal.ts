@@ -16,7 +16,11 @@ export const pgGetSomePostsById = async (postsPublicId: string[]): Promise<FullP
       publicId: true,
       imageUrl: true,
       content: true,
-      likes: true,
+      _count: {
+        select: {
+          likes: true,
+        },
+      },
       author: {
         select: {
           publicId: true,

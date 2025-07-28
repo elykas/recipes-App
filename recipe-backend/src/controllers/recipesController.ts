@@ -22,6 +22,7 @@ import {
   updateRecipeService,
 } from "../services/recipeService";
 import { AuthenticatedRequest } from "../types/requests";
+import { LikeType } from "@prisma/client";
 
 export const getRecipesName =
   (isUserScoped: boolean) =>
@@ -260,6 +261,51 @@ export const toggleRecipePrivacy = async (
       data: updatedRecipe,
       success: true,
       message: "Recipe privacy updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const upsertLikeToPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { recipeId: recipePublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const like: LikeType = req.body.like;
+
+    const recipeWithAddedLike: PostLikeResponseDto = await upsertLikeToRecipeService(
+      recipePublicId,
+      userPublicId,
+      like
+    );
+    res.status(200).json({
+      data: recipeWithAddedLike,
+      success: true,
+      message: "like added successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeLikeFromPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { recipeId: recipePublicId } = req.params;
+    const { publicId: userPublicId } = req as AuthenticatedRequest;
+    const postWithRemovedLike: PostLikeResponseDto =
+      await removeLikeFromRecipeService(recipePublicId, userPublicId);
+    res.status(200).json({
+      data: postWithRemovedLike,
+      success: true,
+      message: "Post deleted successfully",
     });
   } catch (error) {
     next(error);

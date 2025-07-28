@@ -21,8 +21,9 @@ import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware"
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import {
   validateIdParams,
+  validateLikeBody,
   validateRecipe,
-  validateRecipeIdBody,
+  validateRecipeIdsBody,
   validateSearchQuery,
 } from "../middleware/validateMiddleware";
 
@@ -61,7 +62,7 @@ router.post(
   authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateRecipeIdBody,
+  validateRecipeIdsBody,
   getSomeRecipesById
 );
 router.get(
@@ -144,6 +145,25 @@ router.put(
   sanitizeRequestMiddleware,
   validateIdParams,
   toggleRecipePrivacy
-)
+);
+router.post(
+  "/like/:recipeId",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  validateLikeBody,
+  upsertLikeToRecipe
+);
+router.delete(
+  "/unlike/:recipeId",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  removeLikeFromRecipe
+);
 
 export default router;
