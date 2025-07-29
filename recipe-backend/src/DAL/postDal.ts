@@ -18,11 +18,7 @@ export const pgGetSomePostsById = async (
       publicId: true,
       imageUrl: true,
       content: true,
-      _count: {
-        select: {
-          likes: true,
-        },
-      },
+      likeCount: true,
       author: {
         select: {
           publicId: true,
@@ -164,21 +160,31 @@ export const pgAddLikeToPost = async (
   postId: number,
   like: LikeType
 ): Promise<PostLikeResponse> => {
-  const updatedPostWithLike: PostLikeResponse = await prisma.postLike.create({
-    data: {
-      userId,
-      postId,
-      type: like,
-    },
-    select: {
-      post: {
-        select: {
-          publicId: true,
+  return await prisma.$transaction(async (prisma) => {
+    const createdLike = await prisma.postLike.create({
+      data: {
+        userId,
+        postId,
+        type: like,
+      },
+      select: {
+        post: {
+          select: {
+            publicId: true,
+          },
         },
       },
-    },
+    });
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: {
+        likeCount: { increment: 1 },
+      },
+    });
+
+    return createdLike;
   });
-  return updatedPostWithLike;
 };
 
 export const pgUpdateLikeToPost = async (
@@ -210,15 +216,25 @@ export const pgIsPostLikeExists = async (userId: number, postId: number) => {
 };
 
 export const pgRemoveLikeFromPost = async (userId: number, postId: number) => {
-  const postWithLike: PostLikeResponse = await prisma.postLike.delete({
-    where: { userId_postId: { userId, postId } },
-    select: {
-      post: {
-        select: {
-          publicId: true,
+    return await prisma.$transaction(async (prisma) => {
+    const deletedLike = await prisma.postLike.delete({
+      where: { userId_postId: { userId, postId } },
+      select: {
+        post: {
+          select: {
+            publicId: true,
+          },
         },
       },
-    },
+    });
+
+    await prisma.post.update({
+      where: { id: postId },
+      data: {
+        likeCount: { decrement: 1 },
+      },
+    });
+
+    return deletedLike;
   });
-  return postWithLike;
 };

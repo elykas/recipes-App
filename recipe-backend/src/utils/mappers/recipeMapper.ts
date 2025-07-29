@@ -66,5 +66,5 @@ export const mapPreviewRecipeToDto = (
     type: c.type,
   })),
   isPublic: recipe.isPublic,
-  likes: recipe._count?.likes ?? 0,
+  likes: recipe.likeCount,
 });

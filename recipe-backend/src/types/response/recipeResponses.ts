@@ -29,11 +29,7 @@ export type PreviewRecipesResponse = Prisma.RecipeGetPayload<{
     imageUrl: true;
     categories: true;
     isPublic: true;
-    _count: {
-      select: {
-        likes: true;
-      };
-    };
+    likeCount: true;
   };
 }>;
 

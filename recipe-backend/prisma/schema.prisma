@@ -70,6 +70,7 @@ model Recipe {
   posts          Post[]
   author         User              @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
   likes          RecipeLike[]
+  likeCount      Int               @default(0) 
   tags           RecipeTag[]
   reports        Report[]          @relation("ReportedRecipes")
   steps          Step[]
@@ -77,6 +78,8 @@ model Recipe {
   groupRecipes GroupRecipe[]
 
   @@index([title])
+  @@unique([createdAt, publicId])
+  @@unique([likeCount, publicId])
 }
 
 model Ingredient {
@@ -171,8 +174,12 @@ model Post {
   recipe         Recipe?    @relation(fields: [recipeId], references: [id])
   recipeId       Int?
   likes          PostLike[] @relation("PostLikes")
+  likeCount      Int        @default(0)
   tags           PostTag[]  @relation("PostTags")
   reports        Report[]   @relation("ReportedPosts")
+
+  @@unique([createdAt, publicId])
+  @@unique([likeCount, publicId])
 }
 
 model PostLike {

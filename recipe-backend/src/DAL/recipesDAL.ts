@@ -71,9 +71,7 @@ export const pgGetPreviewRecipes = async (
       imageUrl: true,
       isPublic: true,
       categories: true,
-      _count: {
-        select: { likes: true },
-      },
+      likeCount: true,
     },
     orderBy: { createdAt: "desc" },
     take: pageSize,
@@ -335,9 +333,7 @@ export const pgGetPreviewRecipesByCategory = async (
       imageUrl: true,
       isPublic: true,
       categories: true,
-      _count: {
-        select: { likes: true },
-      },
+      likeCount: true,
     },
     orderBy: { createdAt: "desc" },
     take: pageSize,
@@ -386,21 +382,31 @@ export const pgAddLikeToRecipe = async (
   recipeId: number,
   like: LikeType
 ): Promise<RecipeLikeResponse> => {
-  const updatedRecipeWithLike: RecipeLikeResponse = await prisma.recipeLike.create({
-    data: {
-      userId,
-      recipeId,
-      type: like,
-    },
-    select: {
-      recipe: {
-        select: {
-          publicId: true,
+  return await prisma.$transaction(async (prisma) => {
+    const createdLike = await prisma.recipeLike.create({
+      data: {
+        userId,
+        recipeId,
+        type: like,
+      },
+      select: {
+        recipe: {
+          select: {
+            publicId: true,
+          },
         },
       },
-    },
+    });
+
+    await prisma.recipe.update({
+      where: { id: recipeId },
+      data: {
+        likeCount: { increment: 1 },
+      },
+    });
+
+    return createdLike;
   });
-  return updatedRecipeWithLike;
 };
 
 export const pgUpdateLikeToRecipe = async (
@@ -425,15 +431,25 @@ export const pgUpdateLikeToRecipe = async (
 };
 
 export const pgRemoveLikeFromRecipe = async (userId: number, recipeId: number) => {
-  const recipeWithLike: RecipeLikeResponse = await prisma.recipeLike.delete({
-    where: { userId_recipeId: { userId, recipeId } },
-    select: {
-      recipe: {
-        select: {
-          publicId: true,
+   return await prisma.$transaction(async (prisma) => {
+    const deletedLike = await prisma.recipeLike.delete({
+      where: { userId_recipeId: { userId, recipeId } },
+      select: {
+        recipe: {
+          select: {
+            publicId: true,
+          },
         },
       },
-    },
+    });
+
+    await prisma.recipe.update({
+      where: { id: recipeId },
+      data: {
+        likeCount: { decrement: 1 },
+      },
+    });
+
+    return deletedLike;
   });
-  return recipeWithLike;
 };

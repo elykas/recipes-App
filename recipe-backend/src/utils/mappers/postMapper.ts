@@ -15,5 +15,5 @@ export const mapFullPostResponseToDto = (post: FullPostResponse): FullPostDto =>
     publicId: post.author.publicId,
     username: post.author.username,
   },
-  likes: post._count.likes,
+  likes: post.likeCount,
 });
