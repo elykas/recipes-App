@@ -50,12 +50,8 @@ export const verifyAuthToken = (token: string): { sub: string } | null => {
     if (!SUPABASE_JWT_SECRET) {
       throw ErrorResponse("SUPABASE_JWT_SECRET is not defined", 403);
     }
-    // try {
-    return jwt.verify(token, SUPABASE_JWT_SECRET) as { sub: string };
-  // } catch (err) {
-  //   throw new Error("Invalid token");
-  // }
     
+    return jwt.verify(token, SUPABASE_JWT_SECRET) as { sub: string };
 };
 
 export const generateInviteToken = (groupPublicId: string): string => {

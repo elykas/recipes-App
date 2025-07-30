@@ -15,6 +15,7 @@ export type UserDto = {
   fullName?: string | null;
   phone?: string | null;
   imageUrl?: string | null;
+  admin?: boolean;
   bio?: string | null;
   headLine?: string | null;
   birthDate?: Date | null;

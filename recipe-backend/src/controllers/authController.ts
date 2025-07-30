@@ -16,12 +16,11 @@ export const verifyAuthToken = async (
 ) => {
   try {
     const { publicId } = req as AuthenticatedRequest;
-    const { token } = req.body;
 
     const user: UserDto | null = await checkUserExist(publicId);
 
     const id = user?.publicId ?? publicId;
-    const isAdmin = user?.isAdmin ?? false;
+    const isAdmin = user?.admin ?? false;
 
     const accessToken = generateAccessToken(id, isAdmin);
     const refreshToken = generateRefreshToken(id);
@@ -48,7 +47,7 @@ export const completeRegister = async (
 
     const user: UserDto = await createNewUserService(publicId, userRegisterDetails);
 
-    const accessToken = generateAccessToken(user.publicId, user.isAdmin ?? false);
+    const accessToken = generateAccessToken(user.publicId, user.admin ?? false);
     const refreshToken = generateRefreshToken(user.publicId);
     setAuthCookies(res, accessToken, refreshToken);
     res
@@ -82,7 +81,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       return;
     }
 
-    const accessToken = generateAccessToken(user.publicId, user.isAdmin ?? false);
+    const accessToken = generateAccessToken(user.publicId, user.admin ?? false);
     setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({ success: true });
