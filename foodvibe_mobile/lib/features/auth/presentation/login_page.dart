@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../application/auth_controller.dart';
-import '../../../../../routes/app_router.dart';
 import '../widgets/google_sign_in_button.dart';
 import '../widgets/email_login_form.dart';
 

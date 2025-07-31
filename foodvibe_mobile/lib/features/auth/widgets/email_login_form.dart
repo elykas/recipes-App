@@ -14,7 +14,7 @@ class EmailLoginForm extends ConsumerStatefulWidget {
 class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
   final _emailController = TextEditingController();
   String? _error;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
