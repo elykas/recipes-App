@@ -7,18 +7,14 @@ class AuthRepository {
    AuthRepository({SupabaseClient? client})
       : _client = client ?? SupabaseManager.client;
 
-  Future<String?> signInWithEmail({required String email})async{
+  Future<void> signInWithEmail({required String email}) async{
      await _client.auth.signInWithOtp(email: email);
-     final session = _client.auth.currentSession;
-     return session?.accessToken;
   }
 
-  Future<String?> signInWithGoogle() async {
+  Future<void> signInWithGoogle() async {
     await _client.auth.signInWithOAuth(
       OAuthProvider.google
     );
-    final session = _client.auth.currentSession;
-    return session?.accessToken;
   }
 
   Future<void> signOut() async {

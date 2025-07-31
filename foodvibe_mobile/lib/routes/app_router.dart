@@ -4,6 +4,9 @@ import '../features/auth/presentation/login_page.dart';
 
 class AppRoutes {
   static const String login = '/login';
+  static const String emailSent = '/email-sent';
+  static const String completeRegister = '/complete-register';
+  static const String verifyToken = '/verify-token';
   static const String feed = '/feed';
 }
 

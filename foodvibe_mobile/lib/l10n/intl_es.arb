@@ -1,0 +1,7 @@
+{
+    "@@locale": "es",
+  "appTitle": "Mi aplicación genial",
+  "login": "Iniciar sesión",
+  "email": "Correo electrónico",
+  "invalidEmail": "Formato de correo electrónico no válido"
+}

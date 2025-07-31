@@ -1,0 +1,19 @@
+{
+    "@@locale": "en",
+  "appTitle": "My Cool App",
+  "login": "Login",
+  "email": "Email",
+  "invalidEmail": "Invalid email format",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "@login": {
+    "description": "Login button text"
+  },
+  "@email": {
+    "description": "Email input label"
+  },
+  "@invalidEmail": {
+    "description": "Error message for invalid email"
+  }
+}
