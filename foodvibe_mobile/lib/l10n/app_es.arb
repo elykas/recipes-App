@@ -1,7 +1,31 @@
 {
-    "@@locale": "es",
-  "appTitle": "Mi aplicación genial",
-  "login": "Iniciar sesión",
-  "email": "Correo electrónico",
-  "invalidEmail": "Formato de correo electrónico no válido"
+  "@@locale": "es",
+  "appTitle": "foodVibe",
+  "loginButton": "Iniciar sesión",
+  "emailLabel": "Correo electrónico",
+  "invalidEmailInput": "Formato de correo inválido",
+  "loginOr": "o",
+  "loginFailed": "Inicio de sesión fallido. Inténtalo de nuevo.",
+  "loginWithGoogleButton": "Iniciar sesión con Google",
+  "@appTitle": {
+    "description": "El título de la aplicación"
+  },
+  "@loginButton": {
+    "description": "Texto del botón de inicio de sesión"
+  },
+  "@emailLabel": {
+    "description": "Etiqueta del campo de correo"
+  },
+  "@invalidEmailInput": {
+    "description": "Mensaje de error para formato de correo inválido"
+  },
+  "@loginOr": {
+    "description": "Texto 'o'"
+  },
+  "@loginFailed": {
+    "description": "Mensaje de error al fallar el inicio de sesión"
+  },
+  "@loginWithGoogleButton": {
+    "description": "Texto del botón para iniciar sesión con Google"
+  }
 }

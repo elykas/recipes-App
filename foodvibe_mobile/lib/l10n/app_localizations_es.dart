@@ -9,14 +9,23 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
-  String get appTitle => 'Mi aplicación genial';
+  String get appTitle => 'foodVibe';
 
   @override
-  String get login => 'Iniciar sesión';
+  String get loginButton => 'Iniciar sesión';
 
   @override
-  String get email => 'Correo electrónico';
+  String get emailLabel => 'Correo electrónico';
 
   @override
-  String get invalidEmail => 'Formato de correo electrónico no válido';
+  String get invalidEmailInput => 'Formato de correo inválido';
+
+  @override
+  String get loginOr => 'o';
+
+  @override
+  String get loginFailed => 'Inicio de sesión fallido. Inténtalo de nuevo.';
+
+  @override
+  String get loginWithGoogleButton => 'Iniciar sesión con Google';
 }

@@ -1,19 +1,31 @@
 {
   "@@locale": "en",
-  "appTitle": "My Cool App",
-  "login": "Login",
-  "email": "Email",
-  "invalidEmail": "Invalid email format",
+  "appTitle": "foodVibe",
+  "loginButton": "Login",
+  "emailLabel": "Email",
+  "invalidEmailInput": "Invalid email format",
+  "loginOr":"or",
+  "loginFailed":"Login failed. Please try again.",
+  "loginWithGoogleButton":"Login with Google",
   "@appTitle": {
     "description": "The title of the application"
   },
-  "@login": {
+  "@loginButton": {
     "description": "Login button text"
   },
-  "@email": {
+  "@emailLabel": {
     "description": "Email input label"
   },
-  "@invalidEmail": {
-    "description": "Error message for invalid email"
+  "@invalidEmailInput": {
+    "description": "Error message for invalid email input"
+  },
+  "@loginOr": {
+    "description": "Or text"
+  },
+  "@loginFailed": {
+    "description": "Error message for invalid login"
+  },
+  "@loginWithGoogleButton": {
+    "description": "Login with Google button text"
   }
 }

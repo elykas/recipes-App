@@ -1,19 +1,31 @@
 {
-    "@@locale": "pt",
-  "appTitle": "My Cool App",
-  "login": "Login",
-  "email": "Email",
-  "invalidEmail": "Invalid email format",
+  "@@locale": "pt",
+  "appTitle": "foodVibe",
+  "loginButton": "Entrar",
+  "emailLabel": "E-mail",
+  "invalidEmailInput": "Formato de email inválido",
+  "loginOr": "ou",
+  "loginFailed": "Falha no login. Por favor, tente novamente.",
+  "loginWithGoogleButton": "Entrar com o Google",
   "@appTitle": {
-    "description": "The title of the application"
+    "description": "O título da aplicação"
   },
-  "@login": {
-    "description": "Login button text"
+  "@loginButton": {
+    "description": "Texto do botão de login"
   },
-  "@email": {
-    "description": "Email input label"
+  "@emailLabel": {
+    "description": "Rótulo do campo de email"
   },
-  "@invalidEmail": {
-    "description": "Error message for invalid email"
+  "@invalidEmailInput": {
+    "description": "Mensagem de erro para formato de email inválido"
+  },
+  "@loginOr": {
+    "description": "Texto 'ou'"
+  },
+  "@loginFailed": {
+    "description": "Mensagem de erro para falha no login"
+  },
+  "@loginWithGoogleButton": {
+    "description": "Texto do botão para entrar com o Google"
   }
 }

@@ -9,14 +9,23 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
-  String get appTitle => 'My Cool App';
+  String get appTitle => 'foodVibe';
 
   @override
-  String get login => 'Login';
+  String get loginButton => 'Entrar';
 
   @override
-  String get email => 'Email';
+  String get emailLabel => 'E-mail';
 
   @override
-  String get invalidEmail => 'Invalid email format';
+  String get invalidEmailInput => 'Formato de email inválido';
+
+  @override
+  String get loginOr => 'ou';
+
+  @override
+  String get loginFailed => 'Falha no login. Por favor, tente novamente.';
+
+  @override
+  String get loginWithGoogleButton => 'Entrar com o Google';
 }

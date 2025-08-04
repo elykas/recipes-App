@@ -103,26 +103,44 @@ abstract class AppLocalizations {
   /// The title of the application
   ///
   /// In en, this message translates to:
-  /// **'My Cool App'**
+  /// **'foodVibe'**
   String get appTitle;
 
   /// Login button text
   ///
   /// In en, this message translates to:
   /// **'Login'**
-  String get login;
+  String get loginButton;
 
   /// Email input label
   ///
   /// In en, this message translates to:
   /// **'Email'**
-  String get email;
+  String get emailLabel;
 
-  /// Error message for invalid email
+  /// Error message for invalid email input
   ///
   /// In en, this message translates to:
   /// **'Invalid email format'**
-  String get invalidEmail;
+  String get invalidEmailInput;
+
+  /// Or text
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get loginOr;
+
+  /// Error message for invalid login
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please try again.'**
+  String get loginFailed;
+
+  /// Login with Google button text
+  ///
+  /// In en, this message translates to:
+  /// **'Login with Google'**
+  String get loginWithGoogleButton;
 }
 
 class _AppLocalizationsDelegate
