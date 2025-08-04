@@ -11,6 +11,7 @@
 		<array>
 		<!-- TODO Replace this value: -->
 		<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+		<string>com.example.foodvibe_mobile</string>
 		<string>com.googleusercontent.apps.my-ios</string>
 		</array>
 	</dict>
