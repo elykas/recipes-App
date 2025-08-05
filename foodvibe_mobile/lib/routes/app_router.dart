@@ -1,3 +1,5 @@
+import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
+import 'package:foodvibe_mobile/features/auth/presentation/complete_register_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/login_page.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
@@ -20,7 +22,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.emailSent,
-      builder: (context, state) => const EmailSentPage(),
+      builder: (context, state) {
+        final data = state.extra as VerifyTokenResponse;
+        return RegisterScreen(response: data);
+      },
     ), 
     // דף הבית או feed או מה שתבחר
   ],

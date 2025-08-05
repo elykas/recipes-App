@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/services/supabase_service.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  final VerifyTokenResponse response;
+  
+  const RegisterScreen({super.key, required this.response});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();

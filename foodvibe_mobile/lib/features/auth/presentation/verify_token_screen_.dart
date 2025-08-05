@@ -29,12 +29,12 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
     }
 
     try {
-      final isRegistered = await ref.read(authControllerProvider.notifier).verifyToken(token);
+      final response = await ref.read(authControllerProvider.notifier).verifyToken(token);
 
-      if (isRegistered) {
+      if (response.exist) {
         context.go(AppRoutes.feed);
       } else {
-        context.go(AppRoutes.completeRegister);
+        context.go(AppRoutes.completeRegister, extra: response);
       }
     } catch (e) {
       context.go(AppRoutes.login);

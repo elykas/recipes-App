@@ -64,7 +64,7 @@ export const verifyAuthTokenMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const token = req.body.token;
+    const token = req.headers["authorization"]?.split("Bearer")[1] || "";
     if (typeof token !== "string" || !token) {
       res
         .status(401)

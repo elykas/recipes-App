@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/auth_repository.dart';
 
@@ -46,7 +47,7 @@ class AuthController extends StateNotifier<Session?> {
     await _authRepository.signOut();
   }
 
-  Future<bool> verifyToken(String token) async {
+  Future<VerifyTokenResponse> verifyToken(String token) async {
     return await _authRepository.verifyToken(token);
   }
 }
