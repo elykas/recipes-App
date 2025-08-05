@@ -3,6 +3,7 @@
   "appTitle": "foodVibe",
   "loginButton": "Iniciar sesión",
   "emailLabel": "Correo electrónico",
+  "emailSent": "Correo enviado con exito, revisa tu bandeja de entrada.",
   "invalidEmailInput": "Formato de correo inválido",
   "loginOr": "o",
   "loginFailed": "Inicio de sesión fallido. Inténtalo de nuevo.",
@@ -15,6 +16,9 @@
   },
   "@emailLabel": {
     "description": "Etiqueta del campo de correo"
+  },
+  "@emailSent": {
+    "description": "Mensaje de exito para correo enviado"
   },
   "@invalidEmailInput": {
     "description": "Mensaje de error para formato de correo inválido"

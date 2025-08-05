@@ -8,12 +8,13 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  print(dotenv.env['SUPABASE_URL']);
-  print("----------------------------------------------------------------------------------------");
-  
+
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL'] ?? "",
-    anonKey: dotenv.env['SUPABASE_KEY'] ?? "",
+    anonKey: dotenv.env['SUPABASE_KEY'] ?? ""
   );
+  print(dotenv.env['SUPABASE_URL']);
+  print(dotenv.env['SUPABASE_KEY']);
+  
   runApp(const ProviderScope(child: MyApp()));
 }

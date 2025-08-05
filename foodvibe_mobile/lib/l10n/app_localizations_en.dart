@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email';
 
   @override
+  String get emailSent => 'Email sent successfully, check your inbox.';
+
+  @override
   String get invalidEmailInput => 'Invalid email format';
 
   @override

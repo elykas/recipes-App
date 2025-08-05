@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../application/auth_controller.dart';
 import '../../../../../routes/app_router.dart';
 import '../../../l10n/app_localizations.dart';
@@ -33,19 +34,15 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
 
     try {
       await authController.signInWithEmail(email: _emailController.text);
-      final session = ref.read(authControllerProvider);
-      final token = session?.accessToken;
-      if (session != null && token != null && mounted) {
-        Navigator.pushReplacementNamed(
-          context,
-          AppRoutes.verifyToken,
-          arguments: token,
-        );
-      } else {
-        setState(() => _errorKey = "loginFailed");
-      }
+      context.go(AppRoutes.emailSent);
     } catch (e) {
       setState(() => _errorKey = "loginFailed");
+      
+    }
+    finally {
+      setState(() {
+        _emailController.clear();
+      });
     }
   }
 

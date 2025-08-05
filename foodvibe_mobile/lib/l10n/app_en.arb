@@ -3,6 +3,7 @@
   "appTitle": "foodVibe",
   "loginButton": "Login",
   "emailLabel": "Email",
+  "emailSent": "Email sent successfully, check your inbox.",
   "invalidEmailInput": "Invalid email format",
   "loginOr":"or",
   "loginFailed":"Login failed. Please try again.",
@@ -15,6 +16,9 @@
   },
   "@emailLabel": {
     "description": "Email input label"
+  },
+  "@emailSent": {
+    "description": "Success message for email sent"
   },
   "@invalidEmailInput": {
     "description": "Error message for invalid email input"

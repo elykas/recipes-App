@@ -17,7 +17,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: Colors.grey[200], // רקע עדין
+      backgroundColor: Colors.grey[200], 
       body: Center(
         child: Container(
           width: 350,

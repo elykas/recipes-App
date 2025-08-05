@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/login_page.dart';
+import '../features/auth/presentation/email_sent_screen.dart';
 // שים לב להוספה של שאר הדפים גם...
 
 class AppRoutes {
@@ -17,6 +18,10 @@ final appRouter = GoRouter(
       path: AppRoutes.login,
       builder: (context, state) => const LoginPage(),
     ),
+    GoRoute(
+      path: AppRoutes.emailSent,
+      builder: (context, state) => const EmailSentPage(),
+    ), 
     // דף הבית או feed או מה שתבחר
   ],
 );

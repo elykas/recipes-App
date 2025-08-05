@@ -118,6 +118,12 @@ abstract class AppLocalizations {
   /// **'Email'**
   String get emailLabel;
 
+  /// Success message for email sent
+  ///
+  /// In en, this message translates to:
+  /// **'Email sent successfully, check your inbox.'**
+  String get emailSent;
+
   /// Error message for invalid email input
   ///
   /// In en, this message translates to:

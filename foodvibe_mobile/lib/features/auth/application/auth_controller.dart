@@ -45,4 +45,8 @@ class AuthController extends StateNotifier<Session?> {
   Future<void> signOut() async {
     await _authRepository.signOut();
   }
+
+  Future<bool> verifyToken(String token) async {
+    return await _authRepository.verifyToken(token);
+  }
 }
