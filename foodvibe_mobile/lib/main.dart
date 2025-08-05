@@ -8,6 +8,8 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  print(dotenv.env['SUPABASE_URL']);
+  print("----------------------------------------------------------------------------------------");
   
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL'] ?? "",
