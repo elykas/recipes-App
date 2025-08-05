@@ -1,6 +1,7 @@
 import { Request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import ErrorResponse from "../errors/errors";
+import { SupabaseJwtPayload } from "../../types/requests";
 
 const SUPABASE_JWT_SECRET: string = process.env.SUPABASE_JWY_SECRET as string;
 const JWT_SECRET: string = process.env.JWT_SECRET as string;
@@ -43,7 +44,7 @@ export const generateRefreshToken = (publicId: string): string => {
   return refreshToken;
 };
 
-export const verifyAuthToken = (token: string): { sub: string } | null => {
+export const verifyAuthToken = (token: string): SupabaseJwtPayload | null => {
     if (!token) {
       throw ErrorResponse("Token not found", 403);
     }
@@ -51,7 +52,7 @@ export const verifyAuthToken = (token: string): { sub: string } | null => {
       throw ErrorResponse("SUPABASE_JWT_SECRET is not defined", 403);
     }
     
-    return jwt.verify(token, SUPABASE_JWT_SECRET) as { sub: string };
+    return jwt.verify(token, SUPABASE_JWT_SECRET) as SupabaseJwtPayload;
 };
 
 export const generateInviteToken = (groupPublicId: string): string => {

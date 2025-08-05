@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { UserDto } from "../dto/userDto";
+import { CreateUserDto, UserDto } from "../dto/userDto";
 import { checkUserExist, createNewUserService } from "../services/authService";
 import { AuthenticatedRequest } from "../types/requests";
 import {
@@ -15,7 +15,7 @@ export const verifyAuthToken = async (
   next: NextFunction
 ) => {
   try {
-    const { publicId } = req as AuthenticatedRequest;
+    const { publicId, email } = req as AuthenticatedRequest;
 
     const user: UserDto | null = await checkUserExist(publicId);
 
@@ -27,6 +27,7 @@ export const verifyAuthToken = async (
     setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({
+      data: { publicId, email },
       success: true,
       message: "User verified successfully",
       exist: !!user,
@@ -42,7 +43,7 @@ export const completeRegister = async (
   next: NextFunction
 ) => {
   try {
-    const  userRegisterDetails  = req.body;
+    const  userRegisterDetails: CreateUserDto = req.body;
     const { publicId } = req as AuthenticatedRequest;
 
     const user: UserDto = await createNewUserService(publicId, userRegisterDetails);

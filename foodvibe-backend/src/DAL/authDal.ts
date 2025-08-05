@@ -1,5 +1,5 @@
 import prisma from "../config/database";
-import { UserWithoutRecipes } from "../types/response/recipeResponses";
+import { UserWithoutRecipes } from "../types/response/userResponse";
 
 export const pgCreateUser = async (
   publicId: string,
@@ -37,4 +37,11 @@ export const pgCheckUserExist = async (
     where: { publicId },
   });
   return user ? user : null;
+};
+
+export const pgCheckUsernameExist = async (username: string): Promise<boolean> => {
+  const usernameExist = await prisma.user.findUnique({
+    where: { username },
+  });
+  return usernameExist ? true : false;
 };

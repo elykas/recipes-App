@@ -15,7 +15,7 @@ class EmailLoginForm extends ConsumerStatefulWidget {
 class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
   final _emailController = TextEditingController();
   String? _errorKey;
-  final bool _isLoading = false;
+  bool _isLoading = false;
 
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
@@ -33,15 +33,18 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
     final authController = ref.read(authControllerProvider.notifier);
 
     try {
+      setState(() {
+        _errorKey = null;
+        _isLoading = true;
+      });
       await authController.signInWithEmail(email: _emailController.text);
       context.go(AppRoutes.emailSent);
     } catch (e) {
       setState(() => _errorKey = "loginFailed");
-      
-    }
-    finally {
+    } finally {
       setState(() {
         _emailController.clear();
+        _isLoading = false;
       });
     }
   }
@@ -70,7 +73,19 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
             ),
           ),
         SizedBox(height: 16),
-        ElevatedButton(onPressed: _submit, child: Text(loc.loginButton)),
+        ElevatedButton(
+          onPressed: _isLoading ? null : _submit,
+          child: _isLoading
+              ? SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Text(loc.loginButton),
+        ),
       ],
     );
   }

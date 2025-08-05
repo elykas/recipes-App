@@ -13,10 +13,12 @@ import {
   checkIfUserIsAdminOfGroup,
   checkIfUserIsMemberOfGroup,
 } from "../utils/checkUtils/checkGroupUtils";
+import { SupabaseJwtPayload } from "../types/requests";
 
 declare module "express" {
   interface Request {
     publicId?: string;
+    email?: string;
   }
 }
 
@@ -70,7 +72,7 @@ export const verifyAuthTokenMiddleware = (
       return;
     }
 
-    const decoded = verifyAuthToken(token);
+    const decoded: SupabaseJwtPayload | null = verifyAuthToken(token);
     if (!decoded) {
       res
         .status(403)
@@ -79,6 +81,7 @@ export const verifyAuthTokenMiddleware = (
     }
 
     req.publicId = decoded.sub;
+    req.email = decoded.email;
 
     next();
   } catch (error) {
