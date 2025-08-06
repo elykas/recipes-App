@@ -61,7 +61,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               EmailLoginForm(setError: setError),
               SizedBox(height: 20),
               Text(loc.loginOr),
-              GoogleSignInButton(),
+              GoogleSignInButton(setError: setError),
               if (_errorKey != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),

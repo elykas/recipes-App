@@ -39,8 +39,14 @@ class AuthController extends StateNotifier<Session?> {
     await _authRepository.signInWithEmail(email: email);
   }
 
-  Future<void> signInWithGoogle() async {
+  Future<bool> signInWithGoogle() async {
     await _authRepository.signInWithGoogle();
+    final session = _authRepository.client.auth.currentSession;
+    if (session != null) {
+      state = session;
+      return true;
+    }
+    return false;
   }
 
   Future<void> signOut() async {

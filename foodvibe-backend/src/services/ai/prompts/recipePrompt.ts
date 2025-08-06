@@ -22,7 +22,7 @@ export const buildRecipePrompt = (
   if (previousRecipes.length > 0) {
     prompt += `\nAvoid recipes similar to the following:\n`;
     previousRecipes.forEach((recipe, idx) => {
-      prompt += `Recipe ${idx + 1} name: ${recipe.name}\nIngredients: ${recipe.ingredients.map((i) => i.name).join(", ")}\n`;
+      prompt += `Recipe ${idx + 1} name: ${recipe.title}\nIngredients: ${recipe.ingredients.map((i) => i.name).join(", ")}\n`;
     });
     prompt += `\n**IMPORTANT:** Ensure the generated recipe is **absolutely unique and significantly different** from the previous recipes provided below. `;
   prompt += `The "name" of the new recipe must be **creative, descriptive, and distinct**, not just a generic name, and should not duplicate any previous recipe names.\n`;

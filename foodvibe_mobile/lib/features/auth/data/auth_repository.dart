@@ -30,36 +30,30 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
-    const webClientId = 'my-web.apps.googleusercontent.com';
-    const iosClientId = 'my-ios.apps.googleusercontent.com';
-
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: iosClientId,
-      serverClientId: webClientId,
+    // Start Google sign-in flow
+    await GoogleSignIn.instance.initialize(
+      serverClientId: '${dotenv.env['GOOGLE_CLIENT_ID_WEB']}',
     );
-
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    final googleUser = await GoogleSignIn.instance.authenticate();
 
     if (googleUser == null) {
       throw Exception('Google Sign-In aborted by user');
     }
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
+    // Get authentication tokens
+    final googleAuth = googleUser.authentication;
     final String? idToken = googleAuth.idToken;
-    final String? accessToken = googleAuth.accessToken;
 
-    if (idToken == null || accessToken == null) {
+    if (idToken == null) {
       throw Exception('Missing Google authentication tokens');
     }
 
-    await Supabase.instance.client.auth.signInWithIdToken(
+    // Authenticate with Supabase (or your backend)
+    await _client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
-      accessToken: accessToken,
     );
-  }
+  } 
 
   Future<VerifyTokenResponse> verifyToken(String token) async {
     final baseUrl = dotenv.env['BASE_URL'];
