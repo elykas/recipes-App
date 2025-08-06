@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/google_sign_in_button.dart';
-import '../widgets/email_login_form.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../l10n/app_localizations.dart';
+import '../widgets/email_login_form.dart';
+import '../widgets/google_sign_in_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -12,12 +14,32 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
+  String? _errorKey;
 
-   @override
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = GoRouterState.of(context);
+      final extra = state.extra;
+
+      if (extra != null && extra is String) {
+        setError(extra);
+      }
+    });
+  }
+
+  void setError(String? error) {
+    setState(() => _errorKey = error);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      backgroundColor: Colors.grey[200], 
+      backgroundColor: Colors.grey[200],
       body: Center(
         child: Container(
           width: 350,
@@ -36,10 +58,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              EmailLoginForm(),
+              EmailLoginForm(setError: setError),
               SizedBox(height: 20),
               Text(loc.loginOr),
               GoogleSignInButton(),
+              if (_errorKey != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Text(
+                    loc.loginFailed,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
           ),
         ),

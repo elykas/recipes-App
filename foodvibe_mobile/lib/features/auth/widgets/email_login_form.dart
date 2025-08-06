@@ -6,7 +6,9 @@ import '../../../../../routes/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 
 class EmailLoginForm extends ConsumerStatefulWidget {
-  const EmailLoginForm({super.key});
+  final void Function(String?) setError;
+
+  const EmailLoginForm({super.key, required this.setError});
 
   @override
   EmailLoginFormState createState() => EmailLoginFormState();
@@ -40,7 +42,7 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
       await authController.signInWithEmail(email: _emailController.text);
       context.go(AppRoutes.emailSent);
     } catch (e) {
-      setState(() => _errorKey = "loginFailed");
+      widget.setError("loginFailed");
     } finally {
       setState(() {
         _emailController.clear();
@@ -64,14 +66,6 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
                 : null,
           ),
         ),
-        if (_errorKey != null && _errorKey != "invalidEmail")
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(
-              _errorKey == 'loginFailed' ? loc.loginFailed : '',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
         SizedBox(height: 16),
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,

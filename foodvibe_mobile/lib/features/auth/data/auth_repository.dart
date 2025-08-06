@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/supabase_service.dart';
@@ -16,6 +17,8 @@ class AuthRepository {
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];
 
+    print(callBackUrl);
+
     if (callBackUrl == null) {
       throw Exception('CALLBACK_URL is not set');
     }
@@ -27,15 +30,34 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
-    final callBackUrl = dotenv.env['CALLBACK_URL'];
+    const webClientId = 'my-web.apps.googleusercontent.com';
+    const iosClientId = 'my-ios.apps.googleusercontent.com';
 
-    if (callBackUrl == null) {
-      throw Exception('CALLBACK_URL is not set');
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId: iosClientId,
+      serverClientId: webClientId,
+    );
+
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+    if (googleUser == null) {
+      throw Exception('Google Sign-In aborted by user');
     }
 
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: callBackUrl,
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final String? idToken = googleAuth.idToken;
+    final String? accessToken = googleAuth.accessToken;
+
+    if (idToken == null || accessToken == null) {
+      throw Exception('Missing Google authentication tokens');
+    }
+
+    await Supabase.instance.client.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
     );
   }
 

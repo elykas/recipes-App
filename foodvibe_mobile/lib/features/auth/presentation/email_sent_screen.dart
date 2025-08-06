@@ -25,15 +25,6 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
     super.initState();
     
     _startCountdown();
-
-    ref.listen<Session?>(
-      authControllerProvider,
-      (previous, next) {
-        if (next != null) {
-          context.go(AppRoutes.verifyToken);
-        }
-      },
-    );
   }
 
   void _startCountdown() {
@@ -72,6 +63,16 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    
+    ref.listen<Session?>(
+      authControllerProvider,
+      (previous, next) {
+        if (next != null) {
+          context.go(AppRoutes.verifyToken);
+        }
+      },
+    );
+    
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(24.0),
