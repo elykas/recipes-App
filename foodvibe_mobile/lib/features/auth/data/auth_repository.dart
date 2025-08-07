@@ -3,7 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../services/supabase_service.dart';
 
 class AuthRepository {

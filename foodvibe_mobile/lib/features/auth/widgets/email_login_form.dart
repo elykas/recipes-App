@@ -40,7 +40,7 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
         _isLoading = true;
       });
       await authController.signInWithEmail(email: _emailController.text);
-      context.go(AppRoutes.emailSent);
+      context.go(AppRoutes.emailSent, extra: email);
     } catch (e) {
       widget.setError("loginFailed");
     } finally {

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginCallbackPage extends ConsumerStatefulWidget {
   const LoginCallbackPage({super.key});
@@ -21,23 +19,24 @@ class _LoginCallbackPageState extends ConsumerState<LoginCallbackPage> {
     final errorCode = uri.queryParameters['error_code'];
     final errorMessage = uri.queryParameters['error_description'];
 
-    if (errorCode != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go(AppRoutes.login, extra: 'loginFailed');
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (errorCode != null) {
+        if (errorCode == 'invalid_token') {
+          // טוקן פג תוקף
+          context.go(AppRoutes.emailSent, extra: 'expiredLink');
+        } else {
+          // שגיאה כללית
+          context.go(AppRoutes.emailSent, extra: 'loginFailed');
+        }
+      } else {
+        // אין שגיאה – פשוט נשארים פה עד ש־ref.listen יזהה סשן ב־EmailSentPage
+        // (שום הפניה כאן)
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<Session?>(
-      authControllerProvider,
-      (previous, next) {
-        if (next != null) {
-          context.go(AppRoutes.verifyToken);
-        }
-      },
-    );
     return const Scaffold(
       body: Center(child: CircularProgressIndicator()),
     );
