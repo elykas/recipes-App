@@ -39,6 +39,17 @@ class AuthController extends StateNotifier<Session?> {
     await _authRepository.signInWithEmail(email: email);
   }
 
+  Future<void> recoverSessionFromLink(Uri uri) async {
+  try {
+    final response = await _authRepository.client.auth.getSessionFromUrl(uri);
+    if (response.session != null) {
+      state = response.session;
+    }
+  } catch (e) {
+    print("Failed to recover session: $e");
+  }
+}
+
   Future<bool> signInWithGoogle() async {
     await _authRepository.signInWithGoogle();
     final session = _authRepository.client.auth.currentSession;

@@ -13,6 +13,7 @@ class AuthRepository {
     : _client = client ?? SupabaseManager.client,
       _dio = dio ?? Dio();
 
+
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];
 
@@ -25,6 +26,8 @@ class AuthRepository {
     await _client.auth.signInWithOtp(
       email: email,
       emailRedirectTo: callBackUrl,
+      shouldCreateUser: false,
+      
     );
   }
 
