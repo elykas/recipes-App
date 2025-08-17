@@ -6,7 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VerifyTokenResponse response;
-  
+
   const RegisterScreen({super.key, required this.response});
 
   @override
@@ -68,12 +68,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       await SupabaseManager.client.from('profiles').upsert({
         'id': userId,
+        "email": email,
         'username': username,
-        'full_name': _fullNameController.text.trim(),
-        'headline': _headlineController.text.trim(),
-        'birthdate': _birthdate?.toIso8601String(),
+        'fullName': _fullNameController.text.trim(),
+        'headLine': _headlineController.text.trim(),
+        'birthDate': _birthdate?.toIso8601String(),
         'locale': locale,
-        'agreed_at': DateTime.now().toIso8601String(),
+        'agreedToPolicy': _agreed, // checkbox שלך
+        'agreedToPolicyDate': DateTime.now().toIso8601String(),
+        'agreedToPolicyVersion': "v1.0", // כאן אתה קובע גרסה
       });
 
       ScaffoldMessenger.of(

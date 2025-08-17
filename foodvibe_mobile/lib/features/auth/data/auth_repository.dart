@@ -26,8 +26,6 @@ class AuthRepository {
     await _client.auth.signInWithOtp(
       email: email,
       emailRedirectTo: callBackUrl,
-      shouldCreateUser: false,
-      
     );
   }
 
@@ -66,6 +64,16 @@ class AuthRepository {
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
     return VerifyTokenResponse.fromJson(response.data);
+  }
+
+  Future <void> completeRegister(UserRegisterDetails userRegisterDetails) async {
+    final baseUrl = dotenv.env['BASE_URL'];
+    final path = '$baseUrl/auth/complete-register';
+    
+    await _dio.post(
+      path,
+      data: userRegisterDetails.toJson()
+      );
   }
 
   Future<void> signOut() async {

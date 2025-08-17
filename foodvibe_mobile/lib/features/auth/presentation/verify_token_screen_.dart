@@ -24,7 +24,7 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
     final token = session?.accessToken;
 
     if (token == null) {
-      context.go(AppRoutes.login);
+      context.go(AppRoutes.login, extra: 'loginFailed');
       return;
     }
 
@@ -37,7 +37,7 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
         context.go(AppRoutes.completeRegister, extra: response);
       }
     } catch (e) {
-      context.go(AppRoutes.login);
+      context.go(AppRoutes.login, extra: 'loginFailed');
     }
   }
 

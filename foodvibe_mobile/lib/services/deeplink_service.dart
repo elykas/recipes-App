@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:go_router/go_router.dart';
 import '../routes/app_router.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
   return DeepLinkService(ref);
 });
@@ -16,38 +16,48 @@ class DeepLinkService {
   DeepLinkService(this.ref);
 
   void init() {
-    // For app already opened
-    _appLinks.getInitialLink().then((uri) {
-      if (uri != null) _handleLink(uri);
-    });
-
-    // For app in background/foreground
-    _appLinks.uriLinkStream.listen((uri) {
-      if (uri != null) _handleLink(uri);
-    });
+    _appLinks.getInitialLink().then(_handleLink);
+    _appLinks.uriLinkStream.listen(_handleLink);
   }
 
-  Future<void> _handleLink(Uri uri) async {
-  final errorCode = uri.queryParameters['error_code'];
-  final errorMessage = uri.queryParameters['error_description'];
+  Future<void> _handleLink(Uri? uri) async {
+   if (uri == null) return;
 
-  // Use the context from GoRouter's navigator key
+  final code = uri.queryParameters['code'];
   final context = appRouter.routerDelegate.navigatorKey.currentContext;
+  final errorCode = uri.queryParameters['error_code'];
   if (context == null) return;
 
-  if (errorCode != null) {
-    if (errorCode == 'invalid_token') {
-      context.go(AppRoutes.emailSent, extra: 'expiredLink');
-    } else {
-      context.go(AppRoutes.emailSent, extra: 'loginFailed');
+   if (errorCode != null) {
+      if (errorCode == 'invalid_token') {
+        context.go(AppRoutes.emailSent, extra: 'expiredLink');
+      } else {
+        context.go(AppRoutes.emailSent, extra: 'loginFailed');
+      }
+      return;
     }
-    return;
+
+  if (code != null) {
+    try {
+      final authResponse = await Supabase.instance.client.auth.verifyOTP(
+        token: code,
+        type: OtpType.magiclink,
+      );
+
+      if (authResponse.session != null) {
+        ref.read(authControllerProvider.notifier).state = authResponse.session;
+        // מכאן, הסשן זמין וניתן לגשת לטוקן שלו
+        // final token = authResponse.session!.accessToken;
+      }
+    } catch (e) {
+      print("Failed to verify OTP: $e");
+    }
+   
   }
 
-  // This will make Supabase complete the magic link flow
-  await ref.read(authControllerProvider.notifier).recoverSessionFromLink(uri);
 
-  // The listener in EmailSentPage or AuthController will handle navigation next
-}
 
+
+    await ref.read(authControllerProvider.notifier).recoverSessionFromLink(uri);
+  }
 }

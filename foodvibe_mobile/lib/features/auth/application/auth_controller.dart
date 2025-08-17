@@ -41,9 +41,11 @@ class AuthController extends StateNotifier<Session?> {
 
   Future<void> recoverSessionFromLink(Uri uri) async {
   try {
+    if (uri.fragment.isNotEmpty){
     final response = await _authRepository.client.auth.getSessionFromUrl(uri);
     if (response.session != null) {
       state = response.session;
+    }
     }
   } catch (e) {
     print("Failed to recover session: $e");

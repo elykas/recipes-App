@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import ErrorResponse from "../errors/errors";
 import { SupabaseJwtPayload } from "../../types/requests";
 
-const SUPABASE_JWT_SECRET: string = process.env.SUPABASE_JWY_SECRET as string;
+const SUPABASE_JWT_SECRET: string = process.env.SUPABASE_JWT_SECRET as string;
 const JWT_SECRET: string = process.env.JWT_SECRET as string;
 const REFRESH_SECRET: string = process.env.REFRESH_SECRET as string;
 const JWT_SECRET_INVITE_LINK: string = process.env.JWT_SECRET_INVITE_LINK as string;

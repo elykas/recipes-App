@@ -20,7 +20,7 @@ class GoogleSignInButton extends ConsumerWidget {
         try{
           final success = await ref.read(authControllerProvider.notifier).signInWithGoogle();
           if (success) {
-            context.go(AppRoutes.loginCallback);
+            context.go(AppRoutes.verifyToken);
           } else {
             setError("loginFailed");
           }
