@@ -6,6 +6,7 @@ import {
   pgGetUserById,
   pgGetUserIdByPublicId,
   pgGetUserProfileWithPosts,
+  pgIsUsernameAvailable,
   pgUpdateUser,
   pgUpdateUserImage,
 } from "../dal/userDal";
@@ -50,6 +51,13 @@ export const getAllUsernamesService = async (
     ...user,
   }));
   return usernamesDto;
+};
+
+export const isUsernameAvailableService = async (
+  username: string
+): Promise<boolean> => {
+  const isAvailable: boolean = await pgIsUsernameAvailable(username);
+  return isAvailable;
 };
 
 export const getUserByIdService = async (

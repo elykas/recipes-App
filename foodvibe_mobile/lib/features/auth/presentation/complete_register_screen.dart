@@ -27,7 +27,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<bool> _checkUsernameAvailability(String username) async {
     final isExistingUsername = await Supabase.instance.client
-        .from('profiles')
+        .from('User')
         .select('username')
         .eq('username', username)
         .maybeSingle();

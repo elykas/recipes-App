@@ -6,6 +6,7 @@ import {
   getUserById,
   updateUser,
   getAllUsernames,
+  isUsernameAvailable,
 } from "../controllers/userController";
 import {
   authenticateTokenMiddleware,
@@ -14,6 +15,7 @@ import {
 } from "../middleware/authMiddleware";
 import { validateUser } from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
+import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 
 const router = express.Router();
 
@@ -47,13 +49,20 @@ router.delete(
   "/",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
+  searchLimiter,
   deleteUser
 );
 router.get(
-  "usernames",
+  "/usernames",
   authenticateTokenMiddleware,
-  authorizeAdminMiddleware,
+  searchLimiter,
   getAllUsernames
+)
+router.get(
+  "/username-available/:username",
+  authenticateTokenMiddleware,
+  searchLimiter,
+  isUsernameAvailable
 )
 
 export default router;

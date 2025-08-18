@@ -23,6 +23,15 @@ export const pgGetAllUsernames = async (
   return usernames;
 };
 
+export const pgIsUsernameAvailable = async (username: string): Promise<boolean> => {
+  const user = await prisma.user.findUnique({
+    where: { username },
+    select: { username: true },
+  });
+  return user ? false : true;
+};
+
+
 export const pgGetUserProfileWithPosts = async (
   publicId: string,
   limit: number

@@ -13,7 +13,6 @@ class AuthRepository {
     : _client = client ?? SupabaseManager.client,
       _dio = dio ?? Dio();
 
-
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];
 
@@ -53,7 +52,7 @@ class AuthRepository {
       provider: OAuthProvider.google,
       idToken: idToken,
     );
-  } 
+  }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {
     final baseUrl = dotenv.env['BASE_URL'];
@@ -66,14 +65,19 @@ class AuthRepository {
     return VerifyTokenResponse.fromJson(response.data);
   }
 
-  Future <void> completeRegister(UserRegisterDetails userRegisterDetails) async {
+  Future<bool> isUsernameAvailable(String username) async {
+    final baseUrl = dotenv.env['BASE_URL'];
+    final path = '$baseUrl/user/username-available/$username';
+    final response = await _dio.get(path
+    );
+    return response.data['available'] ?? false;
+  }
+
+  Future<void> completeRegister(UserRegisterDetails userRegisterDetails) async {
     final baseUrl = dotenv.env['BASE_URL'];
     final path = '$baseUrl/auth/complete-register';
-    
-    await _dio.post(
-      path,
-      data: userRegisterDetails.toJson()
-      );
+
+    await _dio.post(path, data: userRegisterDetails.toJson());
   }
 
   Future<void> signOut() async {

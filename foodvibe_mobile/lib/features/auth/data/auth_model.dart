@@ -1,11 +1,11 @@
 class VerifyTokenResponse {
-  final String publicId;
+  final String id;
   final String email;
   final bool exist;
   final String message;
 
   VerifyTokenResponse({
-    required this.publicId,
+    required this.id,
     required this.email,
     required this.exist,
     required this.message,
@@ -14,7 +14,7 @@ class VerifyTokenResponse {
   factory VerifyTokenResponse.fromJson(Map<String, dynamic> json) {
     final data = json['data'] ?? {};
     return VerifyTokenResponse(
-      publicId: data['publicId'] ?? '',
+      id: data['publicId'] ?? '',
       email: data['email'] ?? '',
       exist: json['exist'] ?? false,
       message: json['message'] ?? '',

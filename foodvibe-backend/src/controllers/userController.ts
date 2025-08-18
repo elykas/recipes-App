@@ -5,6 +5,7 @@ import {
   getAllUsernamesService,
   getAllUsersService,
   getUserByIdService,
+  isUsernameAvailableService,
   updateUserImageService,
   updateUserService,
 } from "../services/userService";
@@ -44,6 +45,24 @@ export const getAllUsernames = async(
     next(error);
   }
 }
+
+export const isUsernameAvailable = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const username = req.query.username as string;
+    const isAvailable = await isUsernameAvailableService(username);
+    res.status(200).json({
+      success: true,
+      isAvailable: isAvailable,
+      message: "Username availability checked successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getUserById = async (
   req: Request,
