@@ -36,12 +36,14 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
     if (extra is! String) return;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final loc = AppLocalizations.of(context)!;
+
       switch (extra) {
         case 'expiredLink':
-          _showSnackBar('הקישור פג תוקף.');
+          _showSnackBar(loc.expiredLink);
           break;
         case 'loginFailed':
-          _showSnackBar('ההתחברות נכשלה. נסה שוב.');
+          _showSnackBar(loc.loginFailed);
           break;
         default:
           if (extra.contains('@')) {
@@ -53,9 +55,7 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _startCountdown() {
@@ -86,18 +86,13 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
       try {
         await authController.signInWithEmail(email: _email);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('קישור חדש נשלח למייל שלך'),
-              duration: Duration(seconds: 3),
-            ),
-          );
+          final loc = AppLocalizations.of(context)!;
+          _showSnackBar(loc.newEmailSent);
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: const Text('תנסה להתחבר שוב שליחת המייל נכשלה.')),
-          );
+          final loc = AppLocalizations.of(context)!;
+          _showSnackBar(loc.loginFailed);
         }
       }
     }
@@ -125,6 +120,7 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
         }
       });
     }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -143,14 +139,14 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
               onPressed: _isResendEnabled ? _resendEmail : null,
               child: Text(
                 _isResendEnabled
-                    ? "Resend Email"
-                    : "Resend in $_secondsRemaining sec",
+                    ? loc.resendEmailButton
+                    : loc.resendInSeconds(_secondsRemaining),
               ),
             ),
             const SizedBox(height: 10),
             TextButton(
               onPressed: _goBackToLogin,
-              child: const Text("Back to Login"),
+              child: Text(loc.backToLogin),
             ),
           ],
         ),

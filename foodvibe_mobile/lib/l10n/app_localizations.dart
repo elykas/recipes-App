@@ -142,11 +142,71 @@ abstract class AppLocalizations {
   /// **'Login failed. Please try again.'**
   String get loginFailed;
 
+  /// Button text to resend email
+  ///
+  /// In en, this message translates to:
+  /// **'Resend Email'**
+  String get resendEmailButton;
+
+  /// Text to go back to login
+  ///
+  /// In en, this message translates to:
+  /// **'Back to login'**
+  String get backToLogin;
+
+  /// Countdown for resending email link
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds} sec'**
+  String resendInSeconds(Object seconds);
+
+  /// Message for expired link
+  ///
+  /// In en, this message translates to:
+  /// **'The link has expired. Please request a new one.'**
+  String get expiredLink;
+
+  /// Message for new email sent
+  ///
+  /// In en, this message translates to:
+  /// **'A new email has been sent. Please check your inbox.'**
+  String get newEmailSent;
+
   /// Login with Google button text
   ///
   /// In en, this message translates to:
   /// **'Login with Google'**
   String get loginWithGoogleButton;
+
+  /// Username input label
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get usernameLabel;
+
+  /// Error message for invalid username
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username'**
+  String get invalidUsername;
+
+  /// Error message for taken username
+  ///
+  /// In en, this message translates to:
+  /// **'Username is already taken'**
+  String get takenUsername;
+
+  /// Checking username message
+  ///
+  /// In en, this message translates to:
+  /// **'Checking...'**
+  String get checkingUsername;
+
+  /// Username available message
+  ///
+  /// In en, this message translates to:
+  /// **'Username is available'**
+  String get usernameAvailable;
 }
 
 class _AppLocalizationsDelegate

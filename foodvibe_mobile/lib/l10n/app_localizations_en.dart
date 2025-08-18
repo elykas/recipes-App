@@ -30,5 +30,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginFailed => 'Login failed. Please try again.';
 
   @override
+  String get resendEmailButton => 'Resend Email';
+
+  @override
+  String get backToLogin => 'Back to login';
+
+  @override
+  String resendInSeconds(Object seconds) {
+    return 'Resend in $seconds sec';
+  }
+
+  @override
+  String get expiredLink => 'The link has expired. Please request a new one.';
+
+  @override
+  String get newEmailSent =>
+      'A new email has been sent. Please check your inbox.';
+
+  @override
   String get loginWithGoogleButton => 'Login with Google';
+
+  @override
+  String get usernameLabel => 'Username';
+
+  @override
+  String get invalidUsername => 'Invalid username';
+
+  @override
+  String get takenUsername => 'Username is already taken';
+
+  @override
+  String get checkingUsername => 'Checking...';
+
+  @override
+  String get usernameAvailable => 'Username is available';
 }

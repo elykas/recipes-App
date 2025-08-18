@@ -14,12 +14,30 @@
   "loginOr":"or",
   
   "loginFailed":"Login failed. Please try again.",
+
+  "resendEmailButton": "Resend Email",
+
+  "backToLogin": "Back to login",
+
+  "resendInSeconds": "Resend in {seconds} sec",
+
+  "expiredLink": "The link has expired. Please request a new one.",
+
+  "newEmailSent": "A new email has been sent. Please check your inbox.",
  
   "loginWithGoogleButton":"Login with Google",
+
+  "usernameLabel": "Username",
   
-  
-  
-  
+  "invalidUsername": "Invalid username",
+
+  "takenUsername": "Username is already taken",
+
+  "checkingUsername": "Checking...",
+
+  "usernameAvailable": "Username is available",
+
+
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -41,7 +59,40 @@
   "@loginFailed": {
     "description": "Error message for invalid login"
   },
+  "@resendEmailButton": {
+    "description": "Button text to resend email"
+  },
+  "@resendInSeconds": {
+    "description": "Countdown for resending email link",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "@expiredLink": {
+    "description": "Message for expired link"
+  },
+  "@backToLogin": {
+    "description": "Text to go back to login"
+  },
+  "@newEmailSent": {
+    "description": "Message for new email sent"
+  },
+  "@usernameLabel": {
+    "description": "Username input label"
+  },
   "@loginWithGoogleButton": {
     "description": "Login with Google button text"
+  },
+  "@invalidUsername": {
+    "description": "Error message for invalid username"
+  },
+  "@takenUsername": {
+    "description": "Error message for taken username"
+  },
+  "@checkingUsername": {
+    "description": "Checking username message"
+  },
+  "@usernameAvailable": {
+    "description": "Username available message"
   }
 }

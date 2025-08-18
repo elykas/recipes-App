@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../application/auth_controller.dart';
 import '../../../utils/validators.dart';
+import '../../../l10n/app_localizations.dart';
+
 
 enum UsernameStatus { initial, loading, available, taken, invalid }
 
@@ -68,35 +70,40 @@ class _UsernameFieldState extends ConsumerState<UsernameField> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    
     String? errorText;
-    switch (_status) {
-      case UsernameStatus.invalid:
-        errorText = 'Invalid format';
-        break;
-      case UsernameStatus.taken:
-        errorText = 'Username already taken';
-        break;
-      default:
-        errorText = null;
-    }
-
-    Widget statusWidget;
-    switch (_status) {
-      case UsernameStatus.loading:
-        statusWidget = const Text('Checking...', style: TextStyle(color: Colors.grey));
-        break;
-      case UsernameStatus.available:
-        statusWidget = const Text('✅ Available', style: TextStyle(color: Colors.green));
-        break;
-      case UsernameStatus.taken:
-        statusWidget = const Text('❌ Taken', style: TextStyle(color: Colors.red));
-        break;
-      case UsernameStatus.invalid:
-        statusWidget = const Text('⚠️ Invalid format', style: TextStyle(color: Colors.orange));
-        break;
-      default:
-        statusWidget = const SizedBox.shrink();
-    }
+switch (_status) {
+  case UsernameStatus.invalid:
+    errorText = loc.invalidUsername; // "Invalid username"
+    break;
+  case UsernameStatus.taken:
+    errorText = loc.takenUsername; // "Username is already taken"
+    break;
+  default:
+    errorText = null;
+}
+   Widget statusWidget;
+switch (_status) {
+  case UsernameStatus.loading:
+    statusWidget = Text(loc.checkingUsername,
+        style: const TextStyle(color: Colors.grey));
+    break;
+  case UsernameStatus.available:
+    statusWidget = Text(loc.usernameAvailable,
+        style: const TextStyle(color: Colors.green));
+    break;
+  case UsernameStatus.taken:
+    statusWidget = Text(loc.takenUsername,
+        style: const TextStyle(color: Colors.red));
+    break;
+  case UsernameStatus.invalid:
+    statusWidget = Text(loc.invalidUsername,
+        style: const TextStyle(color: Colors.orange));
+    break;
+  default:
+    statusWidget = const SizedBox.shrink();
+}
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,8 +111,7 @@ class _UsernameFieldState extends ConsumerState<UsernameField> {
         TextFormField(
           controller: widget.controller,
           decoration: InputDecoration(labelText: 'Username *', errorText: errorText),
-          validator: (value) =>
-              value == null || value.trim().isEmpty ? 'Username required' : null,
+          onChanged: _onChanged,
         ),
         const SizedBox(height: 4),
         statusWidget,

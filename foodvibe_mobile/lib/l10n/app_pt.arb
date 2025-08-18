@@ -1,13 +1,42 @@
 {
   "@@locale": "pt",
+
   "appTitle": "foodVibe",
+
   "loginButton": "Entrar",
+
   "emailLabel": "E-mail",
+
   "emailSent": "E-mail enviado com sucesso, verifique sua caixa de entrada.",
+
   "invalidEmailInput": "Formato de email inválido",
+
   "loginOr": "ou",
+
   "loginFailed": "Falha no login. Por favor, tente novamente.",
+
+  "resendEmailButton": "Reenviar E-mail",
+
+  "expiredLink": "O link expirou. Por favor, solicite um novo.",
+
+  "newEmailSent": "Um novo e-mail foi enviado. Por favor, verifique sua caixa de entrada.",
+
+  "resendInSeconds": "Reenviar em {seconds} seg",
+
+  "backToLogin": "Voltar ao login",
+
   "loginWithGoogleButton": "Entrar com o Google",
+
+  "usernameLabel": "Nome de usuário",
+
+  "invalidUsername": "Nome de usuário inválido",
+
+  "takenUsername": "O nome de usuário já está em uso",
+
+  "checkingUsername": "Verificando...",
+
+  "usernameAvailable": "Nome de usuário disponível",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -29,7 +58,40 @@
   "@loginFailed": {
     "description": "Mensagem de erro para falha no login"
   },
+  "@resendEmailButton": {
+    "description": "Texto do botão para reenviar email"
+  },
+  "@resendInSeconds": {
+    "description": "Contagem regressiva para reenviar o link",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "@expiredLink": {
+    "description": "Mensagem para link expirado"
+  },
+  "@newEmailSent": {
+    "description": "Mensagem para novo email enviado"
+  },
+  "@backToLogin": {
+    "description": "Texto para voltar ao login"
+  },
   "@loginWithGoogleButton": {
     "description": "Texto do botão para entrar com o Google"
-  }
+  },
+  "@usernameLabel": {
+    "description": "Rótulo do campo de nome de usuário"
+  },
+  "@invalidUsername": {
+    "description": "Mensagem de erro para nome de usuário inválido"
+  },
+  "@takenUsername": {
+    "description": "Mensagem de erro para nome de usuário em uso"
+  },
+  "@checkingUsername": {
+    "description": "Texto que indica que está sendo verificado o nome de usuário"
+  },
+  "@usernameAvailable": {
+    "description": "Mensagem de sucesso para nome de usuário disponível"
+  } 
 }
