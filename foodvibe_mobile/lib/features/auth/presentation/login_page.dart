@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -19,6 +20,19 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
+    final supported = AppLocalizations.supportedLocales
+        .map((l) => l.languageCode)
+        .toList();
+
+    final initialLocale = supported.contains(deviceLocale.languageCode)
+        ? deviceLocale
+        : const Locale('en');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(localeProvider.notifier).setLocale(initialLocale);
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = GoRouterState.of(context);

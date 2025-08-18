@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../application/auth_controller.dart';
 import '../../../../../routes/app_router.dart';
 import '../../../l10n/app_localizations.dart';
+import 'package:foodvibe_mobile/utils/validators.dart';
 
 class EmailLoginForm extends ConsumerStatefulWidget {
   final void Function(String?) setError;
@@ -19,15 +20,10 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
   String? _errorKey;
   bool _isLoading = false;
 
-  bool _isValidEmail(String email) {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(email);
-  }
-
   Future<void> _submit() async {
     final email = _emailController.text.trim();
 
-    if (!_isValidEmail(email)) {
+    if (!Validators.validateEmail(email)) {
       setState(() => _errorKey = "invalidEmailInput");
       return;
     }
@@ -50,6 +46,7 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

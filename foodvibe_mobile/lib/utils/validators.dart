@@ -38,4 +38,7 @@ class Validators {
         maxLength: 40,
         allowEmpty: true,
       );
+
+  static bool validateEmail(String email) =>
+      _validateField(email, pattern: r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 }

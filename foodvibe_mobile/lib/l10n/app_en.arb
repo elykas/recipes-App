@@ -1,13 +1,25 @@
 {
   "@@locale": "en",
+ 
   "appTitle": "foodVibe",
+ 
   "loginButton": "Login",
+ 
   "emailLabel": "Email",
+ 
   "emailSent": "Email sent successfully, check your inbox.",
+  
   "invalidEmailInput": "Invalid email format",
+ 
   "loginOr":"or",
+  
   "loginFailed":"Login failed. Please try again.",
+ 
   "loginWithGoogleButton":"Login with Google",
+  
+  
+  
+  
   "@appTitle": {
     "description": "The title of the application"
   },
