@@ -62,7 +62,8 @@ class AuthRepository {
       path,
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
-    return VerifyTokenResponse.fromJson(response.data);
+    final data = VerifyTokenResponse.fromJson(response.data);
+    return data;
   }
 
   Future<bool> isUsernameAvailable(String username) async {

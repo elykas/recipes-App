@@ -1,11 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../data/auth_repository.dart';
 
 // PROVIDERS
-final authControllerProvider =
-    StateNotifierProvider<AuthController, Session?>((ref) {
+final authControllerProvider = StateNotifierProvider<AuthController, Session?>((
+  ref,
+) {
   final repo = ref.read(authRepositoryProvider);
   return AuthController(repo);
 });
@@ -19,7 +21,9 @@ class AuthController extends StateNotifier<Session?> {
   final AuthRepository _authRepository;
 
   AuthController(this._authRepository) : super(null) {
-    _authRepository.client.auth.onAuthStateChange.listen((AuthState onAuthStateChange) {
+    _authRepository.client.auth.onAuthStateChange.listen((
+      AuthState onAuthStateChange,
+    ) {
       final event = onAuthStateChange.event;
       final session = onAuthStateChange.session;
 
@@ -40,17 +44,17 @@ class AuthController extends StateNotifier<Session?> {
   }
 
   Future<void> recoverSessionFromLink(Uri uri) async {
-  try {
-    if (uri.fragment.isNotEmpty){
-    final response = await _authRepository.client.auth.getSessionFromUrl(uri);
-    if (response.session != null) {
-      state = response.session;
+    try {
+      if (uri.fragment.isNotEmpty) {
+        final response = await _authRepository.client.auth.getSessionFromUrl(
+          uri,
+        );
+        state = response.session;
+      }
+    } catch (e) {
+      print("Failed to recover session: $e");
     }
-    }
-  } catch (e) {
-    print("Failed to recover session: $e");
   }
-}
 
   Future<bool> signInWithGoogle() async {
     await _authRepository.signInWithGoogle();
@@ -62,11 +66,19 @@ class AuthController extends StateNotifier<Session?> {
     return false;
   }
 
+  Future<bool> checkUsernameAvailability(String username) async {
+    return await _authRepository.isUsernameAvailable(username);
+  }
+
   Future<void> signOut() async {
     await _authRepository.signOut();
   }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {
     return await _authRepository.verifyToken(token);
+  }
+
+  Future<void> completeRegister(UserRegisterDetails userRegisterDetails) async {
+    await _authRepository.completeRegister(userRegisterDetails);
   }
 }

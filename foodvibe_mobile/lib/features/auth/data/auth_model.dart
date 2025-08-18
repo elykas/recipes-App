@@ -12,14 +12,19 @@ class VerifyTokenResponse {
   });
 
   factory VerifyTokenResponse.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] ?? {};
-    return VerifyTokenResponse(
-      id: data['publicId'] ?? '',
-      email: data['email'] ?? '',
-      exist: json['exist'] ?? false,
-      message: json['message'] ?? '',
-    );
+  final data = json['data'] ?? {};
+  final id = data['publicId'];
+  final email = data['email'];
+  if (id == null || email == null) {
+    throw Exception('Invalid token: missing email or id');
   }
+  return VerifyTokenResponse(
+    id: id,
+    email: email,
+    exist: json['exist'] ?? false,
+    message: json['message'] ?? '',
+  );
+}
 }
 
 class UserRegisterDetails {

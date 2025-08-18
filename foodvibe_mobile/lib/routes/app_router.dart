@@ -1,7 +1,6 @@
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/complete_register_screen.dart';
-import 'package:foodvibe_mobile/features/auth/presentation/login_callback_screen.dart';
-import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen_.dart';
+import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
 import '../features/auth/presentation/login_page.dart';

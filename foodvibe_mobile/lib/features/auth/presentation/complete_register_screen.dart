@@ -1,19 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
-import 'package:foodvibe_mobile/services/supabase_service.dart';
-import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 
-class RegisterScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
+import 'package:foodvibe_mobile/features/auth/widgets/username_field.dart';
+import 'package:foodvibe_mobile/routes/app_router.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+
+import '../../../utils/validators.dart';
+import '../application/auth_controller.dart';
+
+class RegisterScreen extends ConsumerStatefulWidget {
   final VerifyTokenResponse response;
 
   const RegisterScreen({super.key, required this.response});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _fullNameController = TextEditingController();
@@ -22,69 +29,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   DateTime? _birthdate;
   bool _isLoading = false;
   bool _agreed = false;
-
-  String? _usernameError;
-
-  Future<bool> _checkUsernameAvailability(String username) async {
-    final isExistingUsername = await Supabase.instance.client
-        .from('User')
-        .select('username')
-        .eq('username', username)
-        .maybeSingle();
-
-    return isExistingUsername == null;
-  }
+  bool _usernameAvailable = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!_usernameAvailable) return;
 
     setState(() => _isLoading = true);
 
-    final user = SupabaseManager.client.auth.currentUser;
-    final email = user?.email;
-    final userId = user?.id;
-
-    if (user == null || email == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('User not logged in')));
-      setState(() => _isLoading = false);
-      return;
-    }
-
+    final email = widget.response.email;
     final username = _usernameController.text.trim();
-    final isAvailable = await _checkUsernameAvailability(username);
-    if (!isAvailable) {
-      setState(() {
-        _usernameError = 'Username already taken';
-        _isLoading = false;
-      });
-      return;
-    }
-
     final locale = WidgetsBinding.instance.platformDispatcher.locale
         .toLanguageTag();
 
     try {
-      await SupabaseManager.client.from('profiles').upsert({
-        'id': userId,
-        "email": email,
-        'username': username,
-        'fullName': _fullNameController.text.trim(),
-        'headLine': _headlineController.text.trim(),
-        'birthDate': _birthdate?.toIso8601String(),
-        'locale': locale,
-        'agreedToPolicy': _agreed, // checkbox שלך
-        'agreedToPolicyDate': DateTime.now().toIso8601String(),
-        'agreedToPolicyVersion': "v1.0", // כאן אתה קובע גרסה
-      });
+      final userDetails = UserRegisterDetails(
+        email: email,
+        username: username,
+        fullName: _fullNameController.text.trim(),
+        headLine: _headlineController.text.trim(),
+        birthDate: _birthdate,
+        locale: locale,
+        agreedToPolicy: _agreed,
+        agreedToPolicyVersion: "v1.0",
+      );
+
+      await ref
+          .read(authControllerProvider.notifier)
+          .completeRegister(userDetails);
 
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Registration complete')));
-      // Navigate to app
+      context.go(AppRoutes.feed);
     } catch (e) {
-      debugPrint('Error: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Failed to register')));
@@ -102,16 +80,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       firstDate: DateTime(1900),
       lastDate: now,
     );
-
-    if (date != null) {
-      setState(() => _birthdate = date);
-    }
+    if (date != null) setState(() => _birthdate = date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final locale = WidgetsBinding.instance.platformDispatcher.locale;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Register')),
       body: SingleChildScrollView(
@@ -120,20 +93,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
+              UsernameField(
                 controller: _usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username *',
-                  errorText: _usernameError,
-                ),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Username required'
-                    : null,
+                onStatusChanged: (username, available) {
+                  setState(() => _usernameAvailable = available);
+                },
               ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _fullNameController,
                 decoration: const InputDecoration(labelText: 'Full name'),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Full name required';
+                  }
+                  if (!Validators.validateFullName(value)) {
+                    return 'Full name must be 2–50 letters only';
+                  }
+                  return null; // תקין
+                },
               ),
+
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -153,7 +133,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(
                   labelText: 'Headline (optional)',
                 ),
+                validator: (value) {
+                  if (value != null && value.isNotEmpty) {
+                    if (!Validators.validateHeadline(value)) {
+                      return 'Headline must be up to 150 chars';
+                    }
+                  }
+                  return null; // תקין
+                },
               ),
+
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -168,7 +157,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _isLoading || !_agreed ? null : _submit,
+                onPressed: _isLoading || !_agreed || !_usernameAvailable
+                    ? null
+                    : _submit,
                 child: _isLoading
                     ? const SizedBox(
                         width: 24,
