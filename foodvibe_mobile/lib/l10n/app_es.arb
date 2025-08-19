@@ -1,42 +1,72 @@
 {
   "@@locale": "es",
-
+  
   "appTitle": "foodVibe",
-
+  
   "loginButton": "Iniciar sesión",
-
+  
   "emailLabel": "Correo electrónico",
-
+  
   "emailSent": "Correo enviado con exito, revisa tu bandeja de entrada.",
-
+  
   "invalidEmailInput": "Formato de correo inválido",
-
+  
   "loginOr": "o",
-
+  
   "loginFailed": "Inicio de sesión fallido. Inténtalo de nuevo.",
-
+  
   "resendEmailButton": "Reenviar correo",
-
+  
+  
   "expiredLink": "El enlace ha expirado. Por favor, solicita uno nuevo.",
-
+  
   "resendInSeconds": "Reenviar en {seconds} seg",
-
+  
   "newEmailSent": "Se ha enviado un nuevo correo. Por favor, revisa tu bandeja de entrada.",
-
+  
   "backToLogin": "Volver al inicio de sesión",
-
+  
   "loginWithGoogleButton": "Iniciar sesión con Google",
-
+  
   "usernameLabel": "Nombre de usuario",
-
+  
   "invalidUsername": "Nombre de usuario inválido",
-
+  
   "takenUsername": "El nombre de usuario ya está en uso",
-
+  
   "checkingUsername": "Comprobando...",
-
+  
   "usernameAvailable": "Nombre de usuario disponible",
 
+  "usernameIsRequired": "El nombre de usuario es obligatorio",
+  
+  "registerLabel": "Registrarse",
+  
+  "fullNameLabel": "Nombre completo",
+  
+  "invalidFullName": "El nombre completo debe tener entre 2 y 50 letras",
+  
+  "pickDateLabel": "Seleccionar fecha",
+  
+  "birthDateLabel": "Fecha de nacimiento (opcional)",
+  
+  "headLineLabel": "Titular (opcional)",
+  
+  "invalidHeadLine": "El titular debe tener entre 2 y 100 letras",
+  
+  "agreeToTerms": "Acepto los Términos de servicio y la Política de privacidad",
+  
+  "registerButton": "Registrarse",
+  
+  "registerFailed": "El registro falló. Inténtalo de nuevo.",
+  
+  "registerSuccess": "Registro completo",
+
+  "termsOfService": "¡Bienvenido a FoodVibe! Al usar esta aplicación, usted acepta cumplir con los siguientes términos y condiciones. Debe tener al menos 13 años para usar esta aplicación. Usted es responsable de mantener la confidencialidad de la información de su cuenta. Acepta no usar la aplicación para actividades ilegales o para acosar a otros. Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. El contenido proporcionado en la aplicación es solo para uso personal y no puede redistribuirse sin permiso. Al continuar usando la aplicación, acepta estos términos en su totalidad.",
+
+  "privacyPolicy": "FoodVibe se compromete a proteger su privacidad. Recopilamos información personal como su correo electrónico, nombre de usuario y detalles del perfil para proporcionar y mejorar nuestros servicios. No compartimos su información con terceros sin su consentimiento, excepto cuando lo exige la ley. Sus datos se almacenan de forma segura y pueden eliminarse a petición. Al usar la aplicación, usted da su consentimiento para la recopilación y el uso de su información según lo descrito en esta Política de Privacidad.",
+  
+  
   "@appTitle": {
     "description": "El título de la aplicación"
   },
@@ -93,5 +123,47 @@
   },
   "@usernameAvailable": {
     "description": "Mensaje de exito para nombre de usuario disponible"
+  },
+  "@usernameIsRequired": {
+    "description": "Mensaje de error para nombre de usuario requerido"
+  },
+  "@registerLabel": {
+    "description": "Etiqueta para el registro"
+  },
+  "@fullNameLabel": {
+    "description": "Etiqueta para el campo de nombre completo"
+  },
+  "@invalidFullName": {
+    "description": "Mensaje de error para nombre completo inválido"
+  },
+  "@pickDateLabel": {
+    "description": "Etiqueta para el campo de fecha"
+  },
+  "@birthDateLabel": {
+    "description": "Etiqueta para el campo de fecha de nacimiento"
+  },
+  "@headLineLabel": {
+    "description": "Etiqueta para el campo de titular"
+  },
+  "@invalidHeadLine": {
+    "description": "Mensaje de error para titular inválido"
+  },
+  "@agreeToTerms": {
+    "description": "Texto para aceptar los términos de servicio y la política de privacidad"
+  },
+  "@registerButton": {
+    "description": "Texto del botón de registro"
+  },
+  "@registerFailed": {
+    "description": "Mensaje de error para falla de registro"
+  },
+  "@registerSuccess": {
+    "description": "Mensaje de exito para registro completo"
+  },
+  "@termsOfService": {
+    "description": "Texto explicativo sobre los Términos de Servicio"
+  },
+  "@privacyPolicy": {
+    "description": "Texto explicativo sobre la Política de Privacidad"
   }
 }

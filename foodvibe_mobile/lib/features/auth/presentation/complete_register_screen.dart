@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
@@ -7,9 +6,11 @@ import 'package:foodvibe_mobile/features/auth/widgets/username_field.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
-import '../../../utils/validators.dart';
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/validators.dart';
 import '../application/auth_controller.dart';
+import '../widgets/policy_modal.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   final VerifyTokenResponse response;
@@ -32,6 +33,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _usernameAvailable = false;
 
   Future<void> _submit() async {
+    final loc = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
     if (!_usernameAvailable) return;
 
@@ -39,8 +42,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     final email = widget.response.email;
     final username = _usernameController.text.trim();
-    final locale = WidgetsBinding.instance.platformDispatcher.locale
-        .toLanguageTag();
+    final locale = ref.watch(localeProvider).toLanguageTag();
+    ;
 
     try {
       final userDetails = UserRegisterDetails(
@@ -51,6 +54,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         birthDate: _birthdate,
         locale: locale,
         agreedToPolicy: _agreed,
+        agreedToPolicyDate: DateTime.now(),
         agreedToPolicyVersion: "v1.0",
       );
 
@@ -60,12 +64,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Registration complete')));
+      ).showSnackBar(SnackBar(content: Text(loc.registerSuccess)));
       context.go(AppRoutes.feed);
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to register')));
+      ).showSnackBar(SnackBar(content: Text(loc.registerFailed)));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -85,8 +89,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
+      appBar: AppBar(title: Text(loc.registerLabel)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -102,58 +108,52 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _fullNameController,
-                decoration: const InputDecoration(labelText: 'Full name'),
+                decoration: InputDecoration(labelText: loc.fullNameLabel),
+                autovalidateMode: AutovalidateMode.disabled,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Full name required';
+                    return AppLocalizations.of(context)!.usernameIsRequired;
                   }
-                  if (!Validators.validateFullName(value)) {
-                    return 'Full name must be 2–50 letters only';
-                  }
-                  return null; // תקין
+                  return null;
                 },
               ),
-
               const SizedBox(height: 12),
               Row(
                 children: [
                   Text(
                     _birthdate != null
-                        ? 'Birthdate: ${DateFormat.yMd().format(_birthdate!)}'
-                        : 'No birthdate selected',
+                        ? "${loc.birthDateLabel}: ${DateFormat.yMd().format(_birthdate!)}"
+                        : loc.birthDateLabel,
                   ),
                   TextButton(
                     onPressed: _pickBirthdate,
-                    child: const Text('Pick date'),
+                    child: Text(loc.pickDateLabel),
                   ),
+                  if (_birthdate != null)
+                    IconButton(
+                      icon: const Icon(Icons.clear, color: Colors.red),
+                      onPressed: () {
+                        setState(() => _birthdate = null);
+                      },
+                    ),
                 ],
               ),
               TextFormField(
                 controller: _headlineController,
-                decoration: const InputDecoration(
-                  labelText: 'Headline (optional)',
-                ),
+                decoration: InputDecoration(labelText: loc.headLineLabel),
                 validator: (value) {
                   if (value != null && value.isNotEmpty) {
                     if (!Validators.validateHeadline(value)) {
-                      return 'Headline must be up to 150 chars';
+                      return loc.invalidHeadLine;
                     }
                   }
-                  return null; // תקין
+                  return null;
                 },
               ),
-
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _agreed,
-                    onChanged: (v) => setState(() => _agreed = v!),
-                  ),
-                  const Expanded(
-                    child: Text('I agree to the Terms & Conditions'),
-                  ),
-                ],
+              TermsCheckbox(
+                initialValue: _agreed,
+                onChanged: (v) => setState(() => _agreed = v),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
@@ -166,7 +166,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         height: 24,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Register'),
+                    : Text(loc.registerButton),
               ),
             ],
           ),

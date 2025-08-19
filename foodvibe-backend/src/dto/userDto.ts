@@ -39,9 +39,9 @@ export interface CreateUserDto {
   headLine?: string;
   birthDate?: Date;
   locale?: string;
-  agreedToPolicy?: boolean;
-  agreedToPolicyDate?: Date;
-  agreedToPolicyVersion?: string;
+  agreedToPolicy: boolean;
+  agreedToPolicyDate: Date;
+  agreedToPolicyVersion: string;
   userEvents?: IUserEvents[];
 }
 

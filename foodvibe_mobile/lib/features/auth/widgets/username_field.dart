@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../application/auth_controller.dart';
-import '../../../utils/validators.dart';
+import '../../../core/utils/validators.dart';
 import '../../../l10n/app_localizations.dart';
 
 
@@ -58,7 +58,6 @@ class _UsernameFieldState extends ConsumerState<UsernameField> {
   @override
   void initState() {
     super.initState();
-    widget.controller.addListener(() => _onChanged(widget.controller.text));
   }
 
   @override
@@ -96,10 +95,6 @@ switch (_status) {
   case UsernameStatus.taken:
     statusWidget = Text(loc.takenUsername,
         style: const TextStyle(color: Colors.red));
-    break;
-  case UsernameStatus.invalid:
-    statusWidget = Text(loc.invalidUsername,
-        style: const TextStyle(color: Colors.orange));
     break;
   default:
     statusWidget = const SizedBox.shrink();

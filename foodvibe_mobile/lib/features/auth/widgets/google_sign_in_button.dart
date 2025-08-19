@@ -18,6 +18,7 @@ class GoogleSignInButton extends ConsumerWidget {
     return ElevatedButton.icon(
       onPressed: () async {
         try{
+          setError(null);
           final success = await ref.read(authControllerProvider.notifier).signInWithGoogle();
           if (success) {
             context.go(AppRoutes.verifyToken);

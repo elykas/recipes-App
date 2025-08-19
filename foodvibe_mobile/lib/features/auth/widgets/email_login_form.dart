@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../application/auth_controller.dart';
 import '../../../../../routes/app_router.dart';
 import '../../../l10n/app_localizations.dart';
-import 'package:foodvibe_mobile/utils/validators.dart';
+import 'package:foodvibe_mobile/core/utils/validators.dart';
 
 class EmailLoginForm extends ConsumerStatefulWidget {
   final void Function(String?) setError;

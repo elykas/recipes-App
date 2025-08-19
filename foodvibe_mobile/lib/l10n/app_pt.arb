@@ -37,6 +37,34 @@
 
   "usernameAvailable": "Nome de usuário disponível",
 
+   "usernameIsRequired": "Nome de usuário é obrigatório",
+
+  "registerLabel": "Registrar",
+
+  "fullNameLabel": "Nome completo",
+
+  "invalidFullName": "O nome completo deve ter entre 2 e 50 letras",
+
+  "pickDateLabel": "Selecionar data",
+
+  "birthDateLabel": "Data de nascimento (opcional)",
+
+  "headLineLabel": "Título (opcional)",
+
+  "invalidHeadLine": "O título deve ter entre 2 e 100 letras",
+
+  "agreeToTerms": "Concordo com os Termos de Serviço e a Política de Privacidade",
+
+  "registerButton": "Registrar",
+
+  "registerFailed": "Falha no registro. Tente novamente.",
+
+  "registerSuccess": "Registro concluído",
+
+  "termsOfService": "Bem-vindo ao FoodVibe! Ao usar este aplicativo, você concorda em cumprir os seguintes termos e condições. Você deve ter pelo menos 13 anos para usar este aplicativo. Você é responsável por manter a confidencialidade das informações da sua conta. Você concorda em não usar o aplicativo para atividades ilegais ou para assediar outros. Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos. O conteúdo fornecido no aplicativo é apenas para uso pessoal e não pode ser redistribuído sem permissão. Ao continuar a usar o aplicativo, você aceita estes termos integralmente.",
+
+  "privacyPolicy": "O FoodVibe compromete-se a proteger sua privacidade. Coletamos informações pessoais como seu e-mail, nome de usuário e detalhes do perfil para fornecer e melhorar nossos serviços. Não compartilhamos suas informações com terceiros sem seu consentimento, exceto quando exigido por lei. Seus dados são armazenados com segurança e podem ser excluídos mediante solicitação. Ao usar o aplicativo, você consente com a coleta e uso de suas informações conforme descrito nesta Política de Privacidade.",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -93,5 +121,47 @@
   },
   "@usernameAvailable": {
     "description": "Mensagem de sucesso para nome de usuário disponível"
-  } 
+  },
+  "@usernameIsRequired": {
+    "description": "Mensagem de erro para nome de usuário obrigatório"
+  },
+  "@registerLabel": {
+    "description": "Rótulo para a tela de registro"
+  },
+  "@fullNameLabel": {
+    "description": "Rótulo do campo de nome completo"
+  },
+  "@invalidFullName": {
+    "description": "Mensagem de erro para nome completo inválido"
+  },
+  "@pickDateLabel": {
+    "description": "Rótulo do campo de data"
+  },
+  "@birthDateLabel": {
+    "description": "Rótulo do campo de data de nascimento"
+  },
+  "@headLineLabel": {
+    "description": "Rótulo do campo de título"
+  },
+  "@invalidHeadLine": {
+    "description": "Mensagem de erro para título inválido"
+  },
+  "@agreeToTerms": {
+    "description": "Texto para aceitar os Termos de Serviço e a Política de Privacidade"
+  },
+  "@registerButton": {
+    "description": "Texto do botão de registro"
+  },
+  "@registerFailed": {
+    "description": "Mensagem de erro para falha no registro"
+  },
+  "@registerSuccess": {
+    "description": "Mensagem de sucesso para registro concluído"
+  },
+  "@termsOfService": {
+    "description": "Texto explicativo sobre os Termos de Serviço"
+  },
+  "@privacyPolicy": {
+    "description": "Texto explicativo sobre a Política de Privacidade"
+  }
 }

@@ -30,6 +30,14 @@ export const createNewUserService = async (
   if (isUsernameExist) {
     throw errorResponse("Username already exists", 400);
   }
+  
+  userRegisterDetails.birthDate = userRegisterDetails.birthDate
+  ? new Date(userRegisterDetails.birthDate)
+  : undefined;
+
+  userRegisterDetails.agreedToPolicyDate = userRegisterDetails.agreedToPolicyDate
+  new Date(userRegisterDetails.agreedToPolicyDate)
+
   const newUser = await pgCreateUser(publicId, userRegisterDetails);
   const userDto: UserDto = mapUserToDto(newUser);
   return userDto;

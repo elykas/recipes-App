@@ -207,6 +207,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Username is available'**
   String get usernameAvailable;
+
+  /// Error message for required username
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get usernameIsRequired;
+
+  /// Register label
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get registerLabel;
+
+  /// Full name input label
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullNameLabel;
+
+  /// Error message for invalid full name
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must be 2–50 letters only'**
+  String get invalidFullName;
+
+  /// Pick date label
+  ///
+  /// In en, this message translates to:
+  /// **'Pick date'**
+  String get pickDateLabel;
+
+  /// Birth date label
+  ///
+  /// In en, this message translates to:
+  /// **'birthdate(optional)'**
+  String get birthDateLabel;
+
+  /// Headline label
+  ///
+  /// In en, this message translates to:
+  /// **'Headline (optional)'**
+  String get headLineLabel;
+
+  /// Error message for invalid headline
+  ///
+  /// In en, this message translates to:
+  /// **'Headline must be 2–100 letters only'**
+  String get invalidHeadLine;
+
+  /// Text for agreeing to terms and conditions
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the Terms of Service and Privacy Policy'**
+  String get agreeToTerms;
+
+  /// Register button text
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get registerButton;
+
+  /// Error message for failed registration
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get registerFailed;
+
+  /// Success message for successful registration
+  ///
+  /// In en, this message translates to:
+  /// **'Registration complete'**
+  String get registerSuccess;
+
+  /// Text explaining the Terms of Service
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to FoodVibe! By using this app, you agree to abide by the following terms and conditions. You must be at least 13 years old to use this app. You are responsible for maintaining the confidentiality of your account information. You agree not to use the app for illegal activities or to harass others. We reserve the right to suspend or terminate accounts for violations of these terms. The content provided in the app is for personal use only and may not be redistributed without permission. By continuing to use the app, you accept these terms in full.'**
+  String get termsOfService;
+
+  /// Text explaining the Privacy Policy
+  ///
+  /// In en, this message translates to:
+  /// **'FoodVibe is committed to protecting your privacy. We collect personal information such as your email, username, and profile details to provide and improve our services. We do not share your information with third parties without your consent, except as required by law. Your data is stored securely and may be deleted upon request. By using the app, you consent to the collection and use of your information as described in this Privacy Policy.'**
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate

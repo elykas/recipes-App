@@ -10,6 +10,8 @@ import {
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
+import th from "zod/v4/locales/th.cjs";
+import ErrorResponse from "../utils/errors/errors";
 export const getAllUsers = async (
   req: Request,
   res: Response,
@@ -52,7 +54,10 @@ export const isUsernameAvailable = async (
   next: NextFunction
 ) => {
   try {
-    const username = req.query.username as string;
+    const username = req.params.username as string;
+    if (!username) {
+      throw ErrorResponse("Username is required", 400);
+    }
     const isAvailable = await isUsernameAvailableService(username);
     res.status(200).json({
       success: true,

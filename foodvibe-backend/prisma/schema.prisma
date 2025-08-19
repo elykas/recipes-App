@@ -25,8 +25,8 @@ model User {
   updatedAt             DateTime          @updatedAt
   lastLogin             DateTime?         @default(now())
   agreedToPolicy        Boolean           @default(false)
-  agreedToPolicyDate    DateTime?
-  agreedToPolicyVersion String?
+  agreedToPolicyDate    DateTime
+  agreedToPolicyVersion String
   locale                String?           @default("en")
   score                 Float?            @default(0)
   scoreUpdatedAt        DateTime?         @default(now())

@@ -35,8 +35,8 @@ class UserRegisterDetails {
   final DateTime? birthDate;
   final String? locale;
   final bool agreedToPolicy;
-  final DateTime? agreedToPolicyDate;
-  final String? agreedToPolicyVersion;
+  final DateTime agreedToPolicyDate;
+  final String agreedToPolicyVersion;
 
 
   UserRegisterDetails({
@@ -46,9 +46,9 @@ class UserRegisterDetails {
     this.headLine,
     this.birthDate,
     this.locale,
-    this.agreedToPolicy = false,
-    this.agreedToPolicyDate,
-    this.agreedToPolicyVersion
+    required this.agreedToPolicy,
+    required this.agreedToPolicyDate,
+    required this.agreedToPolicyVersion
   });
 
  Map<String, dynamic> toJson() {
@@ -56,14 +56,14 @@ class UserRegisterDetails {
     'email': email,
     'username': username,
     'agreedToPolicy': agreedToPolicy,
+    'agreedAt' : agreedToPolicyDate.toIso8601String(),
+    'agreedToPolicyVersion' :agreedToPolicyVersion
   };
 
   if (fullName != null) map['fullName'] = fullName;
   if (headLine != null) map['headLine'] = headLine;
   if (birthDate != null) map['birthDate'] = birthDate!.toIso8601String();
   if (locale != null) map['locale'] = locale;
-  if (agreedToPolicyDate != null) map['agreedAt'] = agreedToPolicyDate!.toIso8601String();
-  if (agreedToPolicyVersion != null) map['agreedToPolicyVersion'] = agreedToPolicyVersion;
 
   return map;
 }

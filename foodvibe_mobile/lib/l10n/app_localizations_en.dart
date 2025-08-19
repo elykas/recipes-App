@@ -64,4 +64,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usernameAvailable => 'Username is available';
+
+  @override
+  String get usernameIsRequired => 'Username is required';
+
+  @override
+  String get registerLabel => 'Register';
+
+  @override
+  String get fullNameLabel => 'Full Name';
+
+  @override
+  String get invalidFullName => 'Full name must be 2–50 letters only';
+
+  @override
+  String get pickDateLabel => 'Pick date';
+
+  @override
+  String get birthDateLabel => 'birthdate(optional)';
+
+  @override
+  String get headLineLabel => 'Headline (optional)';
+
+  @override
+  String get invalidHeadLine => 'Headline must be 2–100 letters only';
+
+  @override
+  String get agreeToTerms =>
+      'I agree to the Terms of Service and Privacy Policy';
+
+  @override
+  String get registerButton => 'Register';
+
+  @override
+  String get registerFailed => 'Registration failed. Please try again.';
+
+  @override
+  String get registerSuccess => 'Registration complete';
+
+  @override
+  String get termsOfService =>
+      'Welcome to FoodVibe! By using this app, you agree to abide by the following terms and conditions. You must be at least 13 years old to use this app. You are responsible for maintaining the confidentiality of your account information. You agree not to use the app for illegal activities or to harass others. We reserve the right to suspend or terminate accounts for violations of these terms. The content provided in the app is for personal use only and may not be redistributed without permission. By continuing to use the app, you accept these terms in full.';
+
+  @override
+  String get privacyPolicy =>
+      'FoodVibe is committed to protecting your privacy. We collect personal information such as your email, username, and profile details to provide and improve our services. We do not share your information with third parties without your consent, except as required by law. Your data is stored securely and may be deleted upon request. By using the app, you consent to the collection and use of your information as described in this Privacy Policy.';
 }
