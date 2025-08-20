@@ -12,7 +12,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appTitle => 'foodVibe';
 
   @override
+  String get appDescription =>
+      'Descubre y comparte tus experiencias gastronómicas con foodVibe. Conéctate con amantes de la comida, explora nuevas recetas y disfruta de una comunidad vibrante de entusiastas culinarios.';
+
+  @override
+  String get onboardingText =>
+      'Explora, Comparte y Conéctate Alrededor de la Comida';
+
+  @override
+  String get swipeUpToLogin => 'Desliza hacia arriba para iniciar sesión';
+
+  @override
   String get loginButton => 'Iniciar sesión';
+
+  @override
+  String get loginWelcome => 'Empecemos';
+
+  @override
+  String get loginDescription =>
+      'Inicia sesión para descubrir recetas y conectar con amantes de la comida';
 
   @override
   String get emailLabel => 'Correo electrónico';
@@ -93,10 +111,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get invalidHeadLine => 'El titular debe tener entre 2 y 100 letras';
 
   @override
-  String get agreeToTerms =>
-      'Acepto los Términos de servicio y la Política de privacidad';
-
-  @override
   String get registerButton => 'Registrarse';
 
   @override
@@ -106,10 +120,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get registerSuccess => 'Registro completo';
 
   @override
-  String get termsOfService =>
-      '¡Bienvenido a FoodVibe! Al usar esta aplicación, usted acepta cumplir con los siguientes términos y condiciones. Debe tener al menos 13 años para usar esta aplicación. Usted es responsable de mantener la confidencialidad de la información de su cuenta. Acepta no usar la aplicación para actividades ilegales o para acosar a otros. Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. El contenido proporcionado en la aplicación es solo para uso personal y no puede redistribuirse sin permiso. Al continuar usando la aplicación, acepta estos términos en su totalidad.';
+  String get agreeToTerms =>
+      'Acepto los Términos de servicio y la Política de privacidad';
 
   @override
-  String get privacyPolicy =>
-      'FoodVibe se compromete a proteger su privacidad. Recopilamos información personal como su correo electrónico, nombre de usuario y detalles del perfil para proporcionar y mejorar nuestros servicios. No compartimos su información con terceros sin su consentimiento, excepto cuando lo exige la ley. Sus datos se almacenan de forma segura y pueden eliminarse a petición. Al usar la aplicación, usted da su consentimiento para la recopilación y el uso de su información según lo descrito en esta Política de Privacidad.';
+  String get termsAndPolicyText =>
+      'Términos de servicio y Política de privacidad';
+
+  @override
+  String get close => 'Cerrar';
 }

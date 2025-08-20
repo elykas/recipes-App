@@ -1,23 +1,29 @@
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/complete_register_screen.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen.dart';
+import 'package:foodvibe_mobile/features/auth/presentation/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
 import '../features/auth/presentation/login_page.dart';
 // שים לב להוספה של שאר הדפים גם...
 
 class AppRoutes {
+  static const String onBoarding = '/onboarding';
   static const String login = '/login';
   static const String emailSent = '/email-sent';
   static const String completeRegister = '/complete-register';
   static const String verifyToken = '/verify-token';
   static const String feed = '/feed';
   static const String loginCallback = '/login-callback';
+
 }
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.login,
   routes: [
+    GoRoute(path: AppRoutes.onBoarding, 
+    builder: (context, state) => const OnboardingScreen(),
+    ),
     GoRoute(
       path: AppRoutes.login,
       builder: (context, state) => const LoginPage(),

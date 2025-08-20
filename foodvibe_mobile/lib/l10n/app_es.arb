@@ -2,8 +2,18 @@
   "@@locale": "es",
   
   "appTitle": "foodVibe",
+
+  "appDescription": "Descubre y comparte tus experiencias gastronómicas con foodVibe. Conéctate con amantes de la comida, explora nuevas recetas y disfruta de una comunidad vibrante de entusiastas culinarios.",
+
+  "onboardingText": "Explora, Comparte y Conéctate Alrededor de la Comida",
+
+  "swipeUpToLogin": "Desliza hacia arriba para iniciar sesión",
   
   "loginButton": "Iniciar sesión",
+
+  "loginWelcome": "Empecemos",
+
+  "loginDescription": "Inicia sesión para descubrir recetas y conectar con amantes de la comida",
   
   "emailLabel": "Correo electrónico",
   
@@ -16,7 +26,6 @@
   "loginFailed": "Inicio de sesión fallido. Inténtalo de nuevo.",
   
   "resendEmailButton": "Reenviar correo",
-  
   
   "expiredLink": "El enlace ha expirado. Por favor, solicita uno nuevo.",
   
@@ -62,15 +71,28 @@
   
   "registerSuccess": "Registro completo",
 
-  "termsOfService": "¡Bienvenido a FoodVibe! Al usar esta aplicación, usted acepta cumplir con los siguientes términos y condiciones. Debe tener al menos 13 años para usar esta aplicación. Usted es responsable de mantener la confidencialidad de la información de su cuenta. Acepta no usar la aplicación para actividades ilegales o para acosar a otros. Nos reservamos el derecho de suspender o terminar cuentas que violen estos términos. El contenido proporcionado en la aplicación es solo para uso personal y no puede redistribuirse sin permiso. Al continuar usando la aplicación, acepta estos términos en su totalidad.",
-
-  "privacyPolicy": "FoodVibe se compromete a proteger su privacidad. Recopilamos información personal como su correo electrónico, nombre de usuario y detalles del perfil para proporcionar y mejorar nuestros servicios. No compartimos su información con terceros sin su consentimiento, excepto cuando lo exige la ley. Sus datos se almacenan de forma segura y pueden eliminarse a petición. Al usar la aplicación, usted da su consentimiento para la recopilación y el uso de su información según lo descrito en esta Política de Privacidad.",
+  "termsAndPolicyText": "Términos de servicio y Política de privacidad",
 
   "close": "Cerrar",
   
   
   "@appTitle": {
     "description": "El título de la aplicación"
+  },
+  "@appDescription": {
+    "description": "Una breve descripción de la aplicación"
+  },
+  "@onboardingText": {
+    "description": "Texto mostrado durante el proceso de incorporación"
+  },  
+  "@swipeUpToLogin": {
+    "description": "Instrucción para deslizar hacia arriba para iniciar sesión"
+  },
+  "@loginWelcome": {
+    "description": "Mensaje de bienvenida para la pantalla de inicio de sesión" 
+  },
+  "@loginDescription": {
+    "description": "Texto de descripción para la pantalla de inicio de sesión"
   },
   "@loginButton": {
     "description": "Texto del botón de inicio de sesión"
@@ -162,11 +184,8 @@
   "@registerSuccess": {
     "description": "Mensaje de exito para registro completo"
   },
-  "@termsOfService": {
-    "description": "Texto explicativo sobre los Términos de Servicio"
-  },
-  "@privacyPolicy": {
-    "description": "Texto explicativo sobre la Política de Privacidad"
+  "@termsAndPolicyText": {
+    "description": "Texto para términos de servicio y política de privacidad"
   },
   "@close": {
     "description": "Texto para cerrar el modal de términos y política"

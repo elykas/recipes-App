@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:foodvibe_mobile/core/constants/app_constans.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../providers/locale_provider.dart';
+import '../application/auth_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TermsCheckbox extends StatefulWidget {
+class TermsCheckbox extends ConsumerStatefulWidget {
   final bool initialValue;
   final ValueChanged<bool> onChanged;
 
@@ -12,11 +16,12 @@ class TermsCheckbox extends StatefulWidget {
   });
 
   @override
-  State<TermsCheckbox> createState() => _TermsCheckboxState();
+  ConsumerState<TermsCheckbox> createState() => _TermsCheckboxState();
 }
 
-class _TermsCheckboxState extends State<TermsCheckbox> {
+class _TermsCheckboxState extends ConsumerState<TermsCheckbox> {
   late bool _agreed;
+  late AppLocalizations loc;
 
   @override
   void initState() {
@@ -24,19 +29,33 @@ class _TermsCheckboxState extends State<TermsCheckbox> {
     _agreed = widget.initialValue;
   }
 
-  void _openDocuments(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
-    final content = "${loc.termsOfService}\n\n${loc.privacyPolicy}";
+   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    loc = AppLocalizations.of(context)!; 
+  }
+
+   Future<void> _openDocuments(BuildContext context) async {
+    final locale = ref.read(localeProvider);
+    final version = AppConstants.policyVersion; 
+    final policies = await ref
+        .read(authControllerProvider.notifier)
+        .getPolicy(language: locale.languageCode, version: version);
+
+    String termsContent = policies.isNotEmpty ? policies[0]['content'] ?? "" : "";
+    String privacyContent = policies.length > 1 ? policies[1]['content'] ?? "" : "";
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("${loc.termsOfService} & ${loc.privacyPolicy}"),
-        content: SingleChildScrollView(child: Text(content)),
+        title: Text(loc.termsAndPolicyText),
+        content: SingleChildScrollView(
+          child: Text("$termsContent\n\n$privacyContent"),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("${loc.close}"),
+            child: Text(loc.close),
           ),
         ],
       ),
@@ -45,8 +64,6 @@ class _TermsCheckboxState extends State<TermsCheckbox> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,7 +79,7 @@ class _TermsCheckboxState extends State<TermsCheckbox> {
             onTap: () => _openDocuments(context),
             child: Text(
               loc.agreeToTerms,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.blueAccent,
                 decoration: TextDecoration.underline,
               ),

@@ -3,7 +3,17 @@
 
   "appTitle": "foodVibe",
 
+  "appDescription": "Descubra e compartilhe suas experiências gastronômicas com o foodVibe. Conecte-se com amantes da culinária, explore novas receitas e aproveite uma comunidade vibrante de entusiastas da gastronomia.",
+
+  "onboardingText": "Explore, Compartilhe e Conecte-se em Torno da Comida",
+
+  "swipeUpToLogin": "Deslize para cima para entrar",
+
   "loginButton": "Entrar",
+
+  "loginWelcome": "Vamos começar",
+
+  "loginDescription": "Faça login para descobrir receitas e se conectar com amantes da comida",
 
   "emailLabel": "E-mail",
 
@@ -61,17 +71,30 @@
 
   "registerSuccess": "Registro concluído",
 
-  "termsOfService": "Bem-vindo ao FoodVibe! Ao usar este aplicativo, você concorda em cumprir os seguintes termos e condições. Você deve ter pelo menos 13 anos para usar este aplicativo. Você é responsável por manter a confidencialidade das informações da sua conta. Você concorda em não usar o aplicativo para atividades ilegais ou para assediar outros. Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos. O conteúdo fornecido no aplicativo é apenas para uso pessoal e não pode ser redistribuído sem permissão. Ao continuar a usar o aplicativo, você aceita estes termos integralmente.",
-
-  "privacyPolicy": "O FoodVibe compromete-se a proteger sua privacidade. Coletamos informações pessoais como seu e-mail, nome de usuário e detalhes do perfil para fornecer e melhorar nossos serviços. Não compartilhamos suas informações com terceiros sem seu consentimento, exceto quando exigido por lei. Seus dados são armazenados com segurança e podem ser excluídos mediante solicitação. Ao usar o aplicativo, você consente com a coleta e uso de suas informações conforme descrito nesta Política de Privacidade.",
-
+  "termsAndPolicyText": "Termos de Serviço e Política de Privacidade",
+  
   "close": "Fechar",
 
   "@appTitle": {
     "description": "O título da aplicação"
   },
+  "@appDescription": {
+    "description": "Uma breve descrição da aplicação"
+  },
+  "@onboardingText": {
+    "description": "Texto exibido durante o processo de integração"
+  },
+  "@swipeUpToLogin": {
+    "description": "Instrução para deslizar para cima para entrar"
+  },
   "@loginButton": {
     "description": "Texto do botão de login"
+  },
+  "@loginWelcome": {
+    "description": "Mensagem de boas-vindas para a tela de login"
+  },
+  "@loginDescription": {
+    "description": "Texto de descrição para a tela de login"
   },
   "@emailLabel": {
     "description": "Rótulo do campo de email"
@@ -160,11 +183,8 @@
   "@registerSuccess": {
     "description": "Mensagem de sucesso para registro concluído"
   },
-  "@termsOfService": {
-    "description": "Texto explicativo sobre os Termos de Serviço"
-  },
-  "@privacyPolicy": {
-    "description": "Texto explicativo sobre a Política de Privacidade"
+  "@termsAndPolicyText": {
+    "description": "Texto para termos de serviço e política de privacidade"
   },
   "@close": {
     "description": "Texto para fechar o modal de termos e política"

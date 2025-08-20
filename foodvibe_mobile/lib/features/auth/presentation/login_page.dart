@@ -14,12 +14,23 @@ class LoginPage extends ConsumerStatefulWidget {
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage>
+    with SingleTickerProviderStateMixin {
   String? _errorKey;
+
+  late AnimationController _controller;
+  late Animation<double> _fade;
 
   @override
   void initState() {
     super.initState();
+
+     _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
 
     final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
     final supported = AppLocalizations.supportedLocales
@@ -48,43 +59,78 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _errorKey = error);
   }
 
+   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _socialButton(String text, IconData icon, Color color) {
+    return OutlinedButton.icon(
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: color, width: 1.2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      ),
+      onPressed: () {},
+      icon: Icon(icon, color: color),
+      label: Text(text, style: TextStyle(color: color)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: Center(
-        child: Container(
-          width: 350,
-          padding: EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 12,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              EmailLoginForm(setError: setError),
-              SizedBox(height: 20),
-              Text(loc.loginOr),
-              GoogleSignInButton(setError: setError),
-              if (_errorKey != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
-                  child: Text(
-                    loc.loginFailed,
-                    style: TextStyle(color: Colors.red),
+     return Scaffold(
+      body: FadeTransition(
+        opacity: _fade,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 80),
+          child: Center(
+            child: Container(
+              width: 350,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
                   ),
-                ),
-            ],
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(loc.loginWelcome,
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(
+                    loc.loginDescription,
+                    style: TextStyle(color: Colors.black54, fontSize: 15),
+                  ),
+                  const SizedBox(height: 30),
+                  EmailLoginForm(setError: setError),
+                  const SizedBox(height: 16),
+                  Text(loc.loginOr, textAlign: TextAlign.center),
+                  const SizedBox(height: 20),
+                  GoogleSignInButton(setError: setError),
+                  if (_errorKey != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Text(
+                        loc.loginFailed,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

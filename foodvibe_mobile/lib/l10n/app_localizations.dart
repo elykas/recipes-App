@@ -106,11 +106,41 @@ abstract class AppLocalizations {
   /// **'foodVibe'**
   String get appTitle;
 
+  /// A brief description of the application
+  ///
+  /// In en, this message translates to:
+  /// **'Discover and share your food experiences with foodVibe. Connect with food lovers, explore new recipes, and enjoy a vibrant community of culinary enthusiasts.'**
+  String get appDescription;
+
+  /// Text displayed during the onboarding process
+  ///
+  /// In en, this message translates to:
+  /// **'Explore, Share, and Connect Around Food'**
+  String get onboardingText;
+
+  /// Instruction to swipe up for login
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up to login'**
+  String get swipeUpToLogin;
+
   /// Login button text
   ///
   /// In en, this message translates to:
   /// **'Login'**
   String get loginButton;
+
+  /// Welcome message for login screen
+  ///
+  /// In en, this message translates to:
+  /// **'Let’s get started'**
+  String get loginWelcome;
+
+  /// Description text for login screen
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to discover recipes and connect with food lovers'**
+  String get loginDescription;
 
   /// Email input label
   ///
@@ -256,12 +286,6 @@ abstract class AppLocalizations {
   /// **'Headline must be 2–100 letters only'**
   String get invalidHeadLine;
 
-  /// Text for agreeing to terms and conditions
-  ///
-  /// In en, this message translates to:
-  /// **'I agree to the Terms of Service and Privacy Policy'**
-  String get agreeToTerms;
-
   /// Register button text
   ///
   /// In en, this message translates to:
@@ -280,17 +304,23 @@ abstract class AppLocalizations {
   /// **'Registration complete'**
   String get registerSuccess;
 
-  /// Text explaining the Terms of Service
+  /// Text for agreeing to terms and conditions
   ///
   /// In en, this message translates to:
-  /// **'Welcome to FoodVibe! By using this app, you agree to abide by the following terms and conditions. You must be at least 13 years old to use this app. You are responsible for maintaining the confidentiality of your account information. You agree not to use the app for illegal activities or to harass others. We reserve the right to suspend or terminate accounts for violations of these terms. The content provided in the app is for personal use only and may not be redistributed without permission. By continuing to use the app, you accept these terms in full.'**
-  String get termsOfService;
+  /// **'I agree to the Terms of Service and Privacy Policy'**
+  String get agreeToTerms;
 
-  /// Text explaining the Privacy Policy
+  /// Text for terms of service and privacy policy
   ///
   /// In en, this message translates to:
-  /// **'FoodVibe is committed to protecting your privacy. We collect personal information such as your email, username, and profile details to provide and improve our services. We do not share your information with third parties without your consent, except as required by law. Your data is stored securely and may be deleted upon request. By using the app, you consent to the collection and use of your information as described in this Privacy Policy.'**
-  String get privacyPolicy;
+  /// **'Terms of Service & Privacy Policy'**
+  String get termsAndPolicyText;
+
+  /// Text to close the terms and policy modal
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

@@ -81,4 +81,8 @@ class AuthController extends StateNotifier<Session?> {
   Future<void> completeRegister(UserRegisterDetails userRegisterDetails) async {
     await _authRepository.completeRegister(userRegisterDetails);
   }
+
+  Future<dynamic> getPolicy({required String language, required String version}) async {
+    return await _authRepository.getPolicy(language: language, version: version);
+  }
 }

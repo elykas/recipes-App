@@ -82,6 +82,19 @@ class AuthRepository {
     await _client.auth.signOut();
   }
 
+ Future<dynamic> getPolicy({required String language, required String version}) async {
+  final baseUrl = dotenv.env['BASE_URL'];
+
+  final url = Uri.parse('$baseUrl/policy/query').replace(queryParameters: {
+    'version': version,
+    'language': language,
+  }).toString();
+
+  final response = await _dio.get(url);
+  return response.data;
+}
+
+
   User? get currentUser => _client.auth.currentUser;
 
   Session? get currentSession => _client.auth.currentSession;

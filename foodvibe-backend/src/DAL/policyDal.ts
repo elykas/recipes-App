@@ -1,5 +1,6 @@
 import { IPolicy } from "../dto/policyDto";
 import prisma from "../config/database";
+import { PolicyType} from "@prisma/client";
 
 export const pgCreatePolicy = async (policies: IPolicy[]): Promise<void> => {
   await prisma.policy.createMany({
@@ -22,7 +23,7 @@ export const pgGetPolicyAndTerms = async (
       version,
       language,
       type: {
-        in: ["TermsOfService", "PrivacyPolicy"],
+        in: [PolicyType.TermsOfService, PolicyType.PrivacyPolicy],
       },
     },
     orderBy: {
