@@ -393,3 +393,18 @@ enum ReportStatus {
   Rejected
   Resolved
 }
+
+model Policy {
+  id        Int     @id @default(autoincrement())
+  type      PolicyType
+  version   String
+  language  String     
+  content   String     
+  createdAt DateTime   @default(now())
+}
+
+enum PolicyType {
+  TermsOfService
+  PrivacyPolicy
+  CookiePolicy
+}

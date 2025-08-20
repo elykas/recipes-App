@@ -65,6 +65,8 @@
 
   "privacyPolicy": "O FoodVibe compromete-se a proteger sua privacidade. Coletamos informações pessoais como seu e-mail, nome de usuário e detalhes do perfil para fornecer e melhorar nossos serviços. Não compartilhamos suas informações com terceiros sem seu consentimento, exceto quando exigido por lei. Seus dados são armazenados com segurança e podem ser excluídos mediante solicitação. Ao usar o aplicativo, você consente com a coleta e uso de suas informações conforme descrito nesta Política de Privacidade.",
 
+  "close": "Fechar",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -163,5 +165,8 @@
   },
   "@privacyPolicy": {
     "description": "Texto explicativo sobre a Política de Privacidade"
+  },
+  "@close": {
+    "description": "Texto para fechar o modal de termos e política"
   }
 }

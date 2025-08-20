@@ -8,6 +8,7 @@ import {
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
 import { UserSchema } from "../schema/validateUserSchema";
+import { CreatePoliciesSchema, GetPolicyQuerySchema } from "../schema/validatePolicySchema";
 
 export const validateUser = (
   req: Request,
@@ -147,6 +148,46 @@ export const validatePostIdsBody = (
     return res.status(400).json({
       success: false,
       message: "Invalid recipe ID parameter",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validatePolicyCreation = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const policies = req.body.policies;
+  if (!Array.isArray(policies) || policies.length < 2) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid policies data",
+    });
+  }
+
+  const result = CreatePoliciesSchema.safeParse(policies);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateGetPolicyQuery = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = GetPolicyQuerySchema.safeParse(req.query);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid query",
       errors: result.error.message,
     });
   }

@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import prisma from "../config/database";
 import { IIngredient } from "../models/recipeModel";
 import ErrorResponse from "../utils/errors/errors";
 import { pgGetRecipeIdByPublicId } from "./recipesDAL";

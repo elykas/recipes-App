@@ -24,22 +24,19 @@ class _TermsCheckboxState extends State<TermsCheckbox> {
     _agreed = widget.initialValue;
   }
 
-  void _openDocument(BuildContext context, String type) {
+  void _openDocuments(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-
-    String content = "";
-    if (type == 'terms') content = loc.termsOfService;
-    if (type == 'privacy') content = loc.privacyPolicy;
+    final content = "${loc.termsOfService}\n\n${loc.privacyPolicy}";
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(type == 'terms' ? "Terms of Service" : "Privacy Policy"),
+        title: Text("${loc.termsOfService} & ${loc.privacyPolicy}"),
         content: SingleChildScrollView(child: Text(content)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Close"),
+            child: const Text("${loc.close}"),
           ),
         ],
       ),
@@ -61,31 +58,15 @@ class _TermsCheckboxState extends State<TermsCheckbox> {
           },
         ),
         Expanded(
-          child: Wrap(
-            children: [
-              Text("I agree to "),
-              GestureDetector(
-                onTap: () => _openDocument(context, 'terms'),
-                child: Text(
-                  "Terms of Service",
-                  style: const TextStyle(
-                    color: Colors.blueAccent,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
+          child: GestureDetector(
+            onTap: () => _openDocuments(context),
+            child: Text(
+              loc.agreeToTerms,
+              style: const TextStyle(
+                color: Colors.blueAccent,
+                decoration: TextDecoration.underline,
               ),
-              Text(" and "),
-              GestureDetector(
-                onTap: () => _openDocument(context, 'privacy'),
-                child: Text(
-                  "Privacy Policy",
-                  style: const TextStyle(
-                    color: Colors.blueAccent,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],

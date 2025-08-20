@@ -16,6 +16,7 @@ import groupRouter from "./routes/groupRouter";
 import postRouter from "./routes/postRoutet";
 import recipeRouter from "./routes/recipesRouter";
 import userRouter from "./routes/userRouter";
+import policyRouter from "./routes/policyRouter";
 
 const environment = process.env.NODE_ENV || "development";
 if (environment === "production") {
@@ -59,6 +60,7 @@ app.use("/api/ai-recipes", aiRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/groups", groupRouter);
 app.use("/api/posts", postRouter);
+app.use("/api/policies", policyRouter);
 
 async function startServer() {
   await server.start();
