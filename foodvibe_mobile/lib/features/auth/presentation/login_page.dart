@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/providers/locale_provider.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -8,7 +7,8 @@ import '../widgets/email_login_form.dart';
 import '../widgets/google_sign_in_button.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  final String? errorMessage;
+  const LoginPage({super.key, this.errorMessage});
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -32,18 +32,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
-    final supported = AppLocalizations.supportedLocales
-        .map((l) => l.languageCode)
-        .toList();
-
-    final initialLocale = supported.contains(deviceLocale.languageCode)
-        ? deviceLocale
-        : const Locale('en');
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(localeProvider.notifier).setLocale(initialLocale);
-    });
+    if (widget.errorMessage != null) {
+    _errorKey = widget.errorMessage;
+  }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = GoRouterState.of(context);

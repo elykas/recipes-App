@@ -5,10 +5,13 @@ import 'package:foodvibe_mobile/features/auth/presentation/onboarding_screen.dar
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
 import '../features/auth/presentation/login_page.dart';
+import 'package:foodvibe_mobile/core/screens/splash_screen.dart';
+import 'package:flutter/material.dart';
 // שים לב להוספה של שאר הדפים גם...
 
 class AppRoutes {
-  static const String onBoarding = '/onboarding';
+  static const String splash = '/splash';
+  static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String emailSent = '/email-sent';
   static const String completeRegister = '/complete-register';
@@ -19,14 +22,38 @@ class AppRoutes {
 }
 
 final appRouter = GoRouter(
-  initialLocation: AppRoutes.login,
+  initialLocation: AppRoutes.splash,
   routes: [
-    GoRoute(path: AppRoutes.onBoarding, 
+    GoRoute(path: AppRoutes.splash, 
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(path: AppRoutes.onboarding, 
     builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
       path: AppRoutes.login,
-      builder: (context, state) => const LoginPage(),
+      pageBuilder: (context, state) {
+        final errorMessage = state.extra as String?;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: LoginPage(errorMessage: errorMessage),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            final offsetAnimation = Tween<Offset>(
+              begin: const Offset(0, 1),
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+            );
+            return SlideTransition(
+              position: offsetAnimation,
+              child: child,
+            );
+          },
+        );
+      },
     ),
     GoRoute(
       path: AppRoutes.emailSent,
@@ -43,6 +70,5 @@ final appRouter = GoRouter(
         return RegisterScreen(response: data);
       },
     ),
-
   ],
 );
