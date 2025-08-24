@@ -97,9 +97,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
             child: DraggableScrollableSheet(
               initialChildSize: 0.1,
               minChildSize: 0.1,
-              maxChildSize: 0.5,
+              maxChildSize: 0.55,
               snap: true,
-              snapSizes: const [0.1, 0.5],
+              snapSizes: const [0.1, 0.55],
               builder: (context, scrollController) {
                 return Container(
                   decoration: const BoxDecoration(
@@ -108,13 +108,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                   ),
                   child: SingleChildScrollView(
                     controller: scrollController,
-                    padding: EdgeInsets.fromLTRB(
-                      16, // left
-                      MediaQuery.of(context).size.height * 0.012, // top
-                      16, // right
-                      MediaQuery.of(context).size.height * 0.024, // bottom
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Center(
@@ -122,7 +118,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                             duration: const Duration(milliseconds: 300),
                             child: _sheetExtent <= 0.12
                                 ? const Padding(
-                                    padding: EdgeInsets.only(top: 12),
+                                    padding: EdgeInsets.only(top: AppSpacing.normal),
                                     child: Icon(
                                       LucideIcons.chevronsUp,
                                       size: 32,
@@ -139,7 +135,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                     ),
                                     decoration: BoxDecoration(
                                       color: AppColors.darkText,
-                                      borderRadius: BorderRadius.circular(2),
+                                      borderRadius: AppShapes.borderRadiusVerySmall,
                                     ),
                                   ),
                           ),

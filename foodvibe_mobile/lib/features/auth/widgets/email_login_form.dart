@@ -64,11 +64,7 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
           errorText: _errorKey == "invalidEmailInput"
               ? loc.invalidEmailInput
               : null,
-          backgroundColor: AppColors.background,
-          topLeftRadius: 16.0,
-          topRightRadius: 12.0,
-          bottomLeftRadius: 16.0,
-          bottomRightRadius: 12.0,
+          enabled: !_isLoading,
         ),
         SizedBox(height: AppSpacing.medium),
         SizedBox(
