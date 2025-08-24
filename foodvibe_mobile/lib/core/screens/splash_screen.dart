@@ -33,7 +33,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     // התחלה מ־3/4 המסך עד האמצע (y = 0 זה מרכז, y חיובי זה למטה)
     _slide = Tween<Offset>(
-      begin: const Offset(0, 0.3), // 0.5 = בערך שלושת רבעי המסך למטה
+      begin: const Offset(0, 0.6), // 0.5 = בערך שלושת רבעי המסך למטה
       end: Offset.zero, // מרכז המסך
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
@@ -54,7 +54,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     Future.delayed(const Duration(seconds: 7), () {
       if (mounted) {
-        context.go(AppRoutes.onboarding);
+        context.go(AppRoutes.login);
       }
     });
   }

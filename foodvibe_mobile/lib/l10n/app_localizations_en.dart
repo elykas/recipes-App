@@ -22,7 +22,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get swipeUpToLogin => 'Swipe up to login';
 
   @override
-  String get loginButton => 'Login';
+  String get loginButton => 'Continue';
 
   @override
   String get loginWelcome => 'Let’s get started';
@@ -32,7 +32,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to discover recipes and connect with food lovers';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'Email Address';
 
   @override
   String get emailSent => 'Email sent successfully, check your inbox.';
@@ -65,7 +65,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'A new email has been sent. Please check your inbox.';
 
   @override
-  String get loginWithGoogleButton => 'Login with Google';
+  String get loginWithGoogleButton => 'Continue with Google';
 
   @override
   String get usernameLabel => 'Username';

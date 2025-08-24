@@ -9,13 +9,13 @@
 
   "swipeUpToLogin": "Swipe up to login",
  
-  "loginButton": "Login",
+  "loginButton": "Continue",
 
   "loginWelcome": "Let’s get started",
 
   "loginDescription": "Sign in to discover recipes and connect with food lovers",
  
-  "emailLabel": "Email",
+  "emailLabel": "Email Address",
  
   "emailSent": "Email sent successfully, check your inbox.",
   
@@ -35,7 +35,7 @@
 
   "newEmailSent": "A new email has been sent. Please check your inbox.",
  
-  "loginWithGoogleButton":"Login with Google",
+  "loginWithGoogleButton":"Continue with Google",
 
   "usernameLabel": "Username",
   

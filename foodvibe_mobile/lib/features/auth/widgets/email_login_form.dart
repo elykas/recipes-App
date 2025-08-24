@@ -5,6 +5,11 @@ import '../application/auth_controller.dart';
 import '../../../../../routes/app_router.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:foodvibe_mobile/core/utils/validators.dart';
+import 'package:foodvibe_mobile/core/widgets/custom_button.dart';
+import 'package:foodvibe_mobile/core/widgets/custom_text_field.dart';
+import 'package:foodvibe_mobile/core/theme/app_colors.dart';
+import 'package:foodvibe_mobile/core/theme/app_spacing.dart';
+import 'package:foodvibe_mobile/core/theme/app_shapes.dart';
 
 class EmailLoginForm extends ConsumerStatefulWidget {
   final void Function(String?) setError;
@@ -47,35 +52,35 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        TextField(
+        CustomTextField(
           controller: _emailController,
-          decoration: InputDecoration(
-            labelText: loc.emailLabel,
-            errorText: _errorKey == "invalidEmailInput"
-                ? loc.invalidEmailInput
-                : null,
-          ),
+          labelText: loc.emailLabel,
+          errorText: _errorKey == "invalidEmailInput"
+              ? loc.invalidEmailInput
+              : null,
+          backgroundColor: AppColors.background,
+          topLeftRadius: 16.0,
+          topRightRadius: 12.0,
+          bottomLeftRadius: 16.0,
+          bottomRightRadius: 12.0,
         ),
-        SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: _isLoading ? null : _submit,
-          child: _isLoading
-              ? SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-              : Text(loc.loginButton),
+        SizedBox(height: AppSpacing.medium),
+        SizedBox(
+          width: double.infinity,
+          child: CustomButton(
+            onPressed: _submit,
+            label: loc.loginButton,
+            isLoading: _isLoading,
+            padding: EdgeInsets.all(16),
+            backgroundColor: AppColors.darkText,
+            shape: AppShapes.roundedRectangleShapeMedium,
+          ),
         ),
       ],
     );

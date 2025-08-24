@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'routes/app_router.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import './l10n/app_localizations.dart';
-import 'package:foodvibe_mobile/providers/locale_provider.dart'; 
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
+import 'package:foodvibe_mobile/core/theme/app_theme.dart';
 
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
@@ -14,18 +15,19 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: appRouter,
-      title: 'My App',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      title: 'FoodVibe',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       locale: locale,
 
-       localizationsDelegates: const [
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: AppLocalizations.supportedLocales, 
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
-   

@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// Login button text
   ///
   /// In en, this message translates to:
-  /// **'Login'**
+  /// **'Continue'**
   String get loginButton;
 
   /// Welcome message for login screen
@@ -145,7 +145,7 @@ abstract class AppLocalizations {
   /// Email input label
   ///
   /// In en, this message translates to:
-  /// **'Email'**
+  /// **'Email Address'**
   String get emailLabel;
 
   /// Success message for email sent
@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// Login with Google button text
   ///
   /// In en, this message translates to:
-  /// **'Login with Google'**
+  /// **'Continue with Google'**
   String get loginWithGoogleButton;
 
   /// Username input label
