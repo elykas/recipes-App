@@ -25,6 +25,4 @@ export const userTypeDefs = gql`
         getUserProfileByPublicId(publicId: String!): User
         
     }
-    
-  
 `;

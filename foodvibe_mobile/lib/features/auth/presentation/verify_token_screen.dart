@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/auth/application/auth_state.dart';
 import 'package:go_router/go_router.dart';
 import '../../../routes/app_router.dart';
 import '../application/auth_controller.dart';
@@ -20,8 +21,8 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
   }
 
   Future<void> _verifyUser() async {
-    final session = ref.read(authControllerProvider);
-    final token = session?.accessToken;
+    final authState = ref.read(authControllerProvider);
+    final token = authState.session?.accessToken;
 
     if (token == null) {
       context.go(AppRoutes.login, extra: 'loginFailed');

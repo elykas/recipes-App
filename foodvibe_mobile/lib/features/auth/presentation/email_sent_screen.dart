@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:foodvibe_mobile/features/auth/application/auth_state.dart';
 import '../../../l10n/app_localizations.dart';
 
 class EmailSentPage extends ConsumerStatefulWidget {
@@ -114,11 +114,12 @@ class _EmailSentPageState extends ConsumerState<EmailSentPage> {
 
     if (!_hasSetupListener) {
       _hasSetupListener = true;
-      ref.listen<Session?>(authControllerProvider, (previous, next) {
-        if (next != null) {
-          context.go(AppRoutes.verifyToken);
-        }
-      });
+      ref.listen<AuthState>(authControllerProvider, (previous, next) {
+  if (next.isSessionAvailable) {
+    context.go(AppRoutes.verifyToken);
+  }
+});
+
     }
 
     return Scaffold(

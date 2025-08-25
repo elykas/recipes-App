@@ -10,7 +10,25 @@ export const userResolvers = {
       if (!_context.publicId) {
         throw new Error("Unauthorized: User not authenticated");
       }
-      return getUserProfileWithPostsService(args.publicId, (args.limit || 10));
+
+      try {
+        const userProfile = await getUserProfileWithPostsService(
+          args.publicId,
+          args.limit || 10
+        );
+
+        return {
+          data: userProfile,
+          message: "User profile fetched successfully",
+          success: true,
+        };
+      } catch (err: any) {
+        return {
+          data: null,
+          message: err.message || "Failed to fetch user profile",
+          success: false,
+        };
+      }
     },
   },
 };

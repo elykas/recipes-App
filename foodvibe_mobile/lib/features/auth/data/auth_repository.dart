@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:foodvibe_mobile/core/constants/app_constans.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
+import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
+
 import '../../../core//network/dio_client.dart';
+import '../../../services/supabase_service.dart';
 
 class AuthRepository {
   final SupabaseClient _client;
@@ -16,8 +19,6 @@ class AuthRepository {
 
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];
-
-    print(callBackUrl);
 
     if (callBackUrl == null) {
       throw Exception('CALLBACK_URL is not set');
@@ -36,7 +37,6 @@ class AuthRepository {
     );
     final googleUser = await GoogleSignIn.instance.authenticate();
 
-    // Get authentication tokens
     final googleAuth = googleUser.authentication;
     final String? idToken = googleAuth.idToken;
 
@@ -44,7 +44,6 @@ class AuthRepository {
       throw Exception('Missing Google authentication tokens');
     }
 
-    // Authenticate with Supabase (or your backend)
     await _client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
@@ -52,8 +51,7 @@ class AuthRepository {
   }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {
-    final baseUrl = dotenv.env['BASE_URL'];
-    final path = '$baseUrl/auth/verify-token';
+    final path = '${AppConstants.baseUrl}/auth/verify-token';
 
     final response = await _dio.post(
       path,
@@ -64,16 +62,13 @@ class AuthRepository {
   }
 
   Future<bool> isUsernameAvailable(String username) async {
-    final baseUrl = dotenv.env['BASE_URL'];
-    final path = '$baseUrl/user/username-available/$username';
-    final response = await _dio.get(path
-    );
+    final path = '${AppConstants.baseUrl}/user/username-available/$username';
+    final response = await _dio.get(path);
     return response.data['isAvailable'] ?? false;
   }
 
   Future<void> completeRegister(UserRegisterDetails userRegisterDetails) async {
-    final baseUrl = dotenv.env['BASE_URL'];
-    final path = '$baseUrl/auth/complete-register';
+    final path = '${AppConstants.baseUrl}/auth/complete-register';
 
     await _dio.post(path, data: userRegisterDetails.toJson());
   }
@@ -82,20 +77,52 @@ class AuthRepository {
     await _client.auth.signOut();
   }
 
- Future<dynamic> getPolicy({required String language, required String version}) async {
-  final baseUrl = dotenv.env['BASE_URL'];
+  Future<dynamic> getPolicy({
+    required String language,
+    required String version,
+  }) async {
+    final path = '${AppConstants.baseUrl}/policy/query';
+    final url = Uri.parse(path)
+        .replace(queryParameters: {'version': version, 'language': language})
+        .toString();
 
-  final url = Uri.parse('$baseUrl/policy/query').replace(queryParameters: {
-    'version': version,
-    'language': language,
-  }).toString();
+    final response = await _dio.get(url);
+    return response.data;
+  }
 
-  final response = await _dio.get(url);
-  return response.data;
-}
+  Future<User?> getCurrentUser() async {
+    final uri = '${AppConstants.baseUrl}/graphql';
 
+    const query = r'''
+      query GetUser {
+        getUserProfileByPublicId(publicId: "me") {
+          publicId
+          username
+          fullName
+          imageUrl
+          email
+          bio
+          headLine
+          locale
+          isAdmin
+          posts {
+            publicId
+            likes
+            recipePublicId
+            imageUrl
+          }
+        }
+      }
+    ''';
 
-  User? get currentUser => _client.auth.currentUser;
+    final response = await _dio.post(uri, data: {'query': query});
+
+    final data = response.data['data']['getUserProfileByPublicId'];
+
+    if (data == null) return null;
+
+    return User.fromJson(data);
+  }
 
   Session? get currentSession => _client.auth.currentSession;
 

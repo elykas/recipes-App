@@ -20,12 +20,10 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     super.initState();
     _loadInitialFeed();
 
-    // Lazy loading on scroll
     _scrollController.addListener(() {
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.position.pixels;
 
-      // אם הגלילה קרובה ל-80% מהסוף, טען עוד פוסטים
       if (currentScroll >= maxScroll * 0.8 && !_isLoadingMore) {
         _loadMore();
       }
@@ -64,7 +62,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   Future<void> _onRefresh() async {
     setState(() => _isLoadingMore = true);
 
-    // איפוס הפיד לפני טעינה מחדש
     ref.read(feedControllerProvider.notifier).reset();
 
     try {

@@ -1,11 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import './auth_state.dart' as local;
 import '../data/auth_repository.dart';
 
 // PROVIDERS
-final authControllerProvider = StateNotifierProvider<AuthController, Session?>((
+final authControllerProvider = StateNotifierProvider<AuthController, local.AuthState>((
   ref,
 ) {
   final repo = ref.read(authRepositoryProvider);
@@ -17,10 +17,10 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 // AUTH CONTROLLER
-class AuthController extends StateNotifier<Session?> {
+class AuthController extends StateNotifier<local.AuthState> {
   final AuthRepository _authRepository;
 
-  AuthController(this._authRepository) : super(null) {
+  AuthController(this._authRepository) : super(local.AuthState()) {
     _authRepository.client.auth.onAuthStateChange.listen((
       AuthState onAuthStateChange,
     ) {
@@ -28,29 +28,28 @@ class AuthController extends StateNotifier<Session?> {
       final session = onAuthStateChange.session;
 
       if (event == AuthChangeEvent.signedIn) {
-        state = session;
+        state = local.AuthState(session: session);
         final token = session?.accessToken;
       } else if (event == AuthChangeEvent.signedOut) {
-        state = null;
+        state = local.AuthState(session:null);
         print("User signed out.");
       }
     });
-
-    state = _authRepository.client.auth.currentSession;
   }
 
   Future<void> signInWithEmail({required String email}) async {
     await _authRepository.signInWithEmail(email: email);
+
   }
 
   Future<void> recoverSessionFromLink(Uri uri) async {
     try {
       if (uri.fragment.isNotEmpty) {
-        final response = await _authRepository.client.auth.getSessionFromUrl(
+        final response = _authRepository.client.auth.getSessionFromUrl(
           uri,
         );
-        state = response.session;
       }
+    
     } catch (e) {
       print("Failed to recover session: $e");
     }
@@ -60,7 +59,7 @@ class AuthController extends StateNotifier<Session?> {
     await _authRepository.signInWithGoogle();
     final session = _authRepository.client.auth.currentSession;
     if (session != null) {
-      state = session;
+      state = local.AuthState(session: session);
       return true;
     }
     return false;
@@ -84,5 +83,10 @@ class AuthController extends StateNotifier<Session?> {
 
   Future<dynamic> getPolicy({required String language, required String version}) async {
     return await _authRepository.getPolicy(language: language, version: version);
+  }
+
+  Future<void> loadUser() async {
+    final user = await _authRepository.getCurrentUser();
+    state = local.AuthState(user: user); // null אם לא קיים
   }
 }
