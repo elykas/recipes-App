@@ -28,6 +28,7 @@ export const pgGetNewestPosts = async (
           username: true,
           fullName: true,
           imageUrl: true,
+          headLine: true,
         },
       },
       recipe: {
@@ -67,6 +68,7 @@ export const getPopularPosts = async (
           username: true,
           fullName: true,
           imageUrl: true,
+          headLine: true,
         },
       },
       recipe: {
@@ -111,6 +113,7 @@ export const getPostsWithRecipes = async (
           username: true,
           fullName: true,
           imageUrl: true,
+          headLine: true,
         },
       },
       recipe: {
@@ -161,6 +164,7 @@ export const getRandomPostsWithRecipes = async (
           username: true,
           fullName: true,
           imageUrl: true,
+          headLine: true,
         },
       },
       recipe: {

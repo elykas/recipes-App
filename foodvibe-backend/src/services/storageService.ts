@@ -1,13 +1,15 @@
 import { v4 as uuid } from "uuid";
 import { supabase } from "../config/supabaseStorageConfig";
 
+const bucketName = "foodvibe";
+
 export const uploadSingleImage = async (
   buffer: Buffer,
   userId: string,
   mimeType: string,
   folder: "user" | "recipe" | "group" | "post"
 ): Promise<string> => {
-  const bucket = "recipes-app-media";
+  const bucket = bucketName;
   const fileName = `${folder}/${userId}/${uuid()}`;
 
   const { data, error } = await supabase.storage
@@ -26,7 +28,7 @@ export const uploadSingleImage = async (
 
 export const deleteImageFromStorage = async (filePath: string) => {
   const { data, error } = await supabase.storage
-    .from("recipes-app-media")
+    .from(bucketName)
     .remove([filePath]);
 
   if (error) {

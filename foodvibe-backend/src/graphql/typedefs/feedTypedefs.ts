@@ -1,20 +1,26 @@
 import gql from "graphql-tag";
 
 export const feedTypeDefs = gql`
-  type Post {
-    publicId: String!
-    likes: Int
-    recipePublicId: String
-    imageUrl: String
-    description: String
-    user: User
-  }
+  type Recipe {
+  publicId: String!
+}
 
-  type User {
-    publicId: String!
-    fullName: String
-    imageUrl: String
-  }
+type Author {
+  publicId: String!
+  username: String
+  fullName: String
+  imageUrl: String
+  headLine: String
+}
+
+type Post {
+  publicId: String!
+  imageUrl: String
+  likeCount: Int
+  content: String
+  author: Author
+  recipe: Recipe
+}
 
   type Query {
     getFeed(limit: Int): [Post!]!

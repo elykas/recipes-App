@@ -8,6 +8,7 @@ export interface FeedDto {
         username: string;
         fullName: string;
         imageUrl: string;
+        headLine: string;
     };
     recipe: {
         publicId: string;

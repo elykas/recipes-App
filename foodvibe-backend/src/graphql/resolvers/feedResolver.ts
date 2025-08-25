@@ -23,7 +23,7 @@ export const feedResolvers = {
         ? encodeCursor(feedData.cursors)
         : null;
      
-        return { data: feedData, cursor: encodedCursors };
+        return { data: feedData.items, cursor: encodedCursors, excludeIds: feedData.excludeIds };
     },
   },
 };
