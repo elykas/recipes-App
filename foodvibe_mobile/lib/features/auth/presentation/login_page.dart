@@ -23,21 +23,11 @@ class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin {
   String? _errorKey;
 
-  late AnimationController _controller;
-  late Animation<double> _fade;
-
   double _sheetExtent = 0.1;
 
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
-    _controller.forward();
 
     if (widget.errorMessage != null) {
       _errorKey = widget.errorMessage;
@@ -55,25 +45,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   void setError(String? error) {
     setState(() => _errorKey = error);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Widget _socialButton(String text, IconData icon, Color color) {
-    return OutlinedButton.icon(
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: color, width: 1.2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-      ),
-      onPressed: () {},
-      icon: Icon(icon, color: color),
-      label: Text(text, style: TextStyle(color: color)),
-    );
+    if (error != null) {
+      _sheetExtent = 0.55;
+    }
   }
 
   @override
@@ -108,7 +82,10 @@ class _LoginPageState extends ConsumerState<LoginPage>
                   ),
                   child: SingleChildScrollView(
                     controller: scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.medium,
+                      vertical: AppSpacing.medium,
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,9 +93,11 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         Center(
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 300),
-                            child: _sheetExtent <= 0.12
+                            child: _sheetExtent <= 0.15
                                 ? const Padding(
-                                    padding: EdgeInsets.only(top: AppSpacing.normal),
+                                    padding: EdgeInsets.only(
+                                      top: AppSpacing.normal,
+                                    ),
                                     child: Icon(
                                       LucideIcons.chevronsUp,
                                       size: 32,
@@ -135,7 +114,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                     ),
                                     decoration: BoxDecoration(
                                       color: AppColors.darkText,
-                                      borderRadius: AppShapes.borderRadiusVerySmall,
+                                      borderRadius:
+                                          AppShapes.borderRadiusVerySmall,
                                     ),
                                   ),
                           ),
@@ -170,7 +150,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                               GoogleSignInButton(setError: setError),
                               if (_errorKey != null)
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 12.0),
+                                  padding: const EdgeInsets.only(
+                                    top: AppSpacing.normal,
+                                  ),
                                   child: Text(
                                     loc.loginFailed,
                                     style: Theme.of(context)

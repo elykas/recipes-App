@@ -11,42 +11,66 @@ import 'package:foodvibe_mobile/core/theme/app_shapes.dart';
 import 'package:foodvibe_mobile/core/theme/app_text_styles.dart';
 import 'package:foodvibe_mobile/core/theme/app_spacing.dart';
 
-class GoogleSignInButton extends ConsumerWidget {
+class GoogleSignInButton extends ConsumerStatefulWidget {
   final void Function(String?) setError;
   const GoogleSignInButton({super.key, required this.setError});
-  final String googleLogoPath = 'assets/images/google_logo.svg';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GoogleSignInButton> createState() => _GoogleSignInButtonState();
+}
+
+class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
+  bool _isLoading = false;
+  final String googleLogoPath = 'assets/images/google_logo.svg';
+
+  Future<void> _handleSignIn() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      widget.setError(null);
+
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .signInWithGoogle();
+
+      if (success) {
+        if (mounted) {
+          context.go(AppRoutes.verifyToken);
+        }
+      } else {
+        widget.setError("loginFailed");
+      }
+    } catch (e) {
+      widget.setError("loginFailed");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
 
     return CustomButton(
-      onPressed: () async {
-        try {
-          setError(null);
-          final success = await ref
-              .read(authControllerProvider.notifier)
-              .signInWithGoogle();
-          if (success) {
-            context.go(AppRoutes.verifyToken);
-          } else {
-            setError("loginFailed");
-          }
-        } catch (e) {
-          setError("loginFailed");
-        }
-      },
-      label: loc.loginWithGoogleButton,
-      backgroundColor: Colors.white,
+      onPressed: _isLoading ? null : _handleSignIn,
+      isLoading: _isLoading,
+      variant: ButtonVariant.secondary, // 👈 כאן בוחרים שהכפתור יהיה לבן
       shape: AppShapes.roundedRectangleShapeMedium,
-      border: BorderSide(color: AppColors.darkText, width: 1),
+      padding: EdgeInsets.symmetric(vertical: AppSpacing.medium),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SvgPicture.asset(googleLogoPath, width: 20, height: 20),
-          SizedBox(width: AppSpacing.small),
+          if (!_isLoading) ...[
+            SvgPicture.asset(googleLogoPath, width: 20, height: 20),
+            SizedBox(width: AppSpacing.small),
+          ],
           Text(
-            loc.loginWithGoogleButton,
+            _isLoading ? loc.loading : loc.loginWithGoogleButton,
             style: AppTextStyles.button.copyWith(color: AppColors.darkText),
           ),
         ],

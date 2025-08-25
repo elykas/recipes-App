@@ -17,6 +17,8 @@
 
   "emailLabel": "E-mail",
 
+  "loading": "Carregando...",
+
   "emailSent": "E-mail enviado com sucesso, verifique sua caixa de entrada.",
 
   "invalidEmailInput": "Formato de email inválido",
@@ -95,6 +97,9 @@
   },
   "@loginDescription": {
     "description": "Texto de descrição para a tela de login"
+  },
+  "@loading": {
+    "description": "Texto do indicador de carregamento"
   },
   "@emailLabel": {
     "description": "Rótulo do campo de email"

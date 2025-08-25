@@ -35,6 +35,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailLabel => 'Email Address';
 
   @override
+  String get loading => 'Loading...';
+
+  @override
   String get emailSent => 'Email sent successfully, check your inbox.';
 
   @override

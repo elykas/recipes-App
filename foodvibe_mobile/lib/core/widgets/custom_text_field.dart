@@ -27,7 +27,7 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         errorText: errorText,
         filled: true,
-        fillColor: enabled ? AppColors.background : AppColors.grey,
+        fillColor: AppColors.greyLight,
         border: AppTextFieldStyles.defaultBorder,
         enabledBorder: AppTextFieldStyles.defaultBorder,
         focusedBorder: AppTextFieldStyles.focusedBorder,

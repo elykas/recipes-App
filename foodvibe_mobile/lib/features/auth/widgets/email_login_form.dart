@@ -25,6 +25,17 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
   String? _errorKey;
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    _emailController.addListener(() {
+      if (_errorKey != null) {
+        setState(() => _errorKey = null);
+      }
+    });
+  }
+
   Future<void> _submit() async {
     final email = _emailController.text.trim();
 
@@ -72,10 +83,8 @@ class EmailLoginFormState extends ConsumerState<EmailLoginForm> {
           child: CustomButton(
             onPressed: _submit,
             label: loc.loginButton,
+            variant: ButtonVariant.primary,
             isLoading: _isLoading,
-            padding: EdgeInsets.all(16),
-            backgroundColor: AppColors.darkText,
-            shape: AppShapes.roundedRectangleShapeMedium,
           ),
         ),
       ],

@@ -13,6 +13,8 @@
 
   "loginWelcome": "Empecemos",
 
+  "loading": "Cargando...",
+
   "loginDescription": "Inicia sesión para descubrir recetas y conectar con amantes de la comida",
   
   "emailLabel": "Correo electrónico",
@@ -90,6 +92,9 @@
   },
   "@loginWelcome": {
     "description": "Mensaje de bienvenida para la pantalla de inicio de sesión" 
+  },
+  "@loading": {
+    "description": "Texto del indicador de carga"
   },
   "@loginDescription": {
     "description": "Texto de descripción para la pantalla de inicio de sesión"

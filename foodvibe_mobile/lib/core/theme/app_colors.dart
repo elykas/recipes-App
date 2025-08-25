@@ -4,6 +4,7 @@ class AppColors {
   static const primary = Color(0xFFB95E1F); 
   static const darkText = Color(0xFF1E1E24);
   static const grey = Color(0xFF777792);
+  static const greyLight = Color(0xFFF8F8F8);
   static const lightText = Colors.white;
   static const background = Colors.white;
   static const error = Color(0xFFDB6C6C);

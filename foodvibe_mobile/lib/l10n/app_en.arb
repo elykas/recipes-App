@@ -16,6 +16,8 @@
   "loginDescription": "Sign in to discover recipes and connect with food lovers",
  
   "emailLabel": "Email Address",
+
+  "loading": "Loading...",
  
   "emailSent": "Email sent successfully, check your inbox.",
   
@@ -86,6 +88,9 @@
   },
   "@swipeUpToLogin": {
     "description": "Instruction to swipe up for login"
+  },
+  "@loading": {
+    "description": "Loading indicator text"
   },
   "@loginButton": {
     "description": "Login button text"

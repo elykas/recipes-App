@@ -148,6 +148,12 @@ abstract class AppLocalizations {
   /// **'Email Address'**
   String get emailLabel;
 
+  /// Loading indicator text
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
   /// Success message for email sent
   ///
   /// In en, this message translates to:
