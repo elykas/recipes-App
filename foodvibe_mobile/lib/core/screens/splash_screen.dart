@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:foodvibe_mobile/providers/locale_provider.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';
+import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'dart:async';
+import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
 
 import 'package:go_router/go_router.dart';
 
@@ -52,11 +54,33 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       ref.read(localeProvider.notifier).setLocale(initialLocale);
     });
 
-    Future.delayed(const Duration(seconds: 7), () {
-      if (mounted) {
-        context.go(AppRoutes.login);
+    _init();
+  }
+
+  Future<void> _init() async {
+    try {
+      await ref.read(authControllerProvider.notifier).loadUser();
+
+      final authState = ref.read(authControllerProvider);
+
+      if (authState.user != null) {
+        ref.read(feedControllerProvider.notifier).fetchFeed();
       }
-    });
+    } catch (e, st) {
+      print('Error loading user or feed: $e\n$st');
+    }
+
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    final authState = ref.read(authControllerProvider);
+
+    if (authState.user != null) {
+      context.go(AppRoutes.feed);
+    } else {
+      context.go(AppRoutes.login);
+    }
   }
 
   @override

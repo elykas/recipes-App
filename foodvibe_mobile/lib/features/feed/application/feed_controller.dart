@@ -39,9 +39,18 @@ class FeedController extends StateNotifier<List<Post>> {
 
   Future<void> fetchMore({int limit = 20}) async {
   if (_debounce?.isActive ?? false) _debounce!.cancel();
-  _debounce = Timer(const Duration(milliseconds: 300), () {
-    fetchFeed(limit: limit);
+   final completer = Completer<void>();
+  
+  _debounce = Timer(const Duration(milliseconds: 300), () async {
+    try {
+      await fetchFeed(limit: limit);
+      completer.complete();
+    } catch (e) {
+      completer.completeError(e);
+    }
   });
+  
+  return completer.future;
 }
 
   void reset() {

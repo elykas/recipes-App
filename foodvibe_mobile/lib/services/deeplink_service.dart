@@ -44,11 +44,11 @@ class DeepLinkService {
         type: OtpType.magiclink,
       );
 
-      if (authResponse.session != null) {
-        ref.read(authControllerProvider.notifier).state = authResponse.session;
-        // מכאן, הסשן זמין וניתן לגשת לטוקן שלו
-        // final token = authResponse.session!.accessToken;
-      }
+      // if (authResponse.session != null) {
+      //   ref.read(authControllerProvider.notifier).state = authResponse.session;
+      //   // מכאן, הסשן זמין וניתן לגשת לטוקן שלו
+      //   // final token = authResponse.session!.accessToken;
+      // }
     } catch (e) {
       print("Failed to verify OTP: $e");
     }

@@ -38,6 +38,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
     try {
       await ref.read(feedControllerProvider.notifier).fetchFeed();
+    
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -61,7 +62,6 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
   Future<void> _onRefresh() async {
     setState(() => _isLoadingMore = true);
-
     ref.read(feedControllerProvider.notifier).reset();
 
     try {
@@ -79,6 +79,23 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 
     if (_error != null) {
       return Center(child: Text('Error: $_error'));
+    }
+
+    if (feed.isEmpty && !_isLoadingMore) {
+      return const Center(child: Text('No posts yet.'));
+    }
+
+    if (feed.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(height: 100),
+            Center(child: Text('No posts yet.')),
+          ],
+        ),
+      );
     }
 
     return RefreshIndicator(
@@ -109,30 +126,43 @@ class FeedItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // בודקים שהאובייקטים הפנימיים קיימים לפני השימוש בהם
+    final author = post.author;
+    final imageUrl = post.imageUrl;
+    final recipeId = post.recipe?.publicId;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: post.author?.imageUrl != null
-              ? CircleAvatar(backgroundImage: NetworkImage(post.author!.imageUrl!))
+          // משתמשים בבדיקה מפורשת
+          leading: (author != null && author.imageUrl != null)
+              ? CircleAvatar(
+                  backgroundImage: NetworkImage(author.imageUrl!),
+                )
               : const CircleAvatar(child: Icon(Icons.person)),
-          title: Text(post.author?.username ?? post.author?.fullName ?? 'Unknown'),
+          title: Text(
+            // משתמשים באופרטור ?? כדי לספק ערך חלופי אם הערך המקורי הוא null
+            author?.username ?? author?.fullName ?? 'Unknown author',
+          ),
         ),
-
-        if (post.imageUrl != null)
+        // מציגים את התמונה רק אם היא קיימת
+        if (imageUrl != null)
           Image.network(
-            post.imageUrl!,
+            imageUrl,
             fit: BoxFit.cover,
             width: double.infinity,
             height: 250,
           ),
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${post.likeCount ?? 0} likes', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                '${post.likeCount ?? 0} likes',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 4),
               Text(post.content ?? ''),
               const SizedBox(height: 4),
@@ -140,7 +170,8 @@ class FeedItemWidget extends StatelessWidget {
                 children: [
                   const Icon(Icons.book, size: 16),
                   const SizedBox(width: 4),
-                  Text(post.recipe?.publicId ?? ''),
+                  // משתמשים באופרטור ?? כדי לספק ערך חלופי
+                  Text(recipeId ?? 'No recipe ID'),
                 ],
               ),
             ],

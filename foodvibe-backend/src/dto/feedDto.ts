@@ -2,15 +2,15 @@ export interface FeedDto {
     publicId: string;
     imageUrl: string;
     likeCount: number;
-    content: string;
+    content: string | null;
     author: {
         publicId: string;
         username: string;
-        fullName: string;
-        imageUrl: string;
-        headLine: string;
+        fullName: string | null;
+        imageUrl: string | null;
+        headLine: string | null;
     };
     recipe: {
-        publicId: string;
+        publicId: string | null;
     };
 }

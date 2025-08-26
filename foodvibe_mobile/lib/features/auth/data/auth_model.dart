@@ -56,7 +56,7 @@ class UserRegisterDetails {
     'email': email,
     'username': username,
     'agreedToPolicy': agreedToPolicy,
-    'agreedAt' : agreedToPolicyDate.toIso8601String(),
+    'agreedToPolicyDate' : agreedToPolicyDate.toIso8601String(),
     'agreedToPolicyVersion' :agreedToPolicyVersion
   };
 

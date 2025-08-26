@@ -31,7 +31,6 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
-    // Start Google sign-in flow
     await GoogleSignIn.instance.initialize(
       serverClientId: '${dotenv.env['GOOGLE_CLIENT_ID_WEB']}',
     );
@@ -51,7 +50,7 @@ class AuthRepository {
   }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {
-    final path = '${AppConstants.baseUrl}/auth/verify-token';
+    final path = '/auth/verify-token';
 
     final response = await _dio.post(
       path,
@@ -62,13 +61,13 @@ class AuthRepository {
   }
 
   Future<bool> isUsernameAvailable(String username) async {
-    final path = '${AppConstants.baseUrl}/user/username-available/$username';
+    final path = '/user/username-available/$username';
     final response = await _dio.get(path);
     return response.data['isAvailable'] ?? false;
   }
 
   Future<void> completeRegister(UserRegisterDetails userRegisterDetails) async {
-    final path = '${AppConstants.baseUrl}/auth/complete-register';
+    final path = '/auth/complete-register';
 
     await _dio.post(path, data: userRegisterDetails.toJson());
   }
@@ -81,7 +80,7 @@ class AuthRepository {
     required String language,
     required String version,
   }) async {
-    final path = '${AppConstants.baseUrl}/policy/query';
+    final path = '/policy/query';
     final url = Uri.parse(path)
         .replace(queryParameters: {'version': version, 'language': language})
         .toString();
@@ -91,7 +90,7 @@ class AuthRepository {
   }
 
   Future<User?> getCurrentUser() async {
-    final uri = '${AppConstants.baseUrl}/graphql';
+    final uri = dotenv.env['GRAPHQL_URI'] ?? '';
 
     const query = r'''
       query GetUser {

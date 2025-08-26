@@ -13,6 +13,8 @@ export const pgCreateUser = async (
     birthDate,
     headLine,
     agreedToPolicy,
+    agreedToPolicyDate,
+    agreedToPolicyVersion,
   } = userRegisterDetails;
   const user: UserWithoutRecipes = await prisma.user.create({
     data: {
@@ -21,10 +23,11 @@ export const pgCreateUser = async (
       username,
       fullName,
       locale,
-      birthDate,
+      birthDate: birthDate ? new Date(birthDate) : null,
       headLine,
       agreedToPolicy,
-      agreedToPolicyDate: new Date(),
+      agreedToPolicyDate : new Date(agreedToPolicyDate),
+      agreedToPolicyVersion,
     },
   });
   return user;

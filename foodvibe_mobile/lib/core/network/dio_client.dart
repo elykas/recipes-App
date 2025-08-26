@@ -9,14 +9,12 @@ class DioClient {
   late final Dio dio;
   late final CookieJar cookieJar;
 
-  factory DioClient() {
-    return _instance;
-  }
+   factory DioClient() => _instance;
 
   DioClient._internal() {
     dio = Dio(
       BaseOptions(
-        baseUrl: dotenv.env['BASE_URL'] ?? 'http://localhost:3000/api',
+        baseUrl: dotenv.env['BASE_URL'] ?? 'http://localhost:8888/api',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {
@@ -26,8 +24,26 @@ class DioClient {
     );
     cookieJar = CookieJar();
     dio.interceptors.add(CookieManager(cookieJar));
-
-    // optional: add logging interceptor
     dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
+
+      dio.interceptors.add(
+      InterceptorsWrapper(
+        onError: (e, handler) async {
+          if (e.response?.statusCode == 401 && !e.requestOptions.path.contains('refresh')) {
+            try {
+              final refreshResponse = await dio.post('/auth/refresh-token');
+
+              final opts = e.requestOptions;
+              final cloneReq = await dio.fetch(opts);
+              return handler.resolve(cloneReq);
+            } catch (refreshError) {
+              return handler.reject(e);
+            }
+          }
+
+          return handler.next(e);
+        },
+      ),
+    );
   }
 }
