@@ -12,7 +12,7 @@ class PostContentField extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLines: 3,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         labelText: loc.contentLabel,
         border: OutlineInputBorder(),
       ),

@@ -358,6 +358,12 @@ abstract class AppLocalizations {
   /// **'Gallery'**
   String get gallery;
 
+  /// Post content label
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get contentLabel;
+
   /// Success message for successful post creation
   ///
   /// In en, this message translates to:

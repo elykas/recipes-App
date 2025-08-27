@@ -87,6 +87,8 @@
 
   "gallery": "Gallery",
 
+  "contentLabel": "Content",
+
   "createPostSuccess": "Post created successfully",
 
   "@appTitle": {
@@ -223,5 +225,8 @@
   },
   "@createPostSuccess": {
     "description": "Success message for successful post creation"
+  },
+  "@contentLabel": {
+    "description": "Post content label"
   }
 }

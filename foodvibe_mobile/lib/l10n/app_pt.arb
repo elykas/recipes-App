@@ -89,6 +89,8 @@
 
   "createPostSuccess": "Post criado com sucesso",
 
+  "contentLabel": "Conteúdo",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -223,6 +225,9 @@
   },
   "@createPostSuccess": {
     "description": "Mensagem de sucesso para criação do post"
+  },
+  "@contentLabel": {
+    "description": "Etiqueta para o campo de conteúdo"
   }
 }
 

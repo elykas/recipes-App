@@ -144,5 +144,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gallery => 'Gallery';
 
   @override
+  String get contentLabel => 'Content';
+
+  @override
   String get createPostSuccess => 'Post created successfully';
 }

@@ -147,5 +147,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get gallery => 'Galeria';
 
   @override
+  String get contentLabel => 'Conteúdo';
+
+  @override
   String get createPostSuccess => 'Post criado com sucesso';
 }

@@ -88,6 +88,8 @@
   "gallery": "Galería",
 
   "createPostSuccess": "Post creado con exito",
+
+  "contentLabel": "Contenido",
   
   "@appTitle": {
     "description": "El título de la aplicación"
@@ -223,5 +225,8 @@
   },
   "@createPostSuccess": {
     "description": "Mensaje de exito para creación de post"
+  },
+  "@contentLabel": {
+    "description": "Etiqueta para el campo de contenido"
   }
 }
