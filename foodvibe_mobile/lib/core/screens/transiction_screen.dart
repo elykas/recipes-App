@@ -46,12 +46,6 @@ class _TransictionScreenState extends ConsumerState<TransictionScreen>
 
   Future<void> _loadUserAndFeed() async {
     try {
-      final authState = ref.read(authControllerProvider);
-
-      if (authState.user == null) {
-        throw Exception('No user');
-      }
-
       await ref.read(authControllerProvider.notifier).loadUser();
 
       await ref.read(feedControllerProvider.notifier).fetchFeed();

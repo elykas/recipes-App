@@ -91,30 +91,37 @@ class AuthRepository {
 
   Future<User?> getCurrentUser() async {
     final uri = dotenv.env['GRAPHQL_URI'] ?? '';
+    final limit = 5;
 
-    const query = r'''
-      query GetUser {
-        getUserProfileByPublicId(publicId: "me") {
-          publicId
-          username
-          fullName
-          imageUrl
-          email
-          bio
-          headLine
-          locale
-          isAdmin
-          posts {
-            publicId
-            likes
-            recipePublicId
-            imageUrl
-          }
-        }
+    final query = '''
+      query GetUser(\$limit: Int) {
+      getUserProfileByPublicId(limit: \$limit) {
+      publicId
+      username
+      fullName
+      imageUrl
+      email
+      bio
+      headLine
+      locale
+      isAdmin
+      posts {
+        publicId
+        likes
+        recipePublicId
+        imageUrl
       }
-    ''';
+    }
+  }
+''';
 
-    final response = await _dio.post(uri, data: {'query': query});
+    final response = await _dio.post(
+      uri,
+      data: {
+        'query': query,
+        'variables': {'limit': limit},
+      },
+    );
 
     final data = response.data['data']['getUserProfileByPublicId'];
 

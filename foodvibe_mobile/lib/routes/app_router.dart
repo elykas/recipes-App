@@ -1,3 +1,4 @@
+import 'package:foodvibe_mobile/core/screens/base_screen.dart';
 import 'package:foodvibe_mobile/core/screens/transiction_screen.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/complete_register_screen.dart';
@@ -21,6 +22,10 @@ class AppRoutes {
   static const String feed = '/feed';
   static const String loginCallback = '/login-callback';
   static const String transiction = '/transition';
+  static const String recipes = '/recipes';
+  static const String createPost = '/create-post';
+  static const String profile = '/profile';
+  static const String search = '/search';
 
 }
 
@@ -78,7 +83,19 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.feed,
-      builder: (context, state) => const FeedScreen(),
+      builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 0),
+    ),
+    GoRoute(path: AppRoutes.recipes,
+    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 1),
+    ),
+    GoRoute(path: AppRoutes.createPost,
+    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 2),
+    ),
+    GoRoute(path: AppRoutes.profile,
+    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 3),
+    ),
+    GoRoute(path: AppRoutes.search,
+    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 4),
     ),
   ],
 );

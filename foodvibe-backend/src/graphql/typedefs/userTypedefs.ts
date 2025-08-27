@@ -22,7 +22,7 @@ export const userTypeDefs = gql`
     }
 
     type Query {
-        getUserProfileByPublicId(publicId: String!): User
+        getUserProfileByPublicId(limit: Int): User
         
     }
 `;

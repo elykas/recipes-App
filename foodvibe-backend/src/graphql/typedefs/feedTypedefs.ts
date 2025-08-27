@@ -23,6 +23,6 @@ type Post {
 }
 
   type Query {
-    getFeed(limit: Int): [Post!]!
+    getFeed(limit: Int, cursor: String, excludeIds: [String!]): [Post!]!
   }
 `;
