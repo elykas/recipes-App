@@ -9,14 +9,14 @@ import 'package:foodvibe_mobile/l10n/app_localizations.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 
-class CreatePostPage extends ConsumerStatefulWidget {
-  const CreatePostPage({super.key});
+class CreatePostScreen extends ConsumerStatefulWidget {
+  const CreatePostScreen({super.key});
 
   @override
-  ConsumerState<CreatePostPage> createState() => _CreatePostPageState();
+  ConsumerState<CreatePostScreen> createState() => _CreatePostPageState();
 }
 
-class _CreatePostPageState extends ConsumerState<CreatePostPage> {
+class _CreatePostPageState extends ConsumerState<CreatePostScreen> {
   String? imagePath;
   final contentController = TextEditingController();
   final recipeIdController = TextEditingController();
@@ -74,10 +74,7 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
             const SizedBox(height: 16),
             PostAutoCompleteField(controller: tagsController),
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _submitPost,
-              child: Text(loc.submitPost),
-            ),
+            ElevatedButton(onPressed: _submitPost, child: Text(loc.submitPost)),
           ],
         ),
       ),

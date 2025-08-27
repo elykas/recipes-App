@@ -10,6 +10,7 @@ import '../features/auth/presentation/email_sent_screen.dart';
 import '../features/auth/presentation/login_page.dart';
 import 'package:foodvibe_mobile/core/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:foodvibe_mobile/features/post/presentation/create_post_screen.dart';
 // שים לב להוספה של שאר הדפים גם...
 
 class AppRoutes {
@@ -26,17 +27,18 @@ class AppRoutes {
   static const String createPost = '/create-post';
   static const String profile = '/profile';
   static const String search = '/search';
-
 }
 
 final appRouter = GoRouter(
   initialLocation: AppRoutes.splash,
   routes: [
-    GoRoute(path: AppRoutes.splash, 
+    GoRoute(
+      path: AppRoutes.splash,
       builder: (context, state) => const SplashScreen(),
     ),
-    GoRoute(path: AppRoutes.onboarding, 
-    builder: (context, state) => const OnboardingScreen(),
+    GoRoute(
+      path: AppRoutes.onboarding,
+      builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
       path: AppRoutes.login,
@@ -46,19 +48,17 @@ final appRouter = GoRouter(
           key: state.pageKey,
           child: LoginPage(errorMessage: errorMessage),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final offsetAnimation = Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(
-              CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              ),
-            );
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
+            final offsetAnimation =
+                Tween<Offset>(
+                  begin: const Offset(0, 1),
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  ),
+                );
+            return SlideTransition(position: offsetAnimation, child: child);
           },
         );
       },
@@ -78,24 +78,34 @@ final appRouter = GoRouter(
         return RegisterScreen(response: data);
       },
     ),
-    GoRoute(path: AppRoutes.transiction,
-    builder: (context, state) => const TransictionScreen()
+    GoRoute(
+      path: AppRoutes.transiction,
+      builder: (context, state) => const TransictionScreen(),
     ),
     GoRoute(
       path: AppRoutes.feed,
-      builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 0),
+      builder: (context, state) =>
+          const BaseScreen(child: FeedScreen(), currentIndex: 0),
     ),
-    GoRoute(path: AppRoutes.recipes,
-    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 1),
+    GoRoute(
+      path: AppRoutes.recipes,
+      builder: (context, state) =>
+          const BaseScreen(child: FeedScreen(), currentIndex: 1),
     ),
-    GoRoute(path: AppRoutes.createPost,
-    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 2),
+    GoRoute(
+      path: AppRoutes.createPost,
+      builder: (context, state) =>
+          const BaseScreen(child: CreatePostScreen(), currentIndex: 2),
     ),
-    GoRoute(path: AppRoutes.profile,
-    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 3),
+    GoRoute(
+      path: AppRoutes.profile,
+      builder: (context, state) =>
+          const BaseScreen(child: FeedScreen(), currentIndex: 3),
     ),
-    GoRoute(path: AppRoutes.search,
-    builder: (context, state) => const BaseScreen(child: FeedScreen(), currentIndex: 4),
+    GoRoute(
+      path: AppRoutes.search,
+      builder: (context, state) =>
+          const BaseScreen(child: FeedScreen(), currentIndex: 4),
     ),
   ],
 );
