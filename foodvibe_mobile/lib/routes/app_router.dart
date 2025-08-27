@@ -1,3 +1,4 @@
+import 'package:foodvibe_mobile/core/screens/transiction_screen.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/complete_register_screen.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen.dart';
@@ -19,6 +20,7 @@ class AppRoutes {
   static const String verifyToken = '/verify-token';
   static const String feed = '/feed';
   static const String loginCallback = '/login-callback';
+  static const String transiction = '/transition';
 
 }
 
@@ -70,6 +72,9 @@ final appRouter = GoRouter(
         final data = state.extra as VerifyTokenResponse;
         return RegisterScreen(response: data);
       },
+    ),
+    GoRoute(path: AppRoutes.transiction,
+    builder: (context, state) => const TransictionScreen()
     ),
     GoRoute(
       path: AppRoutes.feed,

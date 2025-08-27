@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
 import '../application/feed_controller.dart';
 
@@ -37,8 +38,16 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     });
 
     try {
-      await ref.read(feedControllerProvider.notifier).fetchFeed();
-    
+      final authState = ref.read(authControllerProvider);
+      if (authState.user == null) {
+        _error = 'User not logged in';
+        return;
+      }
+
+      final feed = ref.read(feedControllerProvider);
+      if (feed.isEmpty) {
+        await ref.read(feedControllerProvider.notifier).fetchFeed();
+      }
     } catch (e) {
       _error = e.toString();
     } finally {

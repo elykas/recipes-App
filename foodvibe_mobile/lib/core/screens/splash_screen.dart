@@ -33,7 +33,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
-    // התחלה מ־3/4 המסך עד האמצע (y = 0 זה מרכז, y חיובי זה למטה)
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.6), // 0.5 = בערך שלושת רבעי המסך למטה
       end: Offset.zero, // מרכז המסך

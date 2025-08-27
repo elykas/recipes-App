@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/features/auth/application/auth_state.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../routes/app_router.dart';
 import '../application/auth_controller.dart';
 
@@ -13,7 +13,6 @@ class VerifyTokenPage extends ConsumerStatefulWidget {
 }
 
 class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
-  
   @override
   void initState() {
     super.initState();
@@ -30,10 +29,22 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
     }
 
     try {
-      final response = await ref.read(authControllerProvider.notifier).verifyToken(token);
+      final response = await ref
+          .read(authControllerProvider.notifier)
+          .verifyToken(token);
 
       if (response.exist) {
-        context.go(AppRoutes.feed);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful!'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+
+          await Future.delayed(const Duration(seconds: 1));
+          context.go(AppRoutes.transiction);
+        }
       } else {
         context.go(AppRoutes.completeRegister, extra: response);
       }
@@ -44,8 +55,6 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

@@ -65,7 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(loc.registerSuccess)));
-      context.go(AppRoutes.feed);
+      context.go(AppRoutes.transiction);
     } catch (e) {
       ScaffoldMessenger.of(
         context,
