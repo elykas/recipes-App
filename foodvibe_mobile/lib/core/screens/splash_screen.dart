@@ -57,31 +57,32 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _init();
   }
 
-  Future<void> _init() async {
-    try {
-      await ref.read(authControllerProvider.notifier).loadUser();
-
-      final authState = ref.read(authControllerProvider);
-
-      if (authState.user != null) {
-        ref.read(feedControllerProvider.notifier).fetchFeed();
-      }
-    } catch (e, st) {
-      print('Error loading user or feed: $e\n$st');
-    }
-
-    await Future.delayed(const Duration(seconds: 3));
-
-    if (!mounted) return;
+Future<void> _init() async {
+  try {
+    await ref.read(authControllerProvider.notifier).loadUser();
 
     final authState = ref.read(authControllerProvider);
 
     if (authState.user != null) {
+      
+      await ref.read(feedControllerProvider.notifier).fetchFeed();
+      
+      await Future.delayed(const Duration(seconds: 3));
+
+      if (!mounted) return;
       context.go(AppRoutes.feed);
     } else {
+      await Future.delayed(const Duration(seconds: 3));
+      if (!mounted) return;
       context.go(AppRoutes.login);
     }
+  } catch (e, st) {
+    print('Error loading user or feed: $e\n$st');
+    if (!mounted) return;
+    context.go(AppRoutes.login);
   }
+}
+
 
   @override
   void dispose() {

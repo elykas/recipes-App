@@ -87,6 +87,6 @@ class AuthController extends StateNotifier<local.AuthState> {
 
   Future<void> loadUser() async {
     final user = await _authRepository.getCurrentUser();
-    state = local.AuthState(user: user); // null אם לא קיים
+    state = local.AuthState(user: user); 
   }
 }
