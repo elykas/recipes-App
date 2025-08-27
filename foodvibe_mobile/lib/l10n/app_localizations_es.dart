@@ -132,4 +132,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get close => 'Cerrar';
+
+  @override
+  String get createPostLabel => 'Crear post';
+
+  @override
+  String get submitPost => 'Publicar post';
+
+  @override
+  String get createPostFailed =>
+      'La creación del post ha fallado. Inténtalo de nuevo.';
+
+  @override
+  String get camera => 'Cámera';
+
+  @override
+  String get gallery => 'Galería';
+
+  @override
+  String get createPostSuccess => 'Post creado con exito';
 }

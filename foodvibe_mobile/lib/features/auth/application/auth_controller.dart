@@ -6,7 +6,7 @@ import '../data/auth_repository.dart';
 
 // PROVIDERS
 final authControllerProvider = StateNotifierProvider<AuthController, local.AuthState>((
-  ref,
+  ref
 ) {
   final repo = ref.read(authRepositoryProvider);
   return AuthController(repo);

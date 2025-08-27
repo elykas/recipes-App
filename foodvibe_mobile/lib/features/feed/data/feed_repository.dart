@@ -58,7 +58,7 @@ class FeedRepository {
     final feedData = response.data['data']['getFeed'];
 
     final posts = (feedData['data'] as List).map((json) {
-      final post = Post.fromJson(json);
+      final post = FeedPost.fromJson(json);
 
       final imageUrl = post.imageUrl != null
           ? SupabaseManager().getPublicImageUrl(

@@ -77,6 +77,18 @@
   
   "close": "Fechar",
 
+  "createPostLabel": "Criar Post",
+  
+  "submitPost": "Enviar Post",
+  
+  "createPostFailed": "Falha ao criar post. Tente novamente.",
+
+  "camera": "Camera",
+
+  "gallery": "Galeria",
+
+  "createPostSuccess": "Post criado com sucesso",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -193,5 +205,24 @@
   },
   "@close": {
     "description": "Texto para fechar o modal de termos e política"
+  },
+  "@createPostLabel": {
+    "description": "Etiqueta para o campo de criar post"
+  },
+  "@submitPost": {
+    "description": "Texto do botão de criar post"
+  },
+  "@createPostFailed": {
+    "description": "Mensagem de erro para falha na criação do post"
+  },
+  "@camera": {
+    "description": "Texto para o botão da câmera"
+  },
+  "@gallery": {
+    "description": "Texto para o botão da galeria"
+  },
+  "@createPostSuccess": {
+    "description": "Mensagem de sucesso para criação do post"
   }
 }
+

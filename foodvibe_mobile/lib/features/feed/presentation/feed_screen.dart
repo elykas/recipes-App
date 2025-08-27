@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
+
 import '../application/feed_controller.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
@@ -129,7 +130,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
 }
 
 class FeedItemWidget extends StatelessWidget {
-  final Post post;
+  final FeedPost post;
 
   const FeedItemWidget({super.key, required this.post});
 
@@ -146,9 +147,7 @@ class FeedItemWidget extends StatelessWidget {
         ListTile(
           // משתמשים בבדיקה מפורשת
           leading: (author != null && author.imageUrl != null)
-              ? CircleAvatar(
-                  backgroundImage: NetworkImage(author.imageUrl!),
-                )
+              ? CircleAvatar(backgroundImage: NetworkImage(author.imageUrl!))
               : const CircleAvatar(child: Icon(Icons.person)),
           title: Text(
             // משתמשים באופרטור ?? כדי לספק ערך חלופי אם הערך המקורי הוא null

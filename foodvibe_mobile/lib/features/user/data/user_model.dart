@@ -13,7 +13,7 @@ class User {
   final String? headLine;
   final String? locale;
   final bool isAdmin;
-  final List<Post>? posts;
+  final List<FeedPost>? posts;
 
   User.Profile({
     required this.publicId,
@@ -30,7 +30,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     final posts = (json['posts'] as List<dynamic>?)
-        ?.map((p) => Post.fromJson(p as Map<String, dynamic>))
+        ?.map((p) => FeedPost.fromJson(p as Map<String, dynamic>))
         .toList();
 
     final imageUrl = json['imageUrl'] != null

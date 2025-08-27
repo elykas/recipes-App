@@ -76,7 +76,18 @@
   "termsAndPolicyText": "Términos de servicio y Política de privacidad",
 
   "close": "Cerrar",
+
+  "createPostLabel": "Crear post",
   
+  "submitPost": "Publicar post",
+  
+  "createPostFailed": "La creación del post ha fallado. Inténtalo de nuevo.",
+  
+  "camera": "Cámera",
+  
+  "gallery": "Galería",
+
+  "createPostSuccess": "Post creado con exito",
   
   "@appTitle": {
     "description": "El título de la aplicación"
@@ -194,5 +205,23 @@
   },
   "@close": {
     "description": "Texto para cerrar el modal de términos y política"
+  },
+  "@createPostLabel": {
+    "description": "Etiqueta para el campo de crear post"
+  },
+  "@submitPost": {
+    "description": "Texto del botón de crear post"
+  },
+  "@createPostFailed": {
+    "description": "Mensaje de error para falla de creación de post"
+  },
+  "@camera": {
+    "description": "Texto para la cámara button"
+  },
+  "@gallery": {
+    "description": "Texto para la galería button"
+  },
+  "@createPostSuccess": {
+    "description": "Mensaje de exito para creación de post"
   }
 }

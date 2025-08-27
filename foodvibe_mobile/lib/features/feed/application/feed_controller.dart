@@ -1,16 +1,20 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/feed_repository.dart';
+
 import '../data/feed_model.dart';
+import '../data/feed_repository.dart';
 
 final feedControllerProvider =
-    StateNotifierProvider<FeedController, List<Post>>(
-  (ref) => FeedController(ref.read(feedRepositoryProvider)),
+    StateNotifierProvider<FeedController, List<FeedPost>>(
+      (ref) => FeedController(ref.read(feedRepositoryProvider)),
+    );
+
+final feedRepositoryProvider = Provider<FeedRepository>(
+  (ref) => FeedRepository(),
 );
 
-final feedRepositoryProvider = Provider<FeedRepository>((ref) => FeedRepository());
-
-class FeedController extends StateNotifier<List<Post>> {
+class FeedController extends StateNotifier<List<FeedPost>> {
   final FeedRepository _feedRepository;
 
   String? _cursor;
@@ -38,20 +42,20 @@ class FeedController extends StateNotifier<List<Post>> {
   }
 
   Future<void> fetchMore({int limit = 20}) async {
-  if (_debounce?.isActive ?? false) _debounce!.cancel();
-   final completer = Completer<void>();
-  
-  _debounce = Timer(const Duration(milliseconds: 300), () async {
-    try {
-      await fetchFeed(limit: limit);
-      completer.complete();
-    } catch (e) {
-      completer.completeError(e);
-    }
-  });
-  
-  return completer.future;
-}
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    final completer = Completer<void>();
+
+    _debounce = Timer(const Duration(milliseconds: 300), () async {
+      try {
+        await fetchFeed(limit: limit);
+        completer.complete();
+      } catch (e) {
+        completer.completeError(e);
+      }
+    });
+
+    return completer.future;
+  }
 
   void reset() {
     _cursor = null;

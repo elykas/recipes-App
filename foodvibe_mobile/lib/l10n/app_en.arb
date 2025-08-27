@@ -77,6 +77,18 @@
   
   "close": "Close",
 
+  "createPostLabel": "Create Post",
+
+  "submitPost": "Submit Post",
+
+  "createPostFailed": "Post creation failed. Please try again.",
+
+  "camera": "Camera",
+
+  "gallery": "Gallery",
+
+  "createPostSuccess": "Post created successfully",
+
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -193,5 +205,23 @@
   },
   "@close": {
     "description": "Text to close the terms and policy modal"
+  },
+  "@createPostLabel": {
+    "description": "Create post label"
+  },
+  "@submitPost": {
+    "description": "Submit post button text"
+  },
+  "@createPostFailed": {
+    "description": "Error message for failed post creation"
+  },
+  "@camera": {
+    "description": "Camera button text"
+  },
+  "@gallery": {
+    "description": "Gallery button text"
+  },
+  "@createPostSuccess": {
+    "description": "Success message for successful post creation"
   }
 }

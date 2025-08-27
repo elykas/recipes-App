@@ -50,7 +50,7 @@ class PostRecipe {
   }
 }
 
-class Post {
+class FeedPost {
   final String publicId;
   final String? imageUrl;
   final int? likeCount;
@@ -58,7 +58,7 @@ class Post {
   final PostAuthor? author;
   final PostRecipe? recipe;
 
-  Post.Feed({
+  FeedPost.Feed({
     required this.publicId,
     this.imageUrl,
     this.likeCount,
@@ -67,8 +67,8 @@ class Post {
     this.recipe,
   });
 
-  factory Post.fromJson(Map<String, dynamic> json) {
-    return Post.Feed(
+  factory FeedPost.fromJson(Map<String, dynamic> json) {
+    return FeedPost.Feed(
       publicId: json['publicId'],
       imageUrl: json['imageUrl'],
       likeCount: json['likeCount'],
@@ -82,7 +82,7 @@ class Post {
     );
   }
 
-  Post copyWith({
+  FeedPost copyWith({
     String? publicId,
     String? imageUrl,
     int? likeCount,
@@ -90,7 +90,7 @@ class Post {
     PostAuthor? author,
     PostRecipe? recipe,
   }) {
-    return Post.Feed(
+    return FeedPost.Feed(
       publicId: publicId ?? this.publicId,
       imageUrl: imageUrl ?? this.imageUrl,
       likeCount: likeCount ?? this.likeCount,
@@ -102,7 +102,7 @@ class Post {
 }
 
 class FeedResponse {
-  final List<Post> posts;
+  final List<FeedPost> posts;
   final String? cursor;
   final List<String> excludeIds;
 

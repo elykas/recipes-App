@@ -10,6 +10,12 @@
 		  <key>CFBundleURLName</key>
     	<string>com.example.foodvibe_mobile</string>
 		<key>CFBundleURLSchemes</key>
+		<key>NSCameraUsageDescription</key>
+		<string>We need access to the camera to take pictures for posts.</string>
+
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We need access to your photo library to select images for posts.</string>
+
 		<array>
 		<!-- TODO Replace this value: -->
 		<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
@@ -21,7 +27,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Foodvibe Mobile</string>
+	<string>Foodvibe</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,7 +35,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>foodvibe_mobile</string>
+	<string>foodvibe</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

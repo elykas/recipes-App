@@ -327,6 +327,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// Create post label
+  ///
+  /// In en, this message translates to:
+  /// **'Create Post'**
+  String get createPostLabel;
+
+  /// Submit post button text
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Post'**
+  String get submitPost;
+
+  /// Error message for failed post creation
+  ///
+  /// In en, this message translates to:
+  /// **'Post creation failed. Please try again.'**
+  String get createPostFailed;
+
+  /// Camera button text
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// Gallery button text
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// Success message for successful post creation
+  ///
+  /// In en, this message translates to:
+  /// **'Post created successfully'**
+  String get createPostSuccess;
 }
 
 class _AppLocalizationsDelegate

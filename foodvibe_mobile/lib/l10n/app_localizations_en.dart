@@ -127,4 +127,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get createPostLabel => 'Create Post';
+
+  @override
+  String get submitPost => 'Submit Post';
+
+  @override
+  String get createPostFailed => 'Post creation failed. Please try again.';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get createPostSuccess => 'Post created successfully';
 }

@@ -130,4 +130,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get close => 'Fechar';
+
+  @override
+  String get createPostLabel => 'Criar Post';
+
+  @override
+  String get submitPost => 'Enviar Post';
+
+  @override
+  String get createPostFailed => 'Falha ao criar post. Tente novamente.';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Galeria';
+
+  @override
+  String get createPostSuccess => 'Post criado com sucesso';
 }
