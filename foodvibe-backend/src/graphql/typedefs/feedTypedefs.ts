@@ -22,7 +22,15 @@ type Post {
   recipe: Recipe
 }
 
+type FeedResponse {
+  data: [Post!]
+  cursor: String
+  excludeIds: [String!]
+  success: Boolean!
+  message: String
+}
+
   type Query {
-    getFeed(limit: Int, cursor: String, excludeIds: [String!]): [Post!]!
+    getFeed(limit: Int, cursor: String, excludeIds: [String!]): FeedResponse!
   }
 `;

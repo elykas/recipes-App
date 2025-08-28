@@ -49,6 +49,7 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
         context.go(AppRoutes.completeRegister, extra: response);
       }
     } catch (e) {
+      print('Error verifying token: $e');
       context.go(AppRoutes.login, extra: 'loginFailed');
     }
   }

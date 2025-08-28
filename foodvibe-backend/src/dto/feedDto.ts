@@ -14,3 +14,4 @@ export interface FeedDto {
         publicId: string | null;
     };
 }
+

@@ -38,7 +38,7 @@ export const feedResolvers = {
         };
       } catch (err: any) {
         return {
-          data: null,
+          data: [],
           cursor: null,
           excludeIds: [],
           success: false,

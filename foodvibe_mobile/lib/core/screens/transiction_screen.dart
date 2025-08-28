@@ -63,9 +63,9 @@ class _TransictionScreenState extends ConsumerState<TransictionScreen>
       if (!mounted) return;
 
       context.go(AppRoutes.feed);
-    } catch (_) {
+    } catch (e) {
       await Future.delayed(splashDuration);
-
+      print('Error loading user or feed: $e');
       if (!mounted) return;
       context.go(AppRoutes.login);
     }

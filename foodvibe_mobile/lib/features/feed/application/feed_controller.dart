@@ -24,7 +24,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
 
   FeedController(this._feedRepository) : super([]);
 
-  Future<void> fetchFeed({int limit = 20}) async {
+  Future<void> fetchFeed({int limit = 5}) async {
     if (_isFetching) return;
     _isFetching = true;
 
@@ -41,7 +41,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
     _isFetching = false;
   }
 
-  Future<void> fetchMore({int limit = 20}) async {
+  Future<void> fetchMore({int limit = 5}) async {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     final completer = Completer<void>();
 
