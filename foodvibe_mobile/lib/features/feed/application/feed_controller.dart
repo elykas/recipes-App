@@ -1,18 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../data/feed_model.dart';
 import '../data/feed_repository.dart';
+import '../providers/feed_providers.dart';
 
 final feedControllerProvider =
-    StateNotifierProvider<FeedController, List<FeedPost>>(
-      (ref) => FeedController(ref.read(feedRepositoryProvider)),
-    );
-
-final feedRepositoryProvider = Provider<FeedRepository>(
-  (ref) => FeedRepository(),
-);
+    StateNotifierProvider<FeedController, List<FeedPost>>((ref) {
+      final repo = ref.watch(feedRepositoryProvider);
+      return FeedController(repo);
+    });
 
 class FeedController extends StateNotifier<List<FeedPost>> {
   final FeedRepository _feedRepository;

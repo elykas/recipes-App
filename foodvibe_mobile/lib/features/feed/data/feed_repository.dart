@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodvibe_mobile/core/constants/app_constans.dart';
-import 'package:foodvibe_mobile/core/network/dio_client.dart';
 import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
 import 'package:foodvibe_mobile/services/supabase_service.dart';
 
 class FeedRepository {
   final Dio _dio;
 
-  FeedRepository([Dio? dio]) : _dio = dio ?? DioClient().dio;
+  FeedRepository(this._dio);
 
   /// מחזיר רשימת פוסטים + cursor
   Future<FeedResponse> getFeed({

@@ -3,17 +3,20 @@ import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import './auth_state.dart' as local;
 import '../data/auth_repository.dart';
+import 'package:foodvibe_mobile/providers/dio_provider.dart';
+
+
 
 // PROVIDERS
-final authControllerProvider = StateNotifierProvider<AuthController, local.AuthState>((
-  ref
-) {
-  final repo = ref.read(authRepositoryProvider);
-  return AuthController(repo);
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final dio = ref.watch(dioProvider); // מקבל את ה-Dio
+  return AuthRepository(dio: dio);
 });
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository();
+final authControllerProvider =
+    StateNotifierProvider<AuthController, local.AuthState>((ref) {
+  final repo = ref.watch(authRepositoryProvider);
+  return AuthController(repo);
 });
 
 // AUTH CONTROLLER

@@ -13,9 +13,9 @@ class AuthRepository {
   final SupabaseClient _client;
   final Dio _dio;
 
-  AuthRepository({SupabaseClient? client, Dio? dio})
-    : _client = client ?? SupabaseManager.client,
-      _dio = dio ?? DioClient().dio;
+  AuthRepository({SupabaseClient? client, required Dio dio})
+      : _client = client ?? SupabaseManager.client,
+        _dio = dio;
 
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];

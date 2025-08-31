@@ -1,27 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/features/post/data/post_model.dart';
 import 'package:foodvibe_mobile/features/post/data/post_repository.dart';
+import 'package:foodvibe_mobile/features/post/data/post_model.dart';
+import 'package:foodvibe_mobile/providers/dio_provider.dart';
 
-/// Provider ל-Repository
 final postRepositoryProvider = Provider<PostRepository>((ref) {
-  return PostRepository();
+  final dio = ref.watch(dioProvider);
+  return PostRepository(dio);
 });
 
-/// Provider ל-Controller
-final postControllerProvider =
-    StateNotifierProvider<PostController, List<CreatePostResponse>>((ref) {
-  final repo = ref.read(postRepositoryProvider);
-  return PostController(repo);
-});
+final postControllerProvider = StateNotifierProvider<PostController, AsyncValue<List<CreatePostResponse>>>(
+  (ref) {
+    final repo = ref.watch(postRepositoryProvider); // עכשיו זה PostRepository
+    return PostController(repo);
+  },
+);
 
-/// Controller שמנהל את רשימת הפוסטים
-class PostController extends StateNotifier<List<CreatePostResponse>> {
+class PostController extends StateNotifier<AsyncValue<List<CreatePostResponse>>> {
   final PostRepository _postRepository;
 
-  PostController(this._postRepository) : super([]);
+  PostController(this._postRepository) : super(const AsyncValue.data([]));
 
   Future<void> createPost(Post postData) async {
-      final postId = await _postRepository.createPost(postData);
-      state = [...state, postId]; 
+    state = const AsyncValue.loading();
+    try {
+      final post = await _postRepository.createPost(postData);
+      state = AsyncValue.data([...state.value ?? [], post]);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
   }
 }
+
