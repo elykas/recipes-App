@@ -1,38 +1,45 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:io';
 
 class DioClient {
-  static final DioClient _instance = DioClient._internal();
-
+  static DioClient? _instance;
   late final Dio dio;
-  late final CookieJar cookieJar;
+  late final PersistCookieJar cookieJar;
 
-   factory DioClient() => _instance;
+  DioClient._internal(this.dio, this.cookieJar);
 
-  DioClient._internal() {
-    dio = Dio(
+  /// אתחול אסינכרוני (כי צריך לחכות ל־path_provider)
+  static Future<DioClient> getInstance() async {
+    if (_instance != null) return _instance!;
+
+    // תיקייה לשמירת הקוקיז
+    final dir = await getApplicationDocumentsDirectory();
+    final cookieJar = PersistCookieJar(
+      storage: FileStorage('${dir.path}/.cookies/'),
+    );
+
+    final dio = Dio(
       BaseOptions(
         baseUrl: dotenv.env['BASE_URL'] ?? 'http://localhost:8888/api',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       ),
     );
-    cookieJar = CookieJar();
+
+    // הוספת אינטרספטורים
     dio.interceptors.add(CookieManager(cookieJar));
     dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
-
-      dio.interceptors.add(
+    dio.interceptors.add(
       InterceptorsWrapper(
         onError: (e, handler) async {
-          if (e.response?.statusCode == 401 && !e.requestOptions.path.contains('refresh')) {
+          if (e.response?.statusCode == 401 &&
+              !e.requestOptions.path.contains('refresh')) {
             try {
-              final refreshResponse = await dio.post('/auth/refresh-token');
-
+              await dio.post('/auth/refresh-token');
               final opts = e.requestOptions;
               final cloneReq = await dio.fetch(opts);
               return handler.resolve(cloneReq);
@@ -40,10 +47,12 @@ class DioClient {
               return handler.reject(e);
             }
           }
-
           return handler.next(e);
         },
       ),
     );
+
+    _instance = DioClient._internal(dio, cookieJar);
+    return _instance!;
   }
 }

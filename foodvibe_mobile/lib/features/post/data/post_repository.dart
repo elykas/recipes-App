@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:foodvibe_mobile/core/network/dio_client.dart';
-import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
 import 'package:foodvibe_mobile/features/post/data/post_model.dart';
 
-class PostRepository{
+class PostRepository {
   final Dio _dio;
-  
-  PostRepository({Dio? dio}) : _dio = dio ?? DioClient().dio;
+
+  PostRepository(this._dio);
 
   Future<CreatePostResponse> createPost(Post post) async {
     final path = '/posts';
@@ -19,7 +18,6 @@ class PostRepository{
 
     final response = await _dio.post(path, data: formData);
 
-    return CreatePostResponse.fromJson(response.data.data);
+    return CreatePostResponse.fromJson(response.data['data']);
   }
 }
-
