@@ -50,7 +50,7 @@ class User {
   Future<String?> getSignedImageUrl() async {
     if (imagePath == null) return null;
     return SupabaseManager().getSignedImageUrl(
-      "${AppConstants.bucketName}/${StorageFolders.user}",
+      "${AppConstants.bucketName}",
       imagePath!,
       AppConstants.sevenDays,
     );
@@ -62,23 +62,23 @@ class User {
     return Future.wait(posts!.map((post) async {
       final signedPostImage = post.imageUrl != null
           ? await SupabaseManager().getSignedImageUrl(
-              "${AppConstants.bucketName}/${StorageFolders.post}",
+              "${AppConstants.bucketName}",
               post.imageUrl!,
               AppConstants.sevenDays,
             )
           : null;
 
-      final signedAuthorImage = post.author?.imageUrl != null
+      final signedAuthorImage = post.author.imageUrl != null
           ? await SupabaseManager().getSignedImageUrl(
-              "${AppConstants.bucketName}/${StorageFolders.user}",
-              post.author!.imageUrl!,
+              "${AppConstants.bucketName}",
+              post.author.imageUrl!,
               AppConstants.sevenDays,
             )
           : null;
 
       return post.copyWith(
         imageUrl: signedPostImage,
-        author: post.author?.copyWith(imageUrl: signedAuthorImage),
+        author: post.author.copyWith(imageUrl: signedAuthorImage),
       );
     }));
   }

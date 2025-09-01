@@ -55,7 +55,7 @@ class FeedPost {
   final String? imageUrl;
   final int? likeCount;
   final String? content;
-  final PostAuthor? author;
+  final PostAuthor author;
   final PostRecipe? recipe;
 
   FeedPost.Feed({
@@ -63,7 +63,7 @@ class FeedPost {
     this.imageUrl,
     this.likeCount,
     this.content,
-    this.author,
+    required this.author,
     this.recipe,
   });
 
@@ -73,9 +73,15 @@ class FeedPost {
       imageUrl: json['imageUrl'],
       likeCount: json['likeCount'],
       content: json['content'],
-      author: json['author'] != null
-          ? PostAuthor.fromJson(json['author'])
-          : null,
+      author: json['author'] != null 
+        ? PostAuthor.fromJson(json['author'])
+        : PostAuthor(
+            publicId: 'unknown',   // fallback values
+            username: 'unknown',
+            fullName: 'Unknown',
+            imageUrl: null,
+            headLine: null,
+          ),
       recipe: json['recipe'] != null
           ? PostRecipe.fromJson(json['recipe'])
           : null,

@@ -65,23 +65,23 @@ class FeedRepository {
 
         final imageUrl = post.imageUrl != null
             ? await SupabaseManager().getSignedImageUrl(
-                "${AppConstants.bucketName}/${StorageFolders.post}",
+                AppConstants.bucketName,
                 post.imageUrl!,
                 AppConstants.sevenDays,
               )
             : null;
 
-        final authorImageUrl = post.author?.imageUrl != null
+        final authorImageUrl = post.author.imageUrl != null
             ? await SupabaseManager().getSignedImageUrl(
-                "${AppConstants.bucketName}/${StorageFolders.user}",
-                post.author!.imageUrl!,
+                AppConstants.bucketName,
+                post.author.imageUrl!,
                 AppConstants.sevenDays,
               )
             : null;
 
         return post.copyWith(
           imageUrl: imageUrl,
-          author: post.author?.copyWith(imageUrl: authorImageUrl),
+          author: post.author.copyWith(imageUrl: authorImageUrl),
         );
       }).toList(),
     );
