@@ -58,37 +58,40 @@ class FeedRepository {
 
     final feedData = response.data['data']['getFeed'];
 
-
     final postsJson = feedData['data'] as List<dynamic>? ?? [];
-    final posts = postsJson.map((json) {
-      final post = FeedPost.fromJson(json);
+    final posts = await Future.wait(
+      postsJson.map((json) async {
+        final post = FeedPost.fromJson(json);
 
-      final imageUrl = post.imageUrl != null
-          ? SupabaseManager().getSignedImageUrl(
-              "${AppConstants.bucketName}/${StorageFolders.post}",
-              post.imageUrl!,
-              AppConstants.sevenDays,
-            )
-          : null;
+        final imageUrl = post.imageUrl != null
+            ? await SupabaseManager().getSignedImageUrl(
+                "${AppConstants.bucketName}/${StorageFolders.post}",
+                post.imageUrl!,
+                AppConstants.sevenDays,
+              )
+            : null;
 
-      final authorImageUrl = post.author?.imageUrl != null
-          ? SupabaseManager().getSignedImageUrl(
-              "${AppConstants.bucketName}/${StorageFolders.user}",
-              post.author!.imageUrl!,
-              AppConstants.sevenDays,
-            )
-          : null;
+        final authorImageUrl = post.author?.imageUrl != null
+            ? await SupabaseManager().getSignedImageUrl(
+                "${AppConstants.bucketName}/${StorageFolders.user}",
+                post.author!.imageUrl!,
+                AppConstants.sevenDays,
+              )
+            : null;
 
-      return post.copyWith(
-        imageUrl: imageUrl,
-        author: post.author?.copyWith(imageUrl: authorImageUrl),
-      );
-    }).toList();
+        return post.copyWith(
+          imageUrl: imageUrl,
+          author: post.author?.copyWith(imageUrl: authorImageUrl),
+        );
+      }).toList(),
+    );
 
     final nextCursor = feedData['cursor'];
-    final updatedExcludeIds = (feedData['excludeIds'] as List<dynamic>?)
-    ?.map((e) => e.toString())
-    .toList() ?? [];
+    final updatedExcludeIds =
+        (feedData['excludeIds'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
 
     return FeedResponse(
       posts: posts,
