@@ -57,37 +57,30 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _init();
   }
 
-Future<void> _init() async {
-  try {
-    await ref.read(dioClientProvider.future);
-    await ref.read(authControllerProvider.notifier).loadUser();
-    if (!mounted) return;
+  Future<void> _init() async {
+    try {
+      await ref.read(dioClientProvider.future);
+      await ref.read(authControllerProvider.notifier).loadUser();
+      if (!mounted) return;
 
-    final authState = ref.read(authControllerProvider);
+      final authState = ref.read(authControllerProvider);
 
-    await Future.delayed(const Duration(seconds: 3)); // המתנה לסplash
+      await Future.delayed(const Duration(seconds: 3)); // המתנה לסplash
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    if (authState.user != null) {
-      await ref.read(feedControllerProvider.notifier).fetchFeed();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (authState.user != null) {
+        await ref.read(feedControllerProvider.notifier).fetchFeed();
         context.go(AppRoutes.feed);
-      });
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      } else {
         context.go(AppRoutes.login);
-      });
-    }
-  } catch (e, st) {
-    print('Error loading user or feed: $e\n$st');
-    if (!mounted) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+      }
+    } catch (e, st) {
+      print('Error loading user or feed: $e\n$st');
+      if (!mounted) return;
       context.go(AppRoutes.login);
-    });
+    }
   }
-}
-
 
   @override
   void dispose() {
