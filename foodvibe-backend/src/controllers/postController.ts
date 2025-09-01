@@ -50,7 +50,7 @@ export const createPost = async (
 ) => {
   try {
     const { publicId: userPublicId } = req as AuthenticatedRequest;
-    const post: PostInputCreateDto = JSON.parse(req.body.post);
+    const post: PostInputCreateDto = req.body;
     const imageFile: Express.Multer.File | undefined = req.file;
 
     const newPost: CreatePostResponseDto = await createPostService(

@@ -32,10 +32,17 @@ class _CreatePostPageState extends ConsumerState<CreatePostScreen> {
       return;
     }
 
+    final content = contentController.text.trim().isEmpty
+        ? null
+        : contentController.text.trim();
+    final recipeId = recipeIdController.text.trim().isEmpty
+        ? null
+        : recipeIdController.text.trim();
+
     final newPost = Post(
       imageUrl: imagePath!,
-      content: contentController.text,
-      recipeId: recipeIdController.text,
+      content: content,
+      recipeId: recipeId,
     );
 
     setState(() {

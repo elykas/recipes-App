@@ -39,6 +39,7 @@ export const pgCheckUserExist = async (
   const user: UserWithoutRecipes | null = await prisma.user.findUnique({
     where: { publicId },
   });
+  
   return user ? user : null;
 };
 

@@ -36,10 +36,10 @@ router.get(
 );
 router.post(
   "/",
+  singleImageUpload,
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
   searchLimiter,
-  singleImageUpload,
   sanitizeRequestMiddleware,
   validatePostBody,
   createPost

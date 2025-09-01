@@ -33,6 +33,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
   }
 
   Future<void> _loadInitialFeed() async {
+    if (!mounted) return;
     setState(() {
       _error = null;
       _isLoadingMore = true;
@@ -41,7 +42,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
     try {
       final authState = ref.read(authControllerProvider);
       if (authState.user == null) {
-        _error = 'User not logged in';
+        if (!mounted) return;
+        setState(() => _error = 'User not logged in');
         return;
       }
 
@@ -50,35 +52,42 @@ class _FeedScreenState extends ConsumerState<FeedScreen> {
         await ref.read(feedControllerProvider.notifier).fetchFeed();
       }
     } catch (e) {
-      _error = e.toString();
+      if (!mounted) return;
+      setState(() => _error = e.toString());
     } finally {
-      setState(() {
-        _isLoadingMore = false;
-      });
+      if (!mounted) return;
+      setState(() => _isLoadingMore = false);
     }
   }
 
   Future<void> _loadMore() async {
+    if (!mounted) return;
     setState(() => _isLoadingMore = true);
 
     try {
       await ref.read(feedControllerProvider.notifier).fetchMore();
     } catch (e) {
-      _error = e.toString();
+      if (!mounted) return;
+      setState(() => _error = e.toString());
     } finally {
+      if (!mounted) return;
       setState(() => _isLoadingMore = false);
     }
   }
 
   Future<void> _onRefresh() async {
+    if (!mounted) return;
     setState(() => _isLoadingMore = true);
+
     ref.read(feedControllerProvider.notifier).reset();
 
     try {
       await ref.read(feedControllerProvider.notifier).fetchFeed();
     } catch (e) {
-      _error = e.toString();
+      if (!mounted) return;
+      setState(() => _error = e.toString());
     } finally {
+      if (!mounted) return;
       setState(() => _isLoadingMore = false);
     }
   }

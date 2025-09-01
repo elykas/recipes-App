@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:foodvibe_mobile/features/post/data/post_model.dart';
+import 'package:http_parser/http_parser.dart';
 
 
 class PostRepository {
@@ -10,10 +13,18 @@ class PostRepository {
   Future<CreatePostResponse> createPost(Post post) async {
     final path = '/posts';
 
+   final file = File(post.imageUrl);
+    final ext = file.path.split('.').last.toLowerCase();
+    final mime = (ext == 'png') ? 'png' : 'jpeg';
+
     final formData = FormData.fromMap({
       'content': post.content,
       'recipePublicId': post.recipeId,
-      'image': await MultipartFile.fromFile(post.imageUrl),
+      'image': await MultipartFile.fromFile(
+        file.path,
+        filename: file.uri.pathSegments.last,
+        contentType: MediaType('image', mime), // 👈 key fix
+      ),
     });
 
     final response = await _dio.post(path, data: formData);

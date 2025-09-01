@@ -12,7 +12,7 @@ export const mapToFeedDto = (post: any): FeedDto => ({
     imageUrl: post.author.imageUrl ?? null,
     headLine: post.author.headLine ?? null,
   },
-  recipe: {
-    publicId: post.recipe.publicId ?? null,
-  },
+  recipe: post.recipe
+    ? { publicId: post.recipe.publicId ?? null }
+    : null,
 });

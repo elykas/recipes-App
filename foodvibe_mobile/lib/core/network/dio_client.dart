@@ -25,8 +25,8 @@ class DioClient {
     final dio = Dio(
       BaseOptions(
         baseUrl: dotenv.env['BASE_URL'] ?? 'http://localhost:8888/api',
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 500),
+        receiveTimeout: const Duration(seconds: 500),
       ),
     );
 

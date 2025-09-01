@@ -64,16 +64,18 @@ class FeedRepository {
       final post = FeedPost.fromJson(json);
 
       final imageUrl = post.imageUrl != null
-          ? SupabaseManager().getPublicImageUrl(
+          ? SupabaseManager().getSignedImageUrl(
               "${AppConstants.bucketName}/${StorageFolders.post}",
               post.imageUrl!,
+              AppConstants.sevenDays,
             )
           : null;
 
       final authorImageUrl = post.author?.imageUrl != null
-          ? SupabaseManager().getPublicImageUrl(
+          ? SupabaseManager().getSignedImageUrl(
               "${AppConstants.bucketName}/${StorageFolders.user}",
               post.author!.imageUrl!,
+              AppConstants.sevenDays,
             )
           : null;
 

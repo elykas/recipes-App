@@ -20,6 +20,7 @@ export const uploadSingleImage = async (
     });
 
   if (error) {
+    console.error("Error uploading image:", error.message);
     throw new Error(`Upload failed: ${error.message}`);
   }
 

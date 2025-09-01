@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/providers/dio_provider.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:foodvibe_mobile/providers/locale_provider.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';
@@ -58,27 +59,31 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
 Future<void> _init() async {
   try {
+    final dioClient = await ref.read(dioClientProvider.future);
     await ref.read(authControllerProvider.notifier).loadUser();
 
     final authState = ref.read(authControllerProvider);
 
-    if (authState.user != null) {
-      
-      await ref.read(feedControllerProvider.notifier).fetchFeed();
-      
-      await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 3)); // המתנה לסplash
 
-      if (!mounted) return;
-      context.go(AppRoutes.feed);
+    if (!mounted) return;
+
+    if (authState.user != null) {
+      await ref.read(feedControllerProvider.notifier).fetchFeed();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go(AppRoutes.feed);
+      });
     } else {
-      await Future.delayed(const Duration(seconds: 3));
-      if (!mounted) return;
-      context.go(AppRoutes.login);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go(AppRoutes.login);
+      });
     }
   } catch (e, st) {
     print('Error loading user or feed: $e\n$st');
     if (!mounted) return;
-    context.go(AppRoutes.login);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.go(AppRoutes.login);
+    });
   }
 }
 

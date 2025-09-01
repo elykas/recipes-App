@@ -10,8 +10,6 @@ export interface FeedDto {
         imageUrl: string | null;
         headLine: string | null;
     };
-    recipe: {
-        publicId: string | null;
-    };
+    recipe: { publicId: string | null } | null; 
 }
 
