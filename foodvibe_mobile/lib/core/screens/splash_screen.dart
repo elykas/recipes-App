@@ -59,8 +59,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
 Future<void> _init() async {
   try {
-    final dioClient = await ref.read(dioClientProvider.future);
+    await ref.read(dioClientProvider.future);
     await ref.read(authControllerProvider.notifier).loadUser();
+    if (!mounted) return;
 
     final authState = ref.read(authControllerProvider);
 
