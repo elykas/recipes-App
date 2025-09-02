@@ -9,7 +9,7 @@ import 'package:foodvibe_mobile/providers/dio_provider.dart';
 
 // PROVIDERS
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final dio = ref.watch(dioProvider); // מקבל את ה-Dio
+  final dio = ref.watch(dioProvider);
   return AuthRepository(dio: dio);
 });
 

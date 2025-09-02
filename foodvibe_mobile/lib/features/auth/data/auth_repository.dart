@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodvibe_mobile/core/constants/app_constans.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
@@ -6,7 +7,6 @@ import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
-import '../../../core//network/dio_client.dart';
 import '../../../services/supabase_service.dart';
 
 class AuthRepository {
@@ -31,8 +31,14 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
+     if (kIsWeb) {
+    // Web: Supabase handles the redirect and token for you
+    await _client.auth.signInWithOAuth(
+      OAuthProvider.google
+    );
+  } else {
     await GoogleSignIn.instance.initialize(
-      serverClientId: '${dotenv.env['GOOGLE_CLIENT_ID_WEB']}',
+      serverClientId: dotenv.env['GOOGLE_CLIENT_ID_WEB'],
     );
     final googleUser = await GoogleSignIn.instance.authenticate();
 
@@ -47,6 +53,7 @@ class AuthRepository {
       provider: OAuthProvider.google,
       idToken: idToken,
     );
+  }
   }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {

@@ -42,6 +42,7 @@ class _GoogleSignInButtonState extends ConsumerState<GoogleSignInButton> {
         widget.setError("loginFailed");
       }
     } catch (e) {
+      print("Failed to sign in with Google: $e");
       widget.setError("loginFailed");
     } finally {
       if (mounted) {
