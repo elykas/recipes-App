@@ -12,6 +12,9 @@ export const feedResolvers = {
       context: any
     ) => {
       try {
+         if (!context.publicId) {
+        throw new Error("Unauthorized: User not authenticated, 403");
+      }
         const limit = args.limit;
         const cursors = args.cursor ? decodeCursor(args.cursor) : undefined;
 

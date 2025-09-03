@@ -39,7 +39,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:5000",
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -65,14 +65,15 @@ async function startServer() {
   await server.start();
 
   app.use(
-    "/graphql",
-    expressMiddleware(server, {
-      context: async ({ req }) => {
-        const publicUserId = getUserFromReq(req);
+  "/graphql",
+  expressMiddleware(server, {
+    context: async ({ req }) => {
+      const publicUserId = getUserFromReq(req);
         return { publicId: publicUserId || null };
       },
     })
   );
+   
 
   app.use(errorHandler);
 

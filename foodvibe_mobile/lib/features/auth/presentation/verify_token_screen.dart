@@ -25,10 +25,8 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
     Session? session;
 
     if (kIsWeb) {
-      // Web: קח session מ-localStorage
       session = SupabaseManager.client.auth.currentSession;
     } else {
-      // Mobile: קח session מה-auth state שלך
       final authState = ref.read(authControllerProvider);
       session = authState.session;
     }

@@ -1,14 +1,15 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/providers/dio_provider.dart';
-import 'package:foodvibe_mobile/routes/app_router.dart';
-import 'package:foodvibe_mobile/providers/locale_provider.dart';
-import 'package:foodvibe_mobile/l10n/app_localizations.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
-import 'dart:async';
 import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
-
+import 'package:foodvibe_mobile/l10n/app_localizations.dart';
+import 'package:foodvibe_mobile/providers/dio_provider.dart';
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
+import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
+import 'package:web/web.dart' as web;
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -35,8 +36,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     _slide = Tween<Offset>(
-      begin: const Offset(0, 0.6), // 0.5 = בערך שלושת רבעי המסך למטה
-      end: Offset.zero, // מרכז המסך
+      begin: const Offset(0, 0.6),
+      end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _controller.forward();
@@ -57,15 +58,28 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _init();
   }
 
+
+
   Future<void> _init() async {
     try {
+      if (kIsWeb) {
+        final uri = Uri.parse(web.window.location.href);
+        if (uri.queryParameters.containsKey('access_token') ||
+            uri.queryParameters.containsKey('refresh_token') ||
+            uri.queryParameters.containsKey('code') ||
+            uri.queryParameters.containsKey('type')) {
+          context.go(AppRoutes.verifyToken);
+          return;
+        }
+      }
+
       ref.read(dioClientProvider);
       await ref.read(authControllerProvider.notifier).loadUser();
       if (!mounted) return;
 
       final authState = ref.read(authControllerProvider);
 
-      await Future.delayed(const Duration(seconds: 3)); // המתנה לסplash
+      await Future.delayed(const Duration(seconds: 3));
 
       if (!mounted) return;
 

@@ -7,14 +7,14 @@ export const setAuthCookies = (res: Response, accessToken: string, refreshToken:
   res.cookie("token", accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite:  process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: maxAge
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite:  process.env.NODE_ENV === "production" ? "none" : "lax",
     maxAge: maxAge
   });
 };

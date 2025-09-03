@@ -8,7 +8,7 @@ export const userResolvers = {
       _context: any
     ) => {
       if (!_context.publicId) {
-        throw new Error("Unauthorized: User not authenticated");
+        throw new Error("Unauthorized: User not authenticated, 403");
       }
       if (args.limit > 30) {
         throw new Error("Limit cannot exceed 30");

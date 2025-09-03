@@ -1,10 +1,11 @@
 import 'dart:io';
+import 'package:dio/browser.dart';
+import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DioClient {
   static DioClient? _instance;
@@ -13,7 +14,9 @@ class DioClient {
 
   DioClient._internal(this.dio, this.cookieJar);
 
-    static DioClient? get instance => _instance;
+
+
+  static DioClient? get instance => _instance;
 
   /// אתחול אסינכרוני – קוראים פעם אחת ב־main()
   static Future<DioClient> getInstance() async {
@@ -45,6 +48,10 @@ class DioClient {
       dio.interceptors.add(CookieManager(jar));
     }
 
+      if (kIsWeb) {
+      dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+    }
+
     dio.interceptors.add(
       LogInterceptor(
         requestBody: true,
@@ -58,7 +65,9 @@ class DioClient {
 
     // Optional: בדיקה אם כבר יש קוקיז שמורים
     if (jar != null) {
-      final cookies = await jar.loadForRequest(Uri.parse(dotenv.env['BASE_URL'] ?? ''));
+      final cookies = await jar.loadForRequest(
+        Uri.parse(dotenv.env['BASE_URL'] ?? ''),
+      );
       if (cookies.isNotEmpty) {
         print("Found ${cookies.length} stored cookies");
       }
@@ -79,6 +88,6 @@ class DioClient {
     if (!kIsWeb && cookieJar != null) {
       return cookieJar!.loadForRequest(Uri.parse(url));
     }
-    return []; // Web: אין File-based cookies
+    return []; 
   }
 }
