@@ -14,8 +14,8 @@ class AuthRepository {
   final Dio _dio;
 
   AuthRepository({SupabaseClient? client, required Dio dio})
-      : _client = client ?? SupabaseManager.client,
-        _dio = dio;
+    : _client = client ?? SupabaseManager.client,
+      _dio = dio;
 
   Future<void> signInWithEmail({required String email}) async {
     final callBackUrl = dotenv.env['CALLBACK_URL'];
@@ -31,29 +31,26 @@ class AuthRepository {
   }
 
   Future<void> signInWithGoogle() async {
-     if (kIsWeb) {
-    // Web: Supabase handles the redirect and token for you
-    await _client.auth.signInWithOAuth(
-      OAuthProvider.google
-    );
-  } else {
-    await GoogleSignIn.instance.initialize(
-      serverClientId: dotenv.env['GOOGLE_CLIENT_ID_WEB'],
-    );
-    final googleUser = await GoogleSignIn.instance.authenticate();
+    if (kIsWeb) {
+      await _client.auth.signInWithOAuth(OAuthProvider.google);
+    } else {
+      await GoogleSignIn.instance.initialize(
+        serverClientId: dotenv.env['GOOGLE_CLIENT_ID_WEB'],
+      );
+      final googleUser = await GoogleSignIn.instance.authenticate();
 
-    final googleAuth = googleUser.authentication;
-    final String? idToken = googleAuth.idToken;
+      final googleAuth = googleUser.authentication;
+      final String? idToken = googleAuth.idToken;
 
-    if (idToken == null) {
-      throw Exception('Missing Google authentication tokens');
+      if (idToken == null) {
+        throw Exception('Missing Google authentication tokens');
+      }
+
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+      );
     }
-
-    await _client.auth.signInWithIdToken(
-      provider: OAuthProvider.google,
-      idToken: idToken,
-    );
-  }
   }
 
   Future<VerifyTokenResponse> verifyToken(String token) async {

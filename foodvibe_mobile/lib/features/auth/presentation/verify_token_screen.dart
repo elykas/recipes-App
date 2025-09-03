@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:foodvibe_mobile/services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../routes/app_router.dart';
 import '../application/auth_controller.dart';
+import 'package:flutter/foundation.dart';
 
 class VerifyTokenPage extends ConsumerStatefulWidget {
   const VerifyTokenPage({super.key});
@@ -20,8 +22,18 @@ class _VerifyTokenPageState extends ConsumerState<VerifyTokenPage> {
   }
 
   Future<void> _verifyUser() async {
-    final authState = ref.read(authControllerProvider);
-    final token = authState.session?.accessToken;
+    Session? session;
+
+    if (kIsWeb) {
+      // Web: קח session מ-localStorage
+      session = SupabaseManager.client.auth.currentSession;
+    } else {
+      // Mobile: קח session מה-auth state שלך
+      final authState = ref.read(authControllerProvider);
+      session = authState.session;
+    }
+
+    final token = session?.accessToken;
 
     if (token == null) {
       context.go(AppRoutes.login, extra: 'loginFailed');
