@@ -10,7 +10,8 @@ export const uploadSingleImage = async (
   folder: "user" | "recipe" | "group" | "post"
 ): Promise<string> => {
   const bucket = bucketName;
-  const fileName = `${folder}/${userId}/${uuid()}`;
+  const ext = mimeType.split("/")[1];
+  const fileName = `${folder}/${userId}/${uuid()}.${ext}`;
 
   const { data, error } = await supabase.storage
     .from(bucket)

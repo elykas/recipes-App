@@ -70,7 +70,7 @@ class FeedRepository {
                 AppConstants.sevenDays,
               )
             : null;
-
+        // print('Signed URL for post ${post.publicId}: $imageUrl');
         final authorImageUrl = post.author.imageUrl != null
             ? await SupabaseManager().getSignedImageUrl(
                 AppConstants.bucketName,
@@ -85,7 +85,6 @@ class FeedRepository {
         );
       }).toList(),
     );
-
     final nextCursor = feedData['cursor'];
     final updatedExcludeIds =
         (feedData['excludeIds'] as List<dynamic>?)

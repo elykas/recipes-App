@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ImagePickerHelper {
@@ -18,7 +17,6 @@ class ImagePickerHelper {
       '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
   final imageFile = await File(pickedFile.path).copy(newPath);
 
-  // עכשיו imageFile.path מוכן להצגה ב־Image.file(...)
   return imageFile;
     }
 

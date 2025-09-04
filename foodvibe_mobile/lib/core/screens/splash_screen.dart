@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/core/location_platform/web_location.dart';
+import 'package:foodvibe_mobile/core/location_platform/href/web_location.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';

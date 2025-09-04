@@ -145,7 +145,6 @@ class FeedItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // בודקים שהאובייקטים הפנימיים קיימים לפני השימוש בהם
     final author = post.author;
     final imageUrl = post.imageUrl;
     final recipeId = post.recipe?.publicId;
@@ -154,16 +153,13 @@ class FeedItemWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          // משתמשים בבדיקה מפורשת
           leading: (author != null && author.imageUrl != null)
               ? CircleAvatar(backgroundImage: NetworkImage(author.imageUrl!))
               : const CircleAvatar(child: Icon(Icons.person)),
           title: Text(
-            // משתמשים באופרטור ?? כדי לספק ערך חלופי אם הערך המקורי הוא null
             author?.username ?? author?.fullName ?? 'Unknown author',
           ),
         ),
-        // מציגים את התמונה רק אם היא קיימת
         if (imageUrl != null)
           Image.network(
             imageUrl,
