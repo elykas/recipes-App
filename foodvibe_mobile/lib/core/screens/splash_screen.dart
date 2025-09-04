@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/core/location_platform/web_location.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';
@@ -9,7 +10,6 @@ import 'package:foodvibe_mobile/providers/dio_provider.dart';
 import 'package:foodvibe_mobile/providers/locale_provider.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
-import 'package:web/web.dart' as web;
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -23,6 +23,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _fade;
   late Animation<Offset> _slide;
+  final href = getHref();
 
   @override
   void initState() {
@@ -58,18 +59,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _init();
   }
 
-
-
   Future<void> _init() async {
     try {
-      if (kIsWeb) {
-        final uri = Uri.parse(web.window.location.href);
-        if (uri.queryParameters.containsKey('access_token') ||
-            uri.queryParameters.containsKey('refresh_token') ||
-            uri.queryParameters.containsKey('code') ||
-            uri.queryParameters.containsKey('type')) {
+      if (kIsWeb || href != null) {
+        final uri = Uri.parse(href!);
+
+        final query = uri.queryParameters;
+        final hasAuthParams = [
+          'access_token',
+          'refresh_token',
+          'code',
+          'type',
+        ].any(query.containsKey);
+
+        if (hasAuthParams) {
           context.go(AppRoutes.verifyToken);
-          return;
         }
       }
 

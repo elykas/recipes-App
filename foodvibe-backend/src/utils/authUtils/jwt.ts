@@ -19,8 +19,6 @@ export const generateAccessToken = (publicId: string, isAdmin: boolean): string 
 };
 
 export const VerifyUserToken = (req: Request): JwtPayload => {
-  console.log("VerifyUserToken", req);
-  console.log(req.cookies);
   const token = req.cookies?.token;
 
   if (!token) {
