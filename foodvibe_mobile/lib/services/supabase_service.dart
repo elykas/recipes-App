@@ -10,18 +10,10 @@ class SupabaseManager {
     String path,
     int expirationDays,
   ) async {
-    try {
-      print(bucket);
-      print(path);
       final res = await _client.storage
-          .from('foodvibe')
-          .createSignedUrl("post/604d5c1d-eedf-4d25-a868-94356475a6f3/bb8fa0bf-d25c-452d-ba02-43cbe0235e85.jpeg", expirationDays); 
-      print("res[$path]: isssssssssssss $res");
+          .from(bucket)
+          .getPublicUrl(path); 
       return res;
-    } catch (e) {
-      print("error storage: on supa $e");
-    }
-    return null;
   }
 
 }

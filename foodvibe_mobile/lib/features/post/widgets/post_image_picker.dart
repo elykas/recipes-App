@@ -3,9 +3,16 @@ import 'dart:io';
 import 'package:foodvibe_mobile/core/utils/image_picker.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';
 
-class PostImagePicker extends StatelessWidget {
+class PostImagePicker extends StatefulWidget {
   final void Function(String path) onImagePicked;
   const PostImagePicker({super.key, required this.onImagePicked});
+
+  @override
+  State<PostImagePicker> createState() => _PostImagePickerState();
+}
+
+class _PostImagePickerState extends State<PostImagePicker> {
+  File? _pickedImage;
 
   Future<void> _pickImage(BuildContext context) async {
     final loc = AppLocalizations.of(context)!;
@@ -29,7 +36,10 @@ class PostImagePicker extends StatelessWidget {
 
     final file = await ImagePickerHelper.pickImage(fromCamera: fromCamera);
     if (file != null) {
-      onImagePicked(file.path);
+      setState(() {
+        _pickedImage = file;
+      });
+      widget.onImagePicked(file.path);
     }
   }
 
@@ -41,7 +51,9 @@ class PostImagePicker extends StatelessWidget {
         height: 200,
         width: double.infinity,
         color: Colors.grey[300],
-        child: const Icon(Icons.add_a_photo, size: 50),
+        child: _pickedImage != null
+            ? Image.file(_pickedImage!, fit: BoxFit.cover)
+            : const Icon(Icons.add_a_photo, size: 50),
       ),
     );
   }

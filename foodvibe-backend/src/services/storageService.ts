@@ -12,7 +12,7 @@ export const uploadSingleImage = async (
   const bucket = bucketName;
   const ext = mimeType.split("/")[1];
   const fileName = `${folder}/${userId}/${uuid()}.${ext}`;
-
+  console.log(fileName);
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(fileName, buffer, {
