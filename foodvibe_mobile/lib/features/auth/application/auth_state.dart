@@ -1,23 +1,14 @@
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:foodvibe_mobile/features/user/data/user_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 class AuthState {
   final Session? session;
-  final User? user;
+  final AppUser? user;
 
-  AuthState({
-    this.session,
-    this.user,
-  });
+  AuthState({this.session, this.user});
 
-  AuthState copyWith({
-    Session? session,
-    User? user,
-  }) {
-    return AuthState(
-      session: session ?? this.session,
-      user: user ?? this.user,
-    );
+  AuthState copyWith({Session? session, AppUser? user}) {
+    return AuthState(session: session ?? this.session, user: user ?? this.user);
   }
 
   bool get isSessionAvailable => session != null;

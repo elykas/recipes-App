@@ -5,6 +5,7 @@ import 'package:foodvibe_mobile/features/auth/presentation/complete_register_scr
 import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/onboarding_screen.dart';
 import 'package:foodvibe_mobile/features/feed/presentation/feed_screen.dart';
+import 'package:foodvibe_mobile/features/user/presentation/user_profle_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
 import '../features/auth/presentation/login_page.dart';
@@ -100,7 +101,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.profile,
       builder: (context, state) =>
-          const BaseScreen(child: FeedScreen(), currentIndex: 3),
+          const BaseScreen(child: UserProfileScreen(), currentIndex: 3),
     ),
     GoRoute(
       path: AppRoutes.search,

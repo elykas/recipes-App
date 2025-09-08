@@ -65,6 +65,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
     final postId = post.publicId;
     final originalPost = post;
     final currentlyLiked = post.isUserLiked;
+    final likeType = "Like";
 
     final updatedPost = post.copyWith(
       isUserLiked: !currentlyLiked,
@@ -82,7 +83,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
       if (currentlyLiked) {
         await _feedRepository.removeLikeFromPost(postId: postId);
       } else {
-        await _feedRepository.addLikeToPost(postId: postId);
+        await _feedRepository.addLikeToPost(postId: postId, likeType: likeType);
       }
     } catch (e) {
       state = [

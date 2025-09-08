@@ -46,11 +46,11 @@ export type UserProfileWithPostsResponse = Prisma.UserGetPayload<{
     username: true;
     fullName: true;
     imageUrl: true;
-    email: true;
+    email?: true;
     bio: true;
     headLine: true;
-    locale: true;
-    isAdmin: true;
+    locale?: true;
+    isAdmin?: true;
     posts: {
       select: {
         publicId: true;

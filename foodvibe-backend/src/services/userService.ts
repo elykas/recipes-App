@@ -27,11 +27,13 @@ export const getAllUsersService = async (): Promise<UserDto[]> => {
 };
 
 export const getUserProfileWithPostsService = async (
+  currentUserPublicId: string,
   userPublicId: string,
   limit: number
 ): Promise<UserProfileDto> => {
+  const isCurrentUserProfile = currentUserPublicId === userPublicId;
   const userProfileWithPosts: UserProfileWithPostsResponse | null =
-    await pgGetUserProfileWithPosts(userPublicId, limit);
+    await pgGetUserProfileWithPosts(userPublicId, limit, isCurrentUserProfile);
 
   if (!userProfileWithPosts) throw errorResponse("User not found", 404);
 

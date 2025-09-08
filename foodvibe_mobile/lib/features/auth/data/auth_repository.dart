@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:foodvibe_mobile/core/constants/app_constans.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -93,13 +92,13 @@ class AuthRepository {
     return response.data;
   }
 
-  Future<User?> getCurrentUser() async {
+  Future<AppUser?> getCurrentUser() async {
     final uri = dotenv.env['GRAPHQL_URI'] ?? '';
     final limit = 5;
 
     final query = '''
-      query GetUser(\$limit: Int) {
-      getUserProfileByPublicId(limit: \$limit) {
+      query GetUserMe(\$limit: Int) {
+      me(limit: \$limit) {
       publicId
       username
       fullName
@@ -127,11 +126,11 @@ class AuthRepository {
       },
     );
 
-    final data = response.data['data']['getUserProfileByPublicId'];
+    final data = response.data['data']['me'];
 
     if (data == null) return null;
 
-    return User.fromJson(data);
+    return AppUser.fromJson(data);
   }
 
   Session? get currentSession => _client.auth.currentSession;

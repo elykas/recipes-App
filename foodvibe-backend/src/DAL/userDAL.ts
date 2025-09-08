@@ -34,7 +34,8 @@ export const pgIsUsernameAvailable = async (username: string): Promise<boolean> 
 
 export const pgGetUserProfileWithPosts = async (
   publicId: string,
-  limit: number
+  limit: number,
+  isCurrentUserProfile: boolean
 ): Promise<UserProfileWithPostsResponse | null> => {
   const user: UserProfileWithPostsResponse | null = await prisma.user.findUnique({
     where: { publicId },
@@ -43,11 +44,11 @@ export const pgGetUserProfileWithPosts = async (
       username: true,
       fullName: true,
       imageUrl: true,
-      email: true,
+      email: isCurrentUserProfile,
       bio: true,
       headLine: true,
-      locale: true,
-      isAdmin: true,
+      locale: isCurrentUserProfile,
+      isAdmin: isCurrentUserProfile,
       posts: {
         select: {
           publicId: true,

@@ -10,7 +10,6 @@ import {
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
-import th from "zod/v4/locales/th.cjs";
 import ErrorResponse from "../utils/errors/errors";
 export const getAllUsers = async (
   req: Request,

@@ -64,10 +64,10 @@ export interface UserProfileDto {
   username: string;
   fullName: string | null;
   imageUrl: string | null;
-  email: string | null;
+  email?: string | null;
   bio: string | null;
   headLine: string | null;
-  locale: string | null;
-  isAdmin: boolean;
+  locale?: string | null;
+  isAdmin?: boolean;
   posts: PostPreviewDto[];
 }
