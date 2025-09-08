@@ -197,6 +197,7 @@ export const upsertLikeToPostService = async (
 
   const postWithLikeDto: PostLikeResponseDto = {
     publicId: postWithLike.post.publicId,
+    isLikedByUser:true
   };
 
   return postWithLikeDto;
@@ -229,6 +230,7 @@ export const removeLikeFromPostService = async (
   );
   const postWithLikeDto: PostLikeResponseDto = {
     publicId: postWithLike.post.publicId,
+    isLikedByUser:false
   };
   return postWithLikeDto;
 };

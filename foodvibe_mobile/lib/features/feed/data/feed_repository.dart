@@ -9,7 +9,6 @@ class FeedRepository {
 
   FeedRepository(this._dio);
 
-  /// מחזיר רשימת פוסטים + cursor
   Future<FeedResponse> getFeed({
     int limit = 5,
     String? cursor,
@@ -70,7 +69,6 @@ class FeedRepository {
                 AppConstants.sevenDays,
               )
             : null;
-        // print('Signed URL for post ${post.publicId}: $imageUrl');
         final authorImageUrl = post.author.imageUrl != null
             ? await SupabaseManager().getSignedImageUrl(
                 AppConstants.bucketName,
@@ -82,6 +80,7 @@ class FeedRepository {
         return post.copyWith(
           imageUrl: imageUrl,
           author: post.author.copyWith(imageUrl: authorImageUrl),
+          isUserLiked: json['isUserLiked'] ?? false,
         );
       }).toList(),
     );
@@ -97,5 +96,17 @@ class FeedRepository {
       cursor: nextCursor,
       excludeIds: updatedExcludeIds,
     );
+  }
+
+  Future<dynamic> addLikeToPost({required String postId}) async {
+    final path = '/posts/like/$postId';
+    final response = await _dio.post(path);
+    return response.data;
+  }
+
+  Future<dynamic> removeLikeFromPost({required String postId}) async {
+    final path = '/posts/unlike/$postId';
+    final response = await _dio.post(path);
+    return response.data;
   }
 }

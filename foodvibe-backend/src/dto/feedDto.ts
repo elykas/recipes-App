@@ -3,6 +3,7 @@ export interface FeedDto {
     imageUrl: string;
     likeCount: number;
     content: string | null;
+    isUserLiked: boolean;
     author: {
         publicId: string;
         username: string;

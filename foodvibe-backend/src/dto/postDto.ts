@@ -24,7 +24,9 @@ export interface UpdateImagePostDto extends BasicPostDto {}
 
 export interface DeletedPostDto extends BasicPostDto {}
 
-export interface PostLikeResponseDto extends BasicPostDto {}
+export interface PostLikeResponseDto extends BasicPostDto {
+  isLikedByUser: boolean;
+}
 
 export interface FullPostDto {
   publicId: string;

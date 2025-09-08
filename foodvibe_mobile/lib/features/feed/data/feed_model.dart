@@ -57,6 +57,7 @@ class FeedPost {
   final String? content;
   final PostAuthor author;
   final PostRecipe? recipe;
+  final bool isUserLiked;
 
   FeedPost.Feed({
     required this.publicId,
@@ -65,6 +66,7 @@ class FeedPost {
     this.content,
     required this.author,
     this.recipe,
+    this.isUserLiked = false,
   });
 
   factory FeedPost.fromJson(Map<String, dynamic> json) {
@@ -85,6 +87,7 @@ class FeedPost {
       recipe: json['recipe'] != null
           ? PostRecipe.fromJson(json['recipe'])
           : null,
+      isUserLiked: json['isUserLiked'] ?? false,
     );
   }
 
@@ -95,6 +98,7 @@ class FeedPost {
     String? content,
     PostAuthor? author,
     PostRecipe? recipe,
+    bool? isUserLiked,
   }) {
     return FeedPost.Feed(
       publicId: publicId ?? this.publicId,
@@ -103,6 +107,7 @@ class FeedPost {
       content: content ?? this.content,
       author: author ?? this.author,
       recipe: recipe ?? this.recipe,
+      isUserLiked: isUserLiked ?? this.isUserLiked,
     );
   }
 }

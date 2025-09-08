@@ -22,7 +22,9 @@ export const feedResolvers = {
           throw new Error("Limit cannot exceed 10")
         }
 
-        const feedData = await getFeedService({
+        const feedData = await getFeedService(
+          context.publicId,
+          {
           limitPerType: limit,
           cursors,
           excludeIds: context.excludeIds,

@@ -5,6 +5,7 @@ export const mapToFeedDto = (post: any): FeedDto => ({
   imageUrl: post.imageUrl,
   likeCount: post.likeCount,
   content: post.content ?? null,
+  isUserLiked: post.isUserLiked,
   author: {
     publicId: post.author.publicId,
     username: post.author.username,

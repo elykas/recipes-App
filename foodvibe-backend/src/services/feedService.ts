@@ -2,13 +2,16 @@ import {
   getPopularPosts,
   getPostsWithRecipes,
   getRandomPostsWithRecipes,
+  pgcheckPostsLikedByUser,
   pgGetNewestPosts,
 } from "../DAL/feedDal";
 import { FeedDto } from "../dto/feedDto";
 import { trimExcludesId } from "../utils/feedUtils/feedUtils";
 import { mapToFeedDto} from "../utils/mappers/feedMapper";
+import { getUserIdByPublicIdService } from "./userService";
 
-export const getFeedService = async ({
+export const getFeedService = async (
+  publicId: string,{
   limitPerType = 5,
   cursors,
   excludeIds = [],
@@ -39,7 +42,16 @@ export const getFeedService = async ({
 
   const finalItems = Array.from(uniqueItemsMap.values());
 
-  const finalItemsDto: FeedDto[] = finalItems.map(mapToFeedDto);
+  const userId = await getUserIdByPublicIdService(publicId);
+  const postsId = finalItems.map((p) => p.id);
+  const likedMap = await pgcheckPostsLikedByUser(postsId, userId);
+
+ const finalItemsDto: FeedDto[] = finalItems.map((post) =>
+  mapToFeedDto({
+    ...post,
+    isUserLiked: likedMap[post.publicId] ?? false, 
+  })
+);
 
   return {
     items: finalItemsDto,

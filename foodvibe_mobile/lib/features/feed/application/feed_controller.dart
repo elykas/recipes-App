@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../data/feed_model.dart';
 import '../data/feed_repository.dart';
 import '../providers/feed_providers.dart';
@@ -57,5 +59,36 @@ class FeedController extends StateNotifier<List<FeedPost>> {
     _cursor = null;
     _excludeIds = [];
     state = [];
+  }
+
+  Future<void> toggleLike({required FeedPost post}) async {
+    final postId = post.publicId;
+    final originalPost = post;
+    final currentlyLiked = post.isUserLiked;
+
+    final updatedPost = post.copyWith(
+      isUserLiked: !currentlyLiked,
+      likeCount: currentlyLiked
+          ? (post.likeCount ?? 1) - 1
+          : (post.likeCount ?? 0) + 1,
+    );
+
+    state = [
+      for (final p in state)
+        if (p.publicId == postId) updatedPost else p,
+    ];
+
+    try {
+      if (currentlyLiked) {
+        await _feedRepository.removeLikeFromPost(postId: postId);
+      } else {
+        await _feedRepository.addLikeToPost(postId: postId);
+      }
+    } catch (e) {
+      state = [
+        for (final p in state)
+          if (p.publicId == postId) originalPost else p,
+      ];
+    }
   }
 }

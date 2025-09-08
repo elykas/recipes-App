@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
+import 'package:foodvibe_mobile/features/feed/widgets/like_in_feed_widget.dart';
 
 import '../application/feed_controller.dart';
 
@@ -172,10 +173,7 @@ class FeedItemWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${post.likeCount ?? 0} likes',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+              LikeInFeedButton(post: post),
               const SizedBox(height: 4),
               Text(post.content ?? ''),
               const SizedBox(height: 4),
@@ -183,7 +181,6 @@ class FeedItemWidget extends StatelessWidget {
                 children: [
                   const Icon(Icons.book, size: 16),
                   const SizedBox(width: 4),
-                  // משתמשים באופרטור ?? כדי לספק ערך חלופי
                   Text(recipeId ?? 'No recipe ID'),
                 ],
               ),

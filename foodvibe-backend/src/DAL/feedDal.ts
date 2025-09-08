@@ -17,6 +17,7 @@ export const pgGetNewestPosts = async (
     },
     orderBy: [{ createdAt: "desc" }, { publicId: "desc" }],
     select: {
+      id: true,
       publicId: true,
       imageUrl: true,
       likeCount: true,
@@ -57,6 +58,7 @@ export const getPopularPosts = async (
   const popularPosts = await prisma.post.findMany({
     orderBy: [{ likeCount: "desc" }, { publicId: "desc" }],
     select: {
+      id: true,
       publicId: true,
       imageUrl: true,
       content: true,
@@ -102,6 +104,7 @@ export const getPostsWithRecipes = async (
     },
     orderBy: [{ createdAt: "desc" }, { publicId: "desc" }],
     select: {
+      id: true,
       publicId: true,
       imageUrl: true,
       content: true,
@@ -153,9 +156,10 @@ export const getRandomPostsWithRecipes = async (
   const allPosts = await prisma.post.findMany({
     where: { publicId: { in: randomIds } },
     select: {
+      id: true,
       publicId: true,
       imageUrl: true,
-      content: true,    
+      content: true,
       likeCount: true,
       createdAt: true,
       author: {
@@ -175,4 +179,28 @@ export const getRandomPostsWithRecipes = async (
     },
   });
   return allPosts;
+};
+
+export const pgcheckPostsLikedByUser = async (
+  postsId:number [],
+  userId: number
+ ) : Promise<Record<string, boolean>> => {
+  const likedPosts= await prisma.post.findMany({
+    where: {
+      id: { in: postsId },
+      likes: {
+        some: { userId },
+      },
+    },
+    select: {
+      publicId: true,
+    },
+  });
+
+  const likedMap: Record<string, boolean> = {};
+  likedPosts.forEach((post) => {
+    likedMap[post.publicId] = true;
+  });
+
+  return likedMap;
 };
