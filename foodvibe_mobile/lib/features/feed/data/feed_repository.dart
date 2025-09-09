@@ -100,7 +100,7 @@ class FeedRepository {
 
   Future<dynamic> addLikeToPost({required String postId, required String likeType}) async {
     final path = '/posts/like/$postId';
-    final response = await _dio.post(path, data: {'likeType': likeType});
+    final response = await _dio.post(path, data: {'like': likeType});
     return response.data;
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/user/application/user_controller.dart';
+import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:foodvibe_mobile/providers/dio_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -92,10 +93,20 @@ class AuthController extends StateNotifier<local.AuthState> {
   }
 
   Future<void> loadUser() async {
-    final user = await _authRepository.getCurrentUser();
-    state = local.AuthState(user: user);
+    final userWithCursor = await _authRepository.getCurrentUser();
+    if (userWithCursor == null) return;
+
+    state = local.AuthState(user: userWithCursor.user);
+
     _ref
         .read(userProfileControllerProvider.notifier)
-        .updateUserProfileState(user);
+        .updateUserProfileState(
+          userWithCursor.user,
+          nextCursor: userWithCursor.nextCursor,
+        );
+  }
+
+  void updateUserState(AppUser user) {
+    state = state.copyWith(user: user);
   }
 }

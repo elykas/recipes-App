@@ -84,3 +84,114 @@ class AppUser {
     );
   }
 }
+
+extension AppUserToJson on AppUser {
+  Map<String, dynamic> toJson() {
+  return {
+    'fullName': fullName,
+    'bio': bio,
+    'headLine': headLine,
+  };
+}
+}
+
+extension AppUserCopy on AppUser {
+  AppUser copyWith({
+    String? publicId,
+    String? username,
+    String? fullName,
+    String? imagePath,
+    String? email,
+    String? bio,
+    String? headLine,
+    String? locale,
+    bool? isAdmin,
+    List<FeedPost>? posts,
+  }) {
+    return AppUser(
+      publicId: publicId ?? this.publicId,
+      username: username ?? this.username,
+      fullName: fullName ?? this.fullName,
+      imagePath: imagePath ?? this.imagePath,
+      email: email ?? this.email,
+      bio: bio ?? this.bio,
+      headLine: headLine ?? this.headLine,
+      locale: locale ?? this.locale,
+      isAdmin: isAdmin ?? this.isAdmin,
+      posts: posts ?? this.posts,
+    );
+  }
+}
+
+class AppUserWithCursor {
+  final AppUser user;
+  final String? nextCursor;
+
+  AppUserWithCursor({required this.user, this.nextCursor});
+
+  factory AppUserWithCursor.fromJson(Map<String, dynamic> json) {
+    return AppUserWithCursor(
+      user: AppUser.fromJson(json),
+      nextCursor: json['nextCursor'],
+    );
+  }
+}
+
+
+class UpdateUserResponse {
+  final String publicId;
+  final String? fullName;
+  final String? headLine;
+  final String? bio;
+
+  UpdateUserResponse({
+    required this.publicId,
+    this.fullName,
+    this.headLine,
+    this.bio,
+  });
+
+  factory UpdateUserResponse.fromJson(Map<String, dynamic> json) {
+    return UpdateUserResponse(
+      publicId: json['publicId'],
+      fullName: json['fullName'],
+      headLine: json['headLine'],
+      bio: json['bio'],
+    );
+  }
+}
+
+
+class UpdateImageUserResponse {
+  final String publicId;
+  final String? imageUrl;
+ 
+
+  UpdateImageUserResponse({
+    required this.publicId,
+    this.imageUrl,
+  });
+
+  factory UpdateImageUserResponse.fromJson(Map<String, dynamic> json) {
+    return UpdateImageUserResponse(
+      publicId: json['publicId'],
+      imageUrl: json['imageUrl'],
+    );
+  }
+
+  static Future<UpdateImageUserResponse> fromJsonWithSignedUrl(
+      Map<String, dynamic> json, String bucket, int expirationDays) async {
+    final raw = UpdateImageUserResponse.fromJson(json);
+
+    if (raw.imageUrl != null) {
+      final signedUrl = await SupabaseManager()
+          .getSignedImageUrl(bucket, raw.imageUrl!, expirationDays);
+      return UpdateImageUserResponse(
+        publicId: raw.publicId,
+        imageUrl: signedUrl,
+      );
+    }
+
+    return raw;
+  }
+}

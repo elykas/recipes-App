@@ -21,8 +21,16 @@ export const userTypeDefs = gql`
     imageUrl: String
   }
 
+  type UserProfileResponse {
+    data: User
+    nextCursor: String
+    success: Boolean!
+    message: String
+  }
+  
+
   type Query {
-    me(limit: Int): User!
-    userProfile(publicId: String!, limit: Int): User
+    me(limit: Int): UserProfileResponse!
+    userProfile(publicId: String!, limit: Int, cursor: String): UserProfileResponse
   }
 `;

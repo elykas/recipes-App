@@ -80,12 +80,14 @@ class FeedController extends StateNotifier<List<FeedPost>> {
     ];
 
     try {
+      print(" currentlyLiked: $currentlyLiked");
       if (currentlyLiked) {
         await _feedRepository.removeLikeFromPost(postId: postId);
       } else {
         await _feedRepository.addLikeToPost(postId: postId, likeType: likeType);
       }
     } catch (e) {
+      print(e);
       state = [
         for (final p in state)
           if (p.publicId == postId) originalPost else p,

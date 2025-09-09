@@ -39,7 +39,7 @@ router.put(
   updateUser
 );
 router.post(
-  "/add-image",
+  "/img",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
   singleImageUpload,

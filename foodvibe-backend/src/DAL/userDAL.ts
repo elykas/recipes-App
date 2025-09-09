@@ -1,6 +1,7 @@
 import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
 import {
+  UpdateUserImageResponse,
   UsernamesResponse,
   UserProfileWithPostsResponse,
   UserWithoutRecipes,
@@ -35,7 +36,8 @@ export const pgIsUsernameAvailable = async (username: string): Promise<boolean> 
 export const pgGetUserProfileWithPosts = async (
   publicId: string,
   limit: number,
-  isCurrentUserProfile: boolean
+  isCurrentUserProfile: boolean,
+  cursor? : string
 ): Promise<UserProfileWithPostsResponse | null> => {
   const user: UserProfileWithPostsResponse | null = await prisma.user.findUnique({
     where: { publicId },
@@ -62,6 +64,8 @@ export const pgGetUserProfileWithPosts = async (
         },
         orderBy: { createdAt: "desc" },
         take: limit,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { publicId: cursor } : undefined,
       },
     },
   });
@@ -121,11 +125,15 @@ export const pgDeleteUser = async (
 export const pgUpdateUserImage = async (
   publicId: string,
   imageUrl: string | null
-): Promise<UserWithoutRecipes> => {
+): Promise<UpdateUserImageResponse> => {
   const updatedUser = await prisma.user.update({
     where: { publicId },
     data: {
       imageUrl,
+    },
+    select: {
+      publicId: true,
+      imageUrl: true,
     },
   });
   return updatedUser;

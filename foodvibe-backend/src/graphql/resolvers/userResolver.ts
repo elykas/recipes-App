@@ -12,13 +12,18 @@ export const userResolvers = {
         }
         const currentUserPublicId = _context.publicId;
         const userPublicId = _context.publicId;
-        const userProfile = await getUserProfileWithPostsService(
+        const {userProfileWithPostsDto : userProfile , nextCursor} = await getUserProfileWithPostsService(
           currentUserPublicId,
           userPublicId,
           args.limit || 10
         );
 
-        return userProfile;
+        return {
+          data: userProfile,
+          nextCursor,
+          message: "User profile fetched successfully",
+          success: true,
+        };
       } catch (err: any) {
         return {
           data: null,
@@ -39,12 +44,18 @@ export const userResolvers = {
         const currentUserPublicId = context.publicId;
         const userPublicId = args.publicId;
 
-        const userProfile = await getUserProfileWithPostsService(
+        const {userProfileWithPostsDto : userProfile , nextCursor} = await getUserProfileWithPostsService(
           currentUserPublicId,
           userPublicId,
-          args.limit || 10
+          args.limit || 10,
+          args.cursor
         );
-        return userProfile;
+        return {
+          data: userProfile,
+          nextCursor,
+          message: "User profile fetched successfully",
+          success: true,
+        };
       } catch (err: any) {
         return {
           data: null,

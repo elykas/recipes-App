@@ -92,9 +92,8 @@ class AuthRepository {
     return response.data;
   }
 
-  Future<AppUser?> getCurrentUser() async {
+  Future<AppUserWithCursor?> getCurrentUser({int limit = 9}) async {
     final uri = dotenv.env['GRAPHQL_URI'] ?? '';
-    final limit = 5;
 
     final query = '''
       query GetUserMe(\$limit: Int) {
@@ -130,7 +129,7 @@ class AuthRepository {
 
     if (data == null) return null;
 
-    return AppUser.fromJson(data);
+    return AppUserWithCursor.fromJson(data);
   }
 
   Session? get currentSession => _client.auth.currentSession;

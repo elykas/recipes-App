@@ -71,3 +71,8 @@ export interface UserProfileDto {
   isAdmin?: boolean;
   posts: PostPreviewDto[];
 }
+
+export interface ImageUserDto {
+  publicId: string;
+  imageUrl: string | null;
+}

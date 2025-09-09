@@ -25,6 +25,14 @@ export type UserWithRecipes = Prisma.UserGetPayload<{
   };
 }>;
 
+export type UpdateUserImageResponse = Prisma.UserGetPayload<{
+  select: {
+    publicId: true;
+    imageUrl: true;
+  };
+}>;
+
+
 export type UsernamesResponse = Prisma.UserGetPayload<{
   select: {
     username: true;

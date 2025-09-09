@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UpdateUserDto, UserDto, UsernameDto } from "../dto/userDto";
+import { ImageUserDto, UpdateUserDto, UserDto, UsernameDto } from "../dto/userDto";
 import {
   deleteUserService,
   getAllUsernamesService,
@@ -131,10 +131,10 @@ export const updateUserImage = async (
   try {
     const { publicId } = req as AuthenticatedRequest;
     const image = req.file;
-    const userWithImage = await updateUserImageService(publicId,  image );
+    const imageUser : ImageUserDto = await updateUserImageService(publicId,  image );
     res.status(200).json({
       success: true,
-      user: userWithImage,
+      user: imageUser,
       message: "User image updated successfully",
     });
   } catch (error) {

@@ -10,8 +10,15 @@ import {
   pgUpdateUser,
   pgUpdateUserImage,
 } from "../dal/userDal";
-import { UpdateUserDto, UserDto, UsernameDto, UserProfileDto } from "../dto/userDto";
 import {
+  ImageUserDto,
+  UpdateUserDto,
+  UserDto,
+  UsernameDto,
+  UserProfileDto,
+} from "../dto/userDto";
+import {
+  UpdateUserImageResponse,
   UsernamesResponse,
   UserProfileWithPostsResponse,
   UserWithoutRecipes,
@@ -29,16 +36,26 @@ export const getAllUsersService = async (): Promise<UserDto[]> => {
 export const getUserProfileWithPostsService = async (
   currentUserPublicId: string,
   userPublicId: string,
-  limit: number
-): Promise<UserProfileDto> => {
+  limit: number,
+  cursor?: string
+): Promise<{userProfileWithPostsDto: UserProfileDto, nextCursor: string | null}> => {
   const isCurrentUserProfile = currentUserPublicId === userPublicId;
   const userProfileWithPosts: UserProfileWithPostsResponse | null =
-    await pgGetUserProfileWithPosts(userPublicId, limit, isCurrentUserProfile);
+    await pgGetUserProfileWithPosts(
+      userPublicId,
+      limit,
+      isCurrentUserProfile,
+      cursor
+    );
 
   if (!userProfileWithPosts) throw errorResponse("User not found", 404);
 
-  const userProfileWithPostsDto: UserProfileDto = mapUserProfileToDto(userProfileWithPosts);
-  return userProfileWithPostsDto;
+  const userProfileWithPostsDto: UserProfileDto =
+    mapUserProfileToDto(userProfileWithPosts);
+  const nextCursor = userProfileWithPosts.posts.length
+    ? userProfileWithPosts.posts[userProfileWithPosts.posts.length - 1].publicId
+    : null;
+  return {userProfileWithPostsDto, nextCursor};
 };
 
 export const getAllUsernamesService = async (
@@ -96,7 +113,7 @@ export const deleteUserService = async (publicId: string): Promise<UserDto> => {
 export const updateUserImageService = async (
   publicId: string,
   image: Express.Multer.File | undefined
-): Promise<UserDto> => {
+): Promise<ImageUserDto> => {
   let imageUrl: string | null = null;
 
   if (image) {
@@ -108,7 +125,7 @@ export const updateUserImageService = async (
     );
     imageUrl = imagePath;
   }
-  const userWithImage: UserWithoutRecipes = await pgUpdateUserImage(
+  const userWithImage: UpdateUserImageResponse = await pgUpdateUserImage(
     publicId,
     imageUrl
   );
@@ -118,6 +135,9 @@ export const updateUserImageService = async (
     await deleteImageFromStorage(oldImagePath);
   }
 
-  const userDto: UserDto = mapUserToDto(userWithImage);
-  return userDto;
-};
+  const imageDto: ImageUserDto = {
+    publicId: userWithImage.publicId,
+    imageUrl: userWithImage.imageUrl,
+  }
+  return imageDto;
+  };
