@@ -31,6 +31,7 @@ import {
 } from "../dto/recipeDto";
 import { IRecipe } from "../models/recipeModel";
 import {
+  CheckImageResponse,
   FullRecipeResponse,
   PreviewRecipesResponse,
   RecipeIdResponse as RecipeIdResponse,
@@ -53,6 +54,7 @@ import { updateRecipeStepsService } from "./stepsService";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 import { getUserIdByPublicIdService } from "./userService";
 import { pgRemoveLikeFromPost } from "../dal/postDal";
+import th from "zod/v4/locales/th.cjs";
 
 export const getRecipesNameService = async (
   searchQuery: string,
@@ -233,10 +235,13 @@ export const updateRecipeImageService = async (
   image: Express.Multer.File | undefined
 ): Promise<ImageRecipeDto> => {
   let imageUrl: string | null = null;
-  const oldImagePath: string =
+  const oldImagePath: CheckImageResponse | null =
     await pgGetImageOfRecipeByPublicId(publicRecipeId);
 
   if (image) {
+    if (publicUserId !== oldImagePath?.author.publicId) {
+      throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+    }
     const imagePath: string = await uploadSingleImage(
       image.buffer,
       publicUserId,
@@ -251,14 +256,36 @@ export const updateRecipeImageService = async (
     imageUrl
   );
 
-  if (oldImagePath) {
-    await deleteImageFromStorage(oldImagePath);
+  if (oldImagePath?.imageUrl) {
+    await deleteImageFromStorage(oldImagePath.imageUrl);
   }
 
   const imageRecipeDto: ImageRecipeDto = {
     imageUrl: updatedImage.imageUrl,
   };
   return imageRecipeDto;
+};
+
+export const removeRecipeImageService = async (
+  publicRecipeId: string,
+  publicUserId: string
+): Promise<RecipeIdDto> => {
+  const oldImagePath: CheckImageResponse | null = await pgGetImageOfRecipeByPublicId(publicRecipeId);
+  if (!oldImagePath?.imageUrl) {
+    throw errorResponse("Recipe has no image to remove", 404);
+  }
+  if (publicUserId !== oldImagePath.author.publicId) {
+    throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+  }
+  const recipe: RecipeImageResponse = await pgUpdateRecipeImage(publicRecipeId, null);
+  
+  if (oldImagePath) {
+    await deleteImageFromStorage(oldImagePath.imageUrl);
+  }
+  const recipeIdDto: RecipeIdDto = {
+    publicId: recipe.publicId,
+  };
+  return recipeIdDto;
 };
 
 export const getRecipesPreviewByCategoryService = async (

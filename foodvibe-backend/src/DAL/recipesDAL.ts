@@ -2,6 +2,7 @@ import { LikeType, Prisma } from "@prisma/client";
 import prisma from "../config/database";
 import { ICategory, IRecipe } from "../models/recipeModel";
 import {
+  CheckImageResponse,
   FullRecipeResponse,
   PreviewRecipesResponse,
   RecipeIdResponse,
@@ -287,12 +288,12 @@ export const pgDeleteRecipe = async (
 
 export const pgGetImageOfRecipeByPublicId = async (
   publicId: string
-): Promise<string> => {
+): Promise<CheckImageResponse | null> => {
   const user = await prisma.recipe.findUnique({
     where: { publicId },
-    select: { imageUrl: true },
+    select: { imageUrl: true, author: { select: { publicId: true } } },
   });
-  return user?.imageUrl ?? "";
+  return user;
 };
 
 export const pgUpdateRecipeImage = async (
@@ -306,6 +307,7 @@ export const pgUpdateRecipeImage = async (
     },
     select: {
       imageUrl: true,
+      publicId:true
     },
   });
   return updatedImage;

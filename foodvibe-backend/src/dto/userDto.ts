@@ -76,3 +76,7 @@ export interface ImageUserDto {
   publicId: string;
   imageUrl: string | null;
 }
+
+export interface userPublicIdDto {
+  publicId: string;
+}

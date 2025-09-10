@@ -39,9 +39,19 @@ export type RecipeIdResponse = Prisma.RecipeGetPayload<{
   };
 }>;
 
+export type CheckImageResponse = Prisma.RecipeGetPayload<{
+  select: {
+    imageUrl: true;
+    author: {
+      select: { publicId: true };
+    }
+  };
+}>;
+
 export type RecipeImageResponse = Prisma.RecipeGetPayload<{
   select: {
     imageUrl: true;
+    publicId: true;
   };
 }>;
 

@@ -7,6 +7,7 @@ import {
   updateUser,
   getAllUsernames,
   isUsernameAvailable,
+  removeUserImage,
 } from "../controllers/userController";
 import {
   authenticateTokenMiddleware,
@@ -57,12 +58,19 @@ router.get(
   authenticateTokenMiddleware,
   searchLimiter,
   getAllUsernames
-)
+);
 router.get(
   "/username-available/:username",
   authenticateTokenMiddleware,
   searchLimiter,
   isUsernameAvailable
-)
+);
+router.put(
+  "/remove-img",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  removeUserImage
+);
 
 export default router;

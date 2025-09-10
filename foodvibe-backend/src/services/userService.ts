@@ -16,6 +16,7 @@ import {
   UserDto,
   UsernameDto,
   UserProfileDto,
+  userPublicIdDto,
 } from "../dto/userDto";
 import {
   UpdateUserImageResponse,
@@ -38,7 +39,10 @@ export const getUserProfileWithPostsService = async (
   userPublicId: string,
   limit: number,
   cursor?: string
-): Promise<{userProfileWithPostsDto: UserProfileDto, nextCursor: string | null}> => {
+): Promise<{
+  userProfileWithPostsDto: UserProfileDto;
+  nextCursor: string | null;
+}> => {
   const isCurrentUserProfile = currentUserPublicId === userPublicId;
   const userProfileWithPosts: UserProfileWithPostsResponse | null =
     await pgGetUserProfileWithPosts(
@@ -55,7 +59,7 @@ export const getUserProfileWithPostsService = async (
   const nextCursor = userProfileWithPosts.posts.length
     ? userProfileWithPosts.posts[userProfileWithPosts.posts.length - 1].publicId
     : null;
-  return {userProfileWithPostsDto, nextCursor};
+  return { userProfileWithPostsDto, nextCursor };
 };
 
 export const getAllUsernamesService = async (
@@ -115,6 +119,7 @@ export const updateUserImageService = async (
   image: Express.Multer.File | undefined
 ): Promise<ImageUserDto> => {
   let imageUrl: string | null = null;
+  const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
 
   if (image) {
     const imagePath: string = await uploadSingleImage(
@@ -130,7 +135,6 @@ export const updateUserImageService = async (
     imageUrl
   );
 
-  const oldImagePath: string = await pgGetImageOfUserByPublicId(publicId);
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath);
   }
@@ -138,6 +142,30 @@ export const updateUserImageService = async (
   const imageDto: ImageUserDto = {
     publicId: userWithImage.publicId,
     imageUrl: userWithImage.imageUrl,
-  }
-  return imageDto;
   };
+  return imageDto;
+};
+
+export const removeUserImageService = async (
+  publicId: string
+): Promise<userPublicIdDto> => {
+  const imagePath: string = await pgGetImageOfUserByPublicId(publicId);
+  if (!imagePath) {
+    throw errorResponse("User has no image to remove", 404);
+  }
+
+  const removeImage = await pgUpdateUserImage(publicId, null);
+
+  try {
+    await deleteImageFromStorage(imagePath);
+  } catch (storageErr) {
+    console.error(
+      `Failed to delete image from storage: ${imagePath}, error:`,
+      storageErr
+    );
+  }
+  const imageDto: userPublicIdDto = {
+    publicId: removeImage.publicId,
+  };
+  return imageDto;
+};

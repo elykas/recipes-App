@@ -6,11 +6,13 @@ import {
   getAllUsersService,
   getUserByIdService,
   isUsernameAvailableService,
+  removeUserImageService,
   updateUserImageService,
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
 import ErrorResponse from "../utils/errors/errors";
+import ca from "zod/v4/locales/ca.cjs";
 export const getAllUsers = async (
   req: Request,
   res: Response,
@@ -138,6 +140,24 @@ export const updateUserImage = async (
       message: "User image updated successfully",
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+export const removeUserImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { publicId } = req as AuthenticatedRequest;
+    const userId = await removeUserImageService(publicId);
+    res.status(200).json({
+      success: true,
+      user: userId,
+      message: "User image removed successfully",
+    });
+  }catch (error) {
     next(error);
   }
 };

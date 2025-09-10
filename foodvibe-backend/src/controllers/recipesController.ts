@@ -19,6 +19,7 @@ import {
   getRecipesPreviewByCategoryService,
   getSomeRecipesByIdsService,
   removeLikeFromRecipeService,
+  removeRecipeImageService,
   toggleRecipePrivacyService,
   updateRecipeImageService,
   updateRecipeService,
@@ -218,6 +219,28 @@ export const editRecipeImage = async (
     next(error);
   }
 };
+
+export const removeRecipeImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { recipeId: publicRecipeId } = req.params;
+    const { publicId: publicUserId } = req as AuthenticatedRequest;
+    const imageRecipe: RecipeIdDto = await removeRecipeImageService(
+      publicRecipeId,
+      publicUserId
+    );
+    res.status(200).json({
+      data: imageRecipe,
+      success: true,
+      message: "Recipe image removed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const getRecipesPreviewByCategory =
   (isUserScoped: boolean) =>

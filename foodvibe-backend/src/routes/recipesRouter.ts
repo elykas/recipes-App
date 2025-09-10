@@ -10,6 +10,7 @@ import {
   getRecipesPreviewByCategory,
   getSomeRecipesById,
   removeLikeFromRecipe,
+  removeRecipeImage,
   toggleRecipePrivacy,
   upsertLikeToRecipe,
 } from "../controllers/recipesController";
@@ -103,11 +104,22 @@ router.put(
   checkRecipeOwnerShipMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
-  sanitizeRequestMiddleware,
   validateIdParams,
   validateRecipe,
   editRecipe
 );
+router.put(
+  "/image/:recipeId",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  checkRecipeOwnerShipMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateIdParams,
+  singleImageUpload,
+  removeRecipeImage
+);
+
 router.delete(
   "/:recipeId",
   authenticateTokenMiddleware,
