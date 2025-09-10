@@ -148,18 +148,16 @@ class FeedItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final author = post.author;
     final imageUrl = post.imageUrl;
-    final recipeId = post.recipe?.publicId;
+    final recipeId = post.recipe?.Id;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
-          leading: (author != null && author.imageUrl != null)
+          leading: (author.imageUrl != null)
               ? CircleAvatar(backgroundImage: NetworkImage(author.imageUrl!))
               : const CircleAvatar(child: Icon(Icons.person)),
-          title: Text(
-            author?.username ?? author?.fullName ?? 'Unknown author',
-          ),
+          title: Text(author.username ?? author.fullName ?? 'Unknown author'),
         ),
         if (imageUrl != null)
           Image.network(

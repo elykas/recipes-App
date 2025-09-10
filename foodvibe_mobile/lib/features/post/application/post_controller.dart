@@ -10,7 +10,7 @@ final postRepositoryProvider = Provider<PostRepository>((ref) {
 
 final postControllerProvider = StateNotifierProvider<PostController, AsyncValue<List<CreatePostResponse>>>(
   (ref) {
-    final repo = ref.watch(postRepositoryProvider); // עכשיו זה PostRepository
+    final repo = ref.watch(postRepositoryProvider); 
     return PostController(repo);
   },
 );
@@ -25,6 +25,19 @@ class PostController extends StateNotifier<AsyncValue<List<CreatePostResponse>>>
     try {
       final post = await _postRepository.createPost(postData);
       state = AsyncValue.data([...state.value ?? [], post]);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> deletePost(String postId) async {
+    state = const AsyncValue.loading();
+    try {
+      await _postRepository.deletePost(postId);
+
+    final currentPosts = state.value ?? [];
+    final updatedPosts = currentPosts.where((p) => p.Id != postId).toList();
+    state = AsyncValue.data(updatedPosts);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }

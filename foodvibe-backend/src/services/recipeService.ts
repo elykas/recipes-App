@@ -1,25 +1,25 @@
 import { LikeType } from "@prisma/client";
 import prisma from "../config/database";
 import {
+  pgAddLikeToRecipe,
   pgCreateRecipe,
   pgDeleteRecipe,
   pgGetAuthorsPublicIdsByRecipeIds,
   pgGetImageOfRecipeByPublicId,
   pgGetPreviewRecipes,
   pgGetPreviewRecipesByCategory,
-  pgGetUserPublicIdByPublicRecipeId,
   pgGetRecipeById,
+  pgGetRecipeIdByPublicId,
   pgGetRecipesByIds,
   pgGetRecipesName,
+  pgGetUserPublicIdByPublicRecipeId,
+  pgIsRecipeLikeExists,
+  pgRemoveLikeFromRecipe,
+  pgToggleRecipePrivacy,
+  pgUpdateLikeToRecipe,
   pgUpdateRecipe,
   pgUpdateRecipeCategories,
   pgUpdateRecipeImage,
-  pgGetRecipeIdByPublicId,
-  pgToggleRecipePrivacy,
-  pgIsRecipeLikeExists,
-  pgAddLikeToRecipe,
-  pgUpdateLikeToRecipe,
-  pgRemoveLikeFromRecipe,
 } from "../dal/recipesDAL";
 import {
   ImageRecipeDto,
@@ -34,7 +34,7 @@ import {
   CheckImageResponse,
   FullRecipeResponse,
   PreviewRecipesResponse,
-  RecipeIdResponse as RecipeIdResponse,
+  RecipeIdResponse,
   RecipeImageResponse,
   RecipeLikeResponse,
   SearchRecipeResponse,
@@ -53,8 +53,6 @@ import { updateRecipeIngredientsService } from "./ingredientsService";
 import { updateRecipeStepsService } from "./stepsService";
 import { deleteImageFromStorage, uploadSingleImage } from "./storageService";
 import { getUserIdByPublicIdService } from "./userService";
-import { pgRemoveLikeFromPost } from "../dal/postDal";
-import th from "zod/v4/locales/th.cjs";
 
 export const getRecipesNameService = async (
   searchQuery: string,
@@ -73,9 +71,7 @@ export const getRecipesNameService = async (
 export const getRecipeIdByPublicIdService = async (
   publicRecipeId: string
 ): Promise<number> => {
-  const recipeId: number | null = await pgGetRecipeIdByPublicId(
-    publicRecipeId
-  );
+  const recipeId: number | null = await pgGetRecipeIdByPublicId(publicRecipeId);
   if (!recipeId) throw errorResponse("Recipe not found", 404);
   return recipeId;
 };
@@ -240,7 +236,10 @@ export const updateRecipeImageService = async (
 
   if (image) {
     if (publicUserId !== oldImagePath?.author.publicId) {
-      throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+      throw errorResponse(
+        "Unauthorized: User is not the author of the recipe",
+        403
+      );
     }
     const imagePath: string = await uploadSingleImage(
       image.buffer,
@@ -257,7 +256,14 @@ export const updateRecipeImageService = async (
   );
 
   if (oldImagePath?.imageUrl) {
-    await deleteImageFromStorage(oldImagePath.imageUrl);
+    try {
+      await deleteImageFromStorage(oldImagePath.imageUrl);
+    } catch (storageErr) {
+      console.error(
+        `Failed to delete image from storage: ${oldImagePath.imageUrl}, error:`,
+        storageErr
+      );
+    }
   }
 
   const imageRecipeDto: ImageRecipeDto = {
@@ -270,15 +276,22 @@ export const removeRecipeImageService = async (
   publicRecipeId: string,
   publicUserId: string
 ): Promise<RecipeIdDto> => {
-  const oldImagePath: CheckImageResponse | null = await pgGetImageOfRecipeByPublicId(publicRecipeId);
+  const oldImagePath: CheckImageResponse | null =
+    await pgGetImageOfRecipeByPublicId(publicRecipeId);
   if (!oldImagePath?.imageUrl) {
     throw errorResponse("Recipe has no image to remove", 404);
   }
   if (publicUserId !== oldImagePath.author.publicId) {
-    throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+    throw errorResponse(
+      "Unauthorized: User is not the author of the recipe",
+      403
+    );
   }
-  const recipe: RecipeImageResponse = await pgUpdateRecipeImage(publicRecipeId, null);
-  
+  const recipe: RecipeImageResponse = await pgUpdateRecipeImage(
+    publicRecipeId,
+    null
+  );
+
   if (oldImagePath) {
     await deleteImageFromStorage(oldImagePath.imageUrl);
   }
@@ -312,7 +325,11 @@ export const toggleRecipePrivacyService = async (
 ): Promise<RecipeIdDto> => {
   const authorPublicId = await getUserPublicIdByRecipeIdService(publicRecipeId);
 
-  if (authorPublicId !== publicUserId) throw errorResponse("Unauthorized: User is not the author of the recipe", 403);
+  if (authorPublicId !== publicUserId)
+    throw errorResponse(
+      "Unauthorized: User is not the author of the recipe",
+      403
+    );
 
   const recipe: RecipeIdResponse = await pgToggleRecipePrivacy(publicRecipeId);
 
@@ -333,10 +350,9 @@ export const upsertLikeToRecipeService = async (
   const userId: number = await getUserIdByPublicIdService(userPublicId);
 
   const recipeId: number = await getRecipeIdByPublicIdService(recipePublicId);
-  
-  const authorRecipeId: string = await getUserPublicIdByRecipeIdService(
-    recipePublicId
-  );
+
+  const authorRecipeId: string =
+    await getUserPublicIdByRecipeIdService(recipePublicId);
 
   if (authorRecipeId === userPublicId)
     throw errorResponse("You can't like your own recipe", 400);
@@ -362,25 +378,23 @@ export const removeLikeFromRecipeService = async (
   recipePublicId: string,
   userPublicId: string
 ): Promise<RecipeLikeResponseDto> => {
-  if (!recipePublicId || !userPublicId )
+  if (!recipePublicId || !userPublicId)
     throw errorResponse("RecipeIdis required", 400);
 
   const userId: number = await getUserIdByPublicIdService(userPublicId);
 
   const recipeId: number = await getRecipeIdByPublicIdService(recipePublicId);
-  
-  const authorPostId: string = await getUserPublicIdByRecipeIdService(
-    recipePublicId
-  );
+
+  const authorPostId: string =
+    await getUserPublicIdByRecipeIdService(recipePublicId);
 
   if (authorPostId === userPublicId)
     throw errorResponse("You can't dislike your own recipe", 400);
 
-
   const likeExists = await pgIsRecipeLikeExists(userId, recipeId);
 
   if (!likeExists) throw errorResponse("Like not found", 404);
-  
+
   const postWithLike: RecipeLikeResponse = await pgRemoveLikeFromRecipe(
     userId,
     recipeId

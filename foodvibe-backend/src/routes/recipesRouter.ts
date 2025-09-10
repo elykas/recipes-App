@@ -116,7 +116,6 @@ router.put(
   searchLimiter,
   sanitizeRequestMiddleware,
   validateIdParams,
-  singleImageUpload,
   removeRecipeImage
 );
 
@@ -132,11 +131,11 @@ router.delete(
 );
 router.put(
   "/image/:recipeId",
+  singleImageUpload,
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
   checkRecipeOwnerShipMiddleware,
   searchLimiter,
-  singleImageUpload,
   sanitizeRequestMiddleware,
   validateIdParams,
   editRecipeImage

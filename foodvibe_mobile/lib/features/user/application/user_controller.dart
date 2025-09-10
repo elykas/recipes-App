@@ -92,8 +92,10 @@ class UserProfileController extends StateNotifier<UserProfileState> {
   }
 
   Future<void> updateProfile(AppUser updatedUser) async {
-    final updated = await _repository.updateUser(updatedUser);
+    state = state.copyWith(isLoading: true);
+
     try {
+      final updated = await _repository.updateUser(updatedUser);
       final current = state.user;
       if (current != null) {
         final merged = current.copyWith(
@@ -105,26 +107,38 @@ class UserProfileController extends StateNotifier<UserProfileState> {
         state = state.copyWith(user: merged, isLoading: false);
       }
     } catch (e) {
+      print(e);
       state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
 
   Future<void> updateImage(File image) async {
-    final response = await _repository.updateUserImage(image);
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await _repository.updateUserImage(image);
 
-    final current = state.user;
-    if (current != null) {
-      final merged = current.copyWith(imagePath: response.imageUrl);
-      state = state.copyWith(user: merged);
+      final current = state.user;
+      if (current != null) {
+        final merged = current.copyWith(imagePath: response.imageUrl);
+        state = state.copyWith(user: merged, isLoading: false);
+      }
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
 
   Future<void> deleteImage() async {
-    await _repository.deleteImage();
-    final current = state.user;
-    if (current != null) {
-      final merged = current.copyWith(imagePath: null);
-      state = state.copyWith(user: merged);
+    state = state.copyWith(isLoading: true);
+
+    try {
+      await _repository.deleteImage();
+      final current = state.user;
+      if (current != null) {
+        final merged = current.copyWith(imagePath: null);
+        state = state.copyWith(user: merged, isLoading: false);
+      }
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
 }

@@ -23,12 +23,18 @@ class PostRepository {
       'image': await MultipartFile.fromFile(
         file.path,
         filename: file.uri.pathSegments.last,
-        contentType: MediaType('image', mime), // 👈 key fix
+        contentType: MediaType('image', mime), 
       ),
     });
 
     final response = await _dio.post(path, data: formData);
 
     return CreatePostResponse.fromJson(response.data['data']);
+  }
+
+  Future<dynamic> deletePost(String postId) async {
+    final path = '/posts/$postId';
+    final response = await _dio.delete(path);
+    return response.data;
   }
 }

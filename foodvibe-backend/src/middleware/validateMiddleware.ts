@@ -7,7 +7,7 @@ import {
   IdsBodySchema,
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
-import { UserSchema } from "../schema/validateUserSchema";
+import { UserSchema, UserUpdateSchema } from "../schema/validateUserSchema";
 import { CreatePoliciesSchema, GetPolicyQuerySchema } from "../schema/validatePolicySchema";
 
 export const validateUser = (
@@ -16,6 +16,22 @@ export const validateUser = (
   next: NextFunction
 ) => {
   const result = UserSchema.safeParse(req.body);
+
+  if (!result.success) {
+    return res.status(400).json({
+      message: "Validation failed",
+      errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateUserUpdate = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = UserUpdateSchema.safeParse(req.body);
 
   if (!result.success) {
     return res.status(400).json({

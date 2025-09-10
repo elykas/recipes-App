@@ -62,7 +62,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
   }
 
   Future<void> toggleLike({required FeedPost post}) async {
-    final postId = post.publicId;
+    final postId = post.Id;
     final originalPost = post;
     final currentlyLiked = post.isUserLiked;
     final likeType = "Like";
@@ -76,7 +76,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
 
     state = [
       for (final p in state)
-        if (p.publicId == postId) updatedPost else p,
+        if (p.Id == postId) updatedPost else p,
     ];
 
     try {
@@ -90,7 +90,7 @@ class FeedController extends StateNotifier<List<FeedPost>> {
       print(e);
       state = [
         for (final p in state)
-          if (p.publicId == postId) originalPost else p,
+          if (p.Id == postId) originalPost else p,
       ];
     }
   }

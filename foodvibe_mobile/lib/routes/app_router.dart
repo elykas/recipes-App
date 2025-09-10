@@ -5,6 +5,7 @@ import 'package:foodvibe_mobile/features/auth/presentation/complete_register_scr
 import 'package:foodvibe_mobile/features/auth/presentation/verify_token_screen.dart';
 import 'package:foodvibe_mobile/features/auth/presentation/onboarding_screen.dart';
 import 'package:foodvibe_mobile/features/feed/presentation/feed_screen.dart';
+import 'package:foodvibe_mobile/features/user/presentation/edit_profile_screen.dart';
 import 'package:foodvibe_mobile/features/user/presentation/user_profle_screen.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/email_sent_screen.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String createPost = '/create-post';
   static const String profile = '/profile';
   static const String search = '/search';
+  static const String editProfile = '/edit-profile';
 }
 
 final appRouter = GoRouter(
@@ -107,6 +109,11 @@ final appRouter = GoRouter(
       path: AppRoutes.search,
       builder: (context, state) =>
           const BaseScreen(child: FeedScreen(), currentIndex: 4),
+    ),
+    GoRoute(
+      path: AppRoutes.editProfile,
+      builder: (context, state) =>
+          const EditProfileScreen(),
     ),
   ],
 );

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:foodvibe_mobile/core/constants/app_constans.dart';
 import 'package:foodvibe_mobile/features/auth/data/auth_model.dart';
 import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -94,28 +95,32 @@ class AuthRepository {
 
   Future<AppUserWithCursor?> getCurrentUser({int limit = 9}) async {
     final uri = dotenv.env['GRAPHQL_URI'] ?? '';
-
     final query = '''
-      query GetUserMe(\$limit: Int) {
+    query GetUserMe(\$limit: Int) {
       me(limit: \$limit) {
-      publicId
-      username
-      fullName
-      imageUrl
-      email
-      bio
-      headLine
-      locale
-      isAdmin
-      posts {
-        publicId
-        likes
-        recipePublicId
-        imageUrl
+        data {
+          publicId
+          username
+          fullName
+          imageUrl
+          email
+          bio
+          headLine
+          locale
+          isAdmin
+          posts {
+            publicId
+            likes
+            recipePublicId
+            imageUrl
+          }
+        }
+        nextCursor
+        success
+        message
       }
     }
-  }
-''';
+  ''';
 
     final response = await _dio.post(
       uri,
@@ -126,10 +131,51 @@ class AuthRepository {
     );
 
     final data = response.data['data']['me'];
-
     if (data == null) return null;
 
-    return AppUserWithCursor.fromJson(data);
+    final userJson = data['data'];
+    if (userJson == null) return null;
+
+    var user = AppUser.fromJson(userJson);
+
+    final signedProfileImage = user.imagePath != null
+        ? await SupabaseManager().getSignedImageUrl(
+            AppConstants.bucketName,
+            user.imagePath!,
+            AppConstants.sevenDays,
+          )
+        : null;
+    final signedPosts = user.posts == null
+        ? null
+        : await Future.wait(
+            user.posts!.map((post) async {
+              final signedPostImage = post.imageUrl != null
+                  ? await SupabaseManager().getSignedImageUrl(
+                      AppConstants.bucketName,
+                      post.imageUrl!,
+                      AppConstants.sevenDays,
+                    )
+                  : null;
+
+              final signedAuthorImage = post.author.imageUrl != null
+                  ? await SupabaseManager().getSignedImageUrl(
+                      AppConstants.bucketName,
+                      post.author.imageUrl!,
+                      AppConstants.sevenDays,
+                    )
+                  : null;
+
+              return post.copyWith(
+                imageUrl: signedPostImage,
+                author: post.author.copyWith(imageUrl: signedAuthorImage),
+              );
+            }),
+          );
+
+    return AppUserWithCursor(
+      user: user.copyWith(imagePath: signedProfileImage, posts: signedPosts),
+      nextCursor: data['nextCursor'],
+    );
   }
 
   Session? get currentSession => _client.auth.currentSession;

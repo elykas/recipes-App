@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/user/widgets/grid_widget.dart';
 import 'package:foodvibe_mobile/features/user/widgets/post_viewer.dart';
-
+import 'package:foodvibe_mobile/routes/app_router.dart';
+import 'package:go_router/go_router.dart';
 import '../application/user_controller.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
@@ -17,10 +18,12 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
   int _selectedTab = 0; // 0=Posts, 1=Recipes
 
+
+
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileControllerProvider);
-
+      debugPrint('Current state: $profileState');
     if (profileState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -84,7 +87,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                           if (user.bio != null) Text(user.bio!),
                           if (isCurrentUser)
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.go(AppRoutes.editProfile);
+                              },
                               child: const Text('Edit Profile'),
                             ),
                         ],

@@ -14,9 +14,10 @@ import {
   authorizeAdminMiddleware,
   authorizeUserAndExistMiddleware,
 } from "../middleware/authMiddleware";
-import { validateUser } from "../middleware/validateMiddleware";
+import { validateUser, validateUserUpdate } from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
+import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
 
 const router = express.Router();
 
@@ -36,14 +37,16 @@ router.put(
   "/",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  validateUser,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateUserUpdate,
   updateUser
 );
 router.post(
   "/img",
+  singleImageUpload,
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
-  singleImageUpload,
   updateUserImage
 );
 router.delete(

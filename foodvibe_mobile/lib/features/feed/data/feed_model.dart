@@ -1,12 +1,12 @@
 class PostAuthor {
-  final String publicId;
+  final String Id;
   final String? username;
   final String? fullName;
   final String? imageUrl;
   final String? headLine;
 
   PostAuthor({
-    required this.publicId,
+    required this.Id,
     this.username,
     this.fullName,
     this.imageUrl,
@@ -15,7 +15,7 @@ class PostAuthor {
 
   factory PostAuthor.fromJson(Map<String, dynamic> json) {
     return PostAuthor(
-      publicId: json['publicId'],
+      Id: json['publicId'],
       username: json['username'],
       fullName: json['fullName'],
       imageUrl: json['imageUrl'],
@@ -24,14 +24,14 @@ class PostAuthor {
   }
 
   PostAuthor copyWith({
-    String? publicId,
+    String? Id,
     String? username,
     String? fullName,
     String? imageUrl,
     String? headLine,
   }) {
     return PostAuthor(
-      publicId: publicId ?? this.publicId,
+      Id: Id ?? this.Id,
       username: username ?? this.username,
       fullName: fullName ?? this.fullName,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -41,17 +41,17 @@ class PostAuthor {
 }
 
 class PostRecipe {
-  final String publicId;
+  final String Id;
 
-  PostRecipe({required this.publicId});
+  PostRecipe({required this.Id});
 
   factory PostRecipe.fromJson(Map<String, dynamic> json) {
-    return PostRecipe(publicId: json['publicId']);
+    return PostRecipe(Id: json['publicId']);
   }
 }
 
 class FeedPost {
-  final String publicId;
+  final String Id;
   final String? imageUrl;
   final int? likeCount;
   final String? content;
@@ -60,7 +60,7 @@ class FeedPost {
   final bool isUserLiked;
 
   FeedPost.Feed({
-    required this.publicId,
+    required this.Id,
     this.imageUrl,
     this.likeCount,
     this.content,
@@ -71,19 +71,19 @@ class FeedPost {
 
   factory FeedPost.fromJson(Map<String, dynamic> json) {
     return FeedPost.Feed(
-      publicId: json['publicId'],
+      Id: json['publicId'],
       imageUrl: json['imageUrl'],
       likeCount: json['likeCount'],
       content: json['content'],
-      author: json['author'] != null 
-        ? PostAuthor.fromJson(json['author'])
-        : PostAuthor(
-            publicId: 'unknown',   // fallback values
-            username: 'unknown',
-            fullName: 'Unknown',
-            imageUrl: null,
-            headLine: null,
-          ),
+      author: json['author'] != null
+          ? PostAuthor.fromJson(json['author'])
+          : PostAuthor(
+              Id: 'unknown',
+              username: 'unknown',
+              fullName: 'Unknown',
+              imageUrl: null,
+              headLine: null,
+            ),
       recipe: json['recipe'] != null
           ? PostRecipe.fromJson(json['recipe'])
           : null,
@@ -101,7 +101,7 @@ class FeedPost {
     bool? isUserLiked,
   }) {
     return FeedPost.Feed(
-      publicId: publicId ?? this.publicId,
+      Id: publicId ?? Id,
       imageUrl: imageUrl ?? this.imageUrl,
       likeCount: likeCount ?? this.likeCount,
       content: content ?? this.content,

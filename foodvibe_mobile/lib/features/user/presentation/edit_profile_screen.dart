@@ -9,9 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../data/user_model.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
-  final AppUser user;
-
-  const EditProfileScreen({super.key, required this.user});
+  const EditProfileScreen({super.key});
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -26,9 +24,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    fullNameController = TextEditingController(text: widget.user.fullName);
-    bioController = TextEditingController(text: widget.user.bio);
-    headLineController = TextEditingController(text: widget.user.headLine);
+    final user = ref.read(userProfileControllerProvider).user;
+    debugPrint('User: $user');
+
+    fullNameController = TextEditingController(text: user?.fullName ?? '');
+    bioController = TextEditingController(text: user?.bio ?? '');
+    headLineController = TextEditingController(text: user?.headLine ?? '');
   }
 
   @override
@@ -45,8 +46,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       setState(() {
         pickedImage = imageFile;
       });
-      // Update image via notifier
-      await ref.read(userProfileControllerProvider.notifier).updateImage(imageFile);
+      await ref
+          .read(userProfileControllerProvider.notifier)
+          .updateImage(imageFile);
     }
   }
 
@@ -58,13 +60,22 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> saveProfile() async {
-    final updatedUser = widget.user.copyWith(
-      fullName: fullNameController.text.isEmpty ? null : fullNameController.text,
+    final currentUser = ref.read(userProfileControllerProvider).user;
+    if (currentUser == null) return;
+
+    final updatedUser = currentUser.copyWith(
+      fullName: fullNameController.text.isEmpty
+          ? null
+          : fullNameController.text,
       bio: bioController.text.isEmpty ? null : bioController.text,
-      headLine: headLineController.text.isEmpty ? null : headLineController.text,
+      headLine: headLineController.text.isEmpty
+          ? null
+          : headLineController.text,
     );
 
-    await ref.read(userProfileControllerProvider.notifier).updateProfile(updatedUser);
+    await ref
+        .read(userProfileControllerProvider.notifier)
+        .updateProfile(updatedUser);
 
     if (context.mounted) context.pop();
   }
@@ -75,7 +86,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final hasImage = pickedImage != null || currentUser?.imagePath != null;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Profile')),
+      appBar: AppBar(
+        title: const Text('Edit Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back), 
+          onPressed: () {
+            if (context.mounted) context.pop(); 
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -89,8 +108,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     backgroundImage: pickedImage != null
                         ? FileImage(pickedImage!)
                         : (currentUser?.imagePath != null
-                            ? NetworkImage(currentUser!.imagePath!)
-                            : null) as ImageProvider?,
+                                  ? NetworkImage(currentUser!.imagePath!)
+                                  : null)
+                              as ImageProvider?,
                     child: pickedImage == null && currentUser?.imagePath == null
                         ? const Icon(Icons.person, size: 50)
                         : null,

@@ -80,7 +80,7 @@ export const getUserById = async (
     const user: UserDto = await getUserByIdService(publicId);
     res.status(200).json({
       success: true,
-      user: user,
+      data: user,
       message: "User fetched successfully",
     });
   } catch (error) {
@@ -100,7 +100,7 @@ export const updateUser = async (
     const updatedUser = await updateUserService(publicId, user);
     res.status(200).json({
       success: true,
-      user: updatedUser,
+      data: updatedUser,
       message: "User updated successfully",
     });
   } catch (error) {
@@ -136,7 +136,7 @@ export const updateUserImage = async (
     const imageUser : ImageUserDto = await updateUserImageService(publicId,  image );
     res.status(200).json({
       success: true,
-      user: imageUser,
+      data: imageUser,
       message: "User image updated successfully",
     });
   } catch (error) {
@@ -154,7 +154,7 @@ export const removeUserImage = async (
     const userId = await removeUserImageService(publicId);
     res.status(200).json({
       success: true,
-      user: userId,
+      data: userId,
       message: "User image removed successfully",
     });
   }catch (error) {

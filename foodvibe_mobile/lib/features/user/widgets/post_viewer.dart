@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
+import 'package:go_router/go_router.dart';
 
 void showPostViewer({
   required BuildContext context,
@@ -50,27 +51,40 @@ class _PostViewerPageState extends State<PostViewerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return PageView.builder(
-      controller: _controller,
-      itemCount: widget.posts.length,
-      onPageChanged: (index) async {
-        if (index == widget.posts.length - 1) {
-          await widget.onLoadMore(); 
-        }
-      },
-      itemBuilder: (context, index) {
-        final post = widget.posts[index];
-        return InteractiveViewer(
-          child: Center(
-            child: Image.network(
-              post.imageUrl ?? '',
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.error, color: Colors.white),
+    return Scaffold(
+      backgroundColor: Colors.black, 
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.mounted) context.pop();
+          },
+        ),
+      ),
+      body: PageView.builder(
+        controller: _controller,
+        itemCount: widget.posts.length,
+        onPageChanged: (index) async {
+          if (index == widget.posts.length - 1) {
+            await widget.onLoadMore(); 
+          }
+        },
+        itemBuilder: (context, index) {
+          final post = widget.posts[index];
+          return InteractiveViewer(
+            child: Center(
+              child: Image.network(
+                post.imageUrl ?? '',
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.error, color: Colors.white),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
