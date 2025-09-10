@@ -75,3 +75,10 @@ export type UserProfileWithPostsResponse = Prisma.UserGetPayload<{
     };
   };
 }>;
+
+export type UpdateUserLocaleResponse = Prisma.UserGetPayload<{
+  select: {
+    publicId: true;
+    locale: true;
+  };
+}>;

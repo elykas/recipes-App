@@ -7,7 +7,7 @@ import {
   IdsBodySchema,
   searchQuerySchema,
 } from "../schema/validateRecipeScema";
-import { UserSchema, UserUpdateSchema } from "../schema/validateUserSchema";
+import { LocaleSchema, UserSchema, UserUpdateSchema } from "../schema/validateUserSchema";
 import { CreatePoliciesSchema, GetPolicyQuerySchema } from "../schema/validatePolicySchema";
 
 export const validateUser = (
@@ -37,6 +37,21 @@ export const validateUserUpdate = (
     return res.status(400).json({
       message: "Validation failed",
       errors: result.error.message,
+    });
+  }
+  next();
+};
+
+export const validateLocaleParam = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const result = LocaleSchema.safeParse(req.params.locale);
+  if (!result) {
+    return res.status(400).json({
+      message: "Validation failed",
+      errors: "Locale is required",
     });
   }
   next();

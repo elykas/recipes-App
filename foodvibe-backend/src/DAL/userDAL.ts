@@ -2,6 +2,7 @@ import prisma from "../config/database";
 import { UpdateUserDto } from "../dto/userDto";
 import {
   UpdateUserImageResponse,
+  UpdateUserLocaleResponse,
   UsernamesResponse,
   UserProfileWithPostsResponse,
   UserWithoutRecipes,
@@ -24,7 +25,9 @@ export const pgGetAllUsernames = async (
   return usernames;
 };
 
-export const pgIsUsernameAvailable = async (username: string): Promise<boolean> => {
+export const pgIsUsernameAvailable = async (
+  username: string
+): Promise<boolean> => {
   const user = await prisma.user.findUnique({
     where: { username },
     select: { username: true },
@@ -32,43 +35,43 @@ export const pgIsUsernameAvailable = async (username: string): Promise<boolean> 
   return user ? false : true;
 };
 
-
 export const pgGetUserProfileWithPosts = async (
   publicId: string,
   limit: number,
   isCurrentUserProfile: boolean,
-  cursor? : string
+  cursor?: string
 ): Promise<UserProfileWithPostsResponse | null> => {
-  const user: UserProfileWithPostsResponse | null = await prisma.user.findUnique({
-    where: { publicId },
-    select: {
-      publicId: true,
-      username: true,
-      fullName: true,
-      imageUrl: true,
-      email: isCurrentUserProfile,
-      bio: true,
-      headLine: true,
-      locale: isCurrentUserProfile,
-      isAdmin: isCurrentUserProfile,
-      posts: {
-        select: {
-          publicId: true,
-          imageUrl: true,
-          likes: true,
-          recipe: {
-            select: {
-              publicId: true,
+  const user: UserProfileWithPostsResponse | null =
+    await prisma.user.findUnique({
+      where: { publicId },
+      select: {
+        publicId: true,
+        username: true,
+        fullName: true,
+        imageUrl: true,
+        email: isCurrentUserProfile,
+        bio: true,
+        headLine: true,
+        locale: isCurrentUserProfile,
+        isAdmin: isCurrentUserProfile,
+        posts: {
+          select: {
+            publicId: true,
+            imageUrl: true,
+            likes: true,
+            recipe: {
+              select: {
+                publicId: true,
+              },
             },
           },
+          orderBy: { createdAt: "desc" },
+          take: limit,
+          skip: cursor ? 1 : 0,
+          cursor: cursor ? { publicId: cursor } : undefined,
         },
-        orderBy: { createdAt: "desc" },
-        take: limit,
-        skip: cursor ? 1 : 0,
-        cursor: cursor ? { publicId: cursor } : undefined,
       },
-    },
-  });
+    });
   return user;
 };
 
@@ -147,4 +150,15 @@ export const pgGetImageOfUserByPublicId = async (
     select: { imageUrl: true },
   });
   return user?.imageUrl ?? "";
+};
+
+export const pgUpdateUserLocale = async (
+  publicId: string,
+  locale: string
+): Promise<UpdateUserLocaleResponse> => {
+  const updatedUser = await prisma.user.update({
+    where: { publicId },
+    data: { locale },
+  });
+  return updatedUser;
 };

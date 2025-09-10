@@ -8,6 +8,7 @@ import {
   getAllUsernames,
   isUsernameAvailable,
   removeUserImage,
+  updateUserLocale,
 } from "../controllers/userController";
 import {
   authenticateTokenMiddleware,
@@ -74,6 +75,15 @@ router.put(
   authorizeUserAndExistMiddleware,
   searchLimiter,
   removeUserImage
+);
+router.put(
+  "/locale/:locale",
+  authenticateTokenMiddleware,
+  authorizeUserAndExistMiddleware,
+  searchLimiter,
+  sanitizeRequestMiddleware,
+  validateUser,
+  updateUserLocale
 );
 
 export default router;

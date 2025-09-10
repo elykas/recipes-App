@@ -18,3 +18,5 @@ export const UserUpdateSchema = z.object({
     headLine: z.string().min(3).max(20).optional().nullable(),
     bio: z.string().min(3).max(300).optional().nullable(),
 })
+
+export const LocaleSchema = z.enum(["en", "es", "pt"]);

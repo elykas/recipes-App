@@ -8,6 +8,7 @@ import {
   isUsernameAvailableService,
   removeUserImageService,
   updateUserImageService,
+  updateUserLocaleService,
   updateUserService,
 } from "../services/userService";
 import { AuthenticatedRequest } from "../types/requests";
@@ -161,3 +162,22 @@ export const removeUserImage = async (
     next(error);
   }
 };
+
+export const updateUserLocale = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { publicId } = req as AuthenticatedRequest;
+    const { locale } = req.params;
+    const updatedUserLocale = await updateUserLocaleService(publicId, locale);
+    res.status(200).json({
+      success: true,
+      data: updatedUserLocale,
+      message: "User locale updated successfully",
+    });
+  }catch (error) {
+    next(error);
+  }
+}

@@ -27,7 +27,7 @@ model User {
   agreedToPolicy        Boolean           @default(false)
   agreedToPolicyDate    DateTime
   agreedToPolicyVersion String
-  locale                String?           @default("en")
+  locale                String            @default("en")
   score                 Float?            @default(0)
   scoreUpdatedAt        DateTime?         @default(now())
   siteLink              String?
@@ -87,6 +87,7 @@ model Ingredient {
   name     String
   quantity String?
   unit     String?
+  imageUrl String?
   recipeId Int
   recipe   Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }

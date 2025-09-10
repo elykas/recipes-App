@@ -80,3 +80,8 @@ export interface ImageUserDto {
 export interface userPublicIdDto {
   publicId: string;
 }
+
+export interface UpdateUserLocaleDto {
+  publicId: string;
+  locale: string;
+}

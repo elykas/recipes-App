@@ -7,12 +7,14 @@ import {
   pgGetUserIdByPublicId,
   pgGetUserProfileWithPosts,
   pgIsUsernameAvailable,
+  pgUpdateUserLocale,
   pgUpdateUser,
   pgUpdateUserImage,
 } from "../dal/userDal";
 import {
   ImageUserDto,
   UpdateUserDto,
+  UpdateUserLocaleDto,
   UserDto,
   UsernameDto,
   UserProfileDto,
@@ -20,6 +22,7 @@ import {
 } from "../dto/userDto";
 import {
   UpdateUserImageResponse,
+  UpdateUserLocaleResponse,
   UsernamesResponse,
   UserProfileWithPostsResponse,
   UserWithoutRecipes,
@@ -168,4 +171,23 @@ export const removeUserImageService = async (
     publicId: removeImage.publicId,
   };
   return imageDto;
+};
+
+export const updateUserLocaleService = async (
+  publicId: string,
+  locale: string
+): Promise<UpdateUserLocaleDto> => {
+  const locales = ["en", "es", "pt"];
+  if (!locales.includes(locale)) {
+    throw errorResponse("Invalid locale", 400);
+  }
+  const updatedLocale: UpdateUserLocaleResponse = await pgUpdateUserLocale(
+    publicId,
+    locale
+  );
+  const localeDto: UpdateUserLocaleDto = {
+    publicId: updatedLocale.publicId,
+    locale: updatedLocale.locale,
+  };
+  return localeDto;
 };
