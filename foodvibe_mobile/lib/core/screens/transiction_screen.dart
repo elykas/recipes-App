@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/routes/app_router.dart';
-import 'package:foodvibe_mobile/l10n/app_localizations.dart';
+import 'package:foodvibe_mobile/core/utils/locale_service.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
-import 'dart:async';
 import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
-
+import 'package:foodvibe_mobile/l10n/app_localizations.dart';
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
+import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
 
 class TransictionScreen extends ConsumerStatefulWidget {
@@ -57,11 +59,27 @@ class _TransictionScreenState extends ConsumerState<TransictionScreen>
 
   Future<void> _init() async {
     try {
-      await _loadUserAndFeed();
+      await ref.read(authControllerProvider.notifier).loadUser();
+      final user = ref.read(authControllerProvider).user;
+
+      if (user == null) {
+        await Future.delayed(splashDuration);
+        if (!mounted) return;
+        context.go(AppRoutes.login);
+        return;
+      }
+
+      final userLocale = await LocaleService.getInitialLocale(user);
+      await ref.read(localeProvider.notifier).setLocale(userLocale);
+
+       try {
+        await ref.read(feedControllerProvider.notifier).fetchFeed();
+      } catch (e) {
+        debugPrint('Error loading feed: $e');
+      }
+
       await Future.delayed(splashDuration);
-
       if (!mounted) return;
-
       context.go(AppRoutes.feed);
     } catch (e) {
       await Future.delayed(splashDuration);

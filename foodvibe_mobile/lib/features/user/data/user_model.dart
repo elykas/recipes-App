@@ -4,13 +4,13 @@ import 'package:foodvibe_mobile/services/supabase_service.dart';
 
 class AppUser {
   final String Id;
-  final String username;
+  final String  username;
   final String? fullName;
   final String? imagePath;
   final String? email;
   final String? bio;
   final String? headLine;
-  final String? locale;
+  final String  locale;
   final bool isAdmin;
   final List<FeedPost>? posts;
 
@@ -22,7 +22,7 @@ class AppUser {
     this.email,
     this.bio,
     this.headLine,
-    this.locale,
+    required this.locale,
     required this.isAdmin,
     this.posts,
   });
@@ -40,7 +40,7 @@ class AppUser {
       email: json['email'],
       bio: json['bio'],
       headLine: json['headLine'],
-      locale: json['locale'],
+      locale: json['locale'] ?? 'en',
       isAdmin: json['isAdmin'] ?? false,
       posts: posts,
     );
@@ -94,13 +94,13 @@ extension AppUserToJson on AppUser {
 extension AppUserCopy on AppUser {
   AppUser copyWith({
     String? Id,
-    String? username,
+    String?  username,
     String? fullName,
     String? imagePath,
     String? email,
     String? bio,
     String? headLine,
-    String? locale,
+    String?  locale,
     bool? isAdmin,
     List<FeedPost>? posts,
   }) {

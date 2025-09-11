@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/core/location_platform/href/web_location.dart';
+import 'package:foodvibe_mobile/core/utils/locale_service.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/feed/application/feed_controller.dart';
 import 'package:foodvibe_mobile/l10n/app_localizations.dart';
@@ -43,19 +44,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _controller.forward();
 
-    final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
-    final supported = AppLocalizations.supportedLocales
-        .map((l) => l.languageCode)
-        .toList();
-
-    final initialLocale = supported.contains(deviceLocale.languageCode)
-        ? deviceLocale
-        : const Locale('en');
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(localeProvider.notifier).setLocale(initialLocale);
-    });
-
     _init();
   }
 
@@ -82,17 +70,27 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       if (!mounted) return;
 
       final authState = ref.read(authControllerProvider);
+      final user = authState.user;
+      final initialLocale = await LocaleService.getInitialLocale(user);
+      ref.read(localeProvider.notifier).setLocale(initialLocale);
 
       await Future.delayed(const Duration(seconds: 3));
 
       if (!mounted) return;
-
-      if (authState.user != null) {
-        await ref.read(feedControllerProvider.notifier).fetchFeed();
-        context.go(AppRoutes.feed);
-      } else {
+      if (user == null) {
         context.go(AppRoutes.login);
+        return;
       }
+
+      try {
+        await ref.read(feedControllerProvider.notifier).fetchFeed();
+      } catch (e) {
+        debugPrint('Error loading feed: $e');
+      }
+      
+      if (!mounted) return;
+      context.go(AppRoutes.feed);
+
     } catch (e, st) {
       print('Error loading user or feed: $e\n$st');
       if (!mounted) return;

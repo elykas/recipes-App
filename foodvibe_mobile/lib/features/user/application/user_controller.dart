@@ -103,8 +103,25 @@ class UserProfileController extends StateNotifier<UserProfileState> {
         state = state.copyWith(user: merged, isLoading: false);
       }
     } catch (e) {
-      print(e);
       state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+
+  void clearLoading() {
+    state = state.copyWith(isLoading: false);
+  }
+
+  void updateDeletedPost(String postId) {
+    final current = state.user;
+    if (current != null) {
+      final merged = current.copyWith(
+        posts: current.posts?.where((p) => p.Id != postId).toList(),
+      );
+      state = state.copyWith(user: merged);
     }
   }
 
@@ -145,6 +162,7 @@ class UserProfileController extends StateNotifier<UserProfileState> {
       final current = state.user;
       if (current != null) {
         final merged = current.copyWith(locale: response.locale);
+        debugPrint("merged $merged");
         state = state.copyWith(user: merged, isLoading: false);
 
         _ref.read(authControllerProvider.notifier).updateUserState(merged);
@@ -152,7 +170,7 @@ class UserProfileController extends StateNotifier<UserProfileState> {
         _ref.read(localeProvider.notifier).setLocale(Locale(response.locale));
       }
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      state = state.copyWith(isLoading: false);
     }
   }
 }

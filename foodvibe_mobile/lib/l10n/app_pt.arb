@@ -91,6 +91,32 @@
 
   "contentLabel": "Conteúdo",
 
+  "saveButton": "Salvar",
+
+  "editProfile": "Editar Perfil",
+
+  "editProfileFailed": "Falha ao editar perfil. Tente novamente.",
+
+  "editProfileSuccess": "Perfil editado com sucesso.",
+
+  "languageLabel": "Idioma",
+
+  "contactLabel": "Contato",
+
+  "aboutLabel": "Sobre",
+
+  "termsLabel": "Termos",
+
+  "privacyLabel": "Privacidade",
+
+  "accessibilityLabel": "Acessibilidade",
+
+  "logoutLabel": "Sair",
+
+  "selectLanguageLabel": "Selecione um idioma",
+
+  "bioLabel": "Biografia",
+
   "@appTitle": {
     "description": "O título da aplicação"
   },
@@ -228,6 +254,45 @@
   },
   "@contentLabel": {
     "description": "Etiqueta para o campo de conteúdo"
+  },
+  "@saveButton": {
+    "description": "Texto do botão de salvar"
+  },
+  "@editProfile": {
+    "description": "Texto do botão de editar perfil"
+  },
+  "@editProfileFailed": {
+    "description": "Mensagem de erro para falha na edição do perfil"
+  },
+  "@editProfileSuccess": {
+    "description": "Mensagem de sucesso para edição do perfil"
+  },
+   "@languageLabel": {
+    "description": "Language label"
+  },
+  "@contactLabel": {
+    "description": "Contact label"
+  },
+  "@aboutLabel": {
+    "description": "About label"
+  },
+  "@termsLabel": {
+    "description": "Terms label"
+  },
+  "@privacyLabel": {
+    "description": "Privacy label"
+  },
+  "@accessibilityLabel": {
+    "description": "Accessibility label"
+  },
+  "@logoutLabel": {
+    "description": "Logout label"
+  },
+  "@selectLanguageLabel": {
+    "description": "Select language label"
+  },
+  "@bioLabel": {
+    "description": "Bio label"
   }
 }
 

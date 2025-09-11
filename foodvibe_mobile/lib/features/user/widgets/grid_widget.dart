@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/user/application/user_controller.dart';
 import 'package:foodvibe_mobile/features/user/widgets/post_delete_widget.dart';
 
-class PostsGrid extends StatelessWidget {
-  final List<FeedPost> posts;
+class PostsGrid extends ConsumerWidget {
   final void Function(int index)? onPostTap;
-
-  const PostsGrid({super.key, required this.posts, this.onPostTap});
+  const PostsGrid({super.key, this.onPostTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final posts = ref.watch(userProfileControllerProvider).user?.posts ?? [];
+
+   if (posts.isEmpty) {
+      return const Center(child: Text('No posts yet.'));
+    }
+    
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

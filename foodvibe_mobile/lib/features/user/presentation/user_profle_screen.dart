@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foodvibe_mobile/features/auth/presentation/login_page.dart';
+import 'package:foodvibe_mobile/features/user/presentation/profile_header_widget.dart';
 import 'package:foodvibe_mobile/features/user/widgets/grid_widget.dart';
+import 'package:foodvibe_mobile/features/user/widgets/hamburger_menu_widget.dart';
 import 'package:foodvibe_mobile/features/user/widgets/post_viewer.dart';
 import 'package:foodvibe_mobile/routes/app_router.dart';
 import 'package:go_router/go_router.dart';
+
 import '../application/user_controller.dart';
 
 class UserProfileScreen extends ConsumerStatefulWidget {
@@ -16,14 +20,11 @@ class UserProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
-  int _selectedTab = 0; // 0=Posts, 1=Recipes
-
-
 
   @override
   Widget build(BuildContext context) {
     final profileState = ref.watch(userProfileControllerProvider);
-      debugPrint('Current state: $profileState');
+    
     if (profileState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -33,16 +34,18 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
     }
 
     final user = profileState.user;
-    if (user == null) return const Center(child: Text('No user data'));
+
+    if (user == null) {
+      context.go(AppRoutes.login);
+    }
 
     final isCurrentUser = widget.publicId == null;
 
-    final currentPosts = _selectedTab == 0
-        ? user.posts ?? []
-        : user.posts?.where((p) => p.recipe != null).toList() ?? [];
-
     return Scaffold(
-      appBar: AppBar(title: Text(user.username)),
+      appBar: AppBar(
+        title: Text(user?.username ?? ''),
+        actions: [if (isCurrentUser) HamburgerMenu(user: user)],
+      ),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref
@@ -50,87 +53,16 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
               .loadUserProfile(Id: widget.publicId, isRefresh: true);
         },
         child: SingleChildScrollView(
-          physics:
-              const AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: user.imagePath != null
-                          ? NetworkImage(user.imagePath!)
-                          : null,
-                      child: user.imagePath == null
-                          ? const Icon(Icons.person, size: 40)
-                          : null,
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            user.fullName ?? user.username,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          if (user.headLine != null)
-                            Text(
-                              user.headLine!,
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                          if (user.bio != null) Text(user.bio!),
-                          if (isCurrentUser)
-                            TextButton(
-                              onPressed: () {
-                                context.go(AppRoutes.editProfile);
-                              },
-                              child: const Text('Edit Profile'),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () => setState(() => _selectedTab = 0),
-                    child: Text(
-                      'Posts',
-                      style: TextStyle(
-                        fontWeight: _selectedTab == 0
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() => _selectedTab = 1),
-                    child: Text(
-                      'Recipes',
-                      style: TextStyle(
-                        fontWeight: _selectedTab == 1
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ProfileHeader(user: user, isCurrentUser: isCurrentUser),
+             
               PostsGrid(
-                posts: currentPosts,
-                onPostTap: (index) {
+                onPostTap: (index, ) {
                   showPostViewer(
                     context: context,
-                    posts: currentPosts,
+                    posts: user.posts ?? [],
                     initialIndex: index,
                     onLoadMore: () async {
                       await ref

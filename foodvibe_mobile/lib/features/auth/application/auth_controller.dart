@@ -70,7 +70,7 @@ class AuthController extends StateNotifier<local.AuthState> {
     return await _authRepository.isUsernameAvailable(username);
   }
 
-  Future<void> signOut() async {
+  Future<void> logOut() async {
     await _authRepository.signOut();
   }
 
@@ -108,5 +108,15 @@ class AuthController extends StateNotifier<local.AuthState> {
 
   void updateUserState(AppUser user) {
     state = state.copyWith(user: user);
+  }
+
+  void updateDeletedPost(String postId) {
+    final current = state.user;
+    if (current != null) {
+      final merged = current.copyWith(
+        posts: current.posts?.where((p) => p.Id != postId).toList(),
+      );
+      state = state.copyWith(user: merged);
+    }
   }
 }

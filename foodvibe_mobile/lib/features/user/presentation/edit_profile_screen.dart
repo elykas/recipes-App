@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/core/utils/image_picker.dart';
 import 'package:foodvibe_mobile/features/user/application/user_controller.dart';
+import 'package:foodvibe_mobile/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/user_model.dart';
@@ -84,10 +85,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     final currentUser = ref.watch(userProfileControllerProvider).user;
     final hasImage = pickedImage != null || currentUser?.imagePath != null;
+    final loc = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text(loc.editProfile),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back), 
           onPressed: () {
@@ -141,18 +143,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: fullNameController,
-                decoration: const InputDecoration(labelText: 'Full Name'),
+                decoration: InputDecoration(labelText: loc.fullNameLabel),
               ),
               TextField(
                 controller: headLineController,
-                decoration: const InputDecoration(labelText: 'Headline'),
+                decoration: InputDecoration(labelText: loc.headLineLabel),
               ),
               TextField(
                 controller: bioController,
-                decoration: const InputDecoration(labelText: 'Bio'),
+                decoration: InputDecoration(labelText: loc.bioLabel),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(onPressed: saveProfile, child: const Text('Save')),
+              ElevatedButton(onPressed: saveProfile, child: Text(loc.saveButton)),
             ],
           ),
         ),

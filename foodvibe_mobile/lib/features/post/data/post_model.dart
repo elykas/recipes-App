@@ -46,3 +46,17 @@ class CreatePostResponse {
   }
 
 }
+
+
+
+class DeletePostResponse {
+  final String Id;
+  final String postId;
+
+  DeletePostResponse({required this.Id, required this.postId});
+
+  factory DeletePostResponse.fromJson(Map<String, dynamic> json) {
+    return DeletePostResponse(Id: json['publicId'] as String, postId: json['postId'] as String);
+  }
+
+}

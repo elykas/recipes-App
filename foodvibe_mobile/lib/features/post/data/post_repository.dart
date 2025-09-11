@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:foodvibe_mobile/features/post/data/post_model.dart';
 import 'package:http_parser/http_parser.dart';
@@ -35,6 +34,6 @@ class PostRepository {
   Future<dynamic> deletePost(String postId) async {
     final path = '/posts/$postId';
     final response = await _dio.delete(path);
-    return response.data;
+    return DeletePostResponse.fromJson(response.data['data']);
   }
 }

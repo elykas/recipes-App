@@ -15,7 +15,7 @@ import {
   authorizeAdminMiddleware,
   authorizeUserAndExistMiddleware,
 } from "../middleware/authMiddleware";
-import { validateUser, validateUserUpdate } from "../middleware/validateMiddleware";
+import { validateLocaleParam, validateUser, validateUserUpdate } from "../middleware/validateMiddleware";
 import { singleImageUpload } from "../middleware/uploadMiddleware";
 import { searchLimiter } from "../middleware/rateLimiterMiddleware";
 import { sanitizeRequestMiddleware } from "../middleware/sanitazeHtmlMiddleware";
@@ -82,7 +82,7 @@ router.put(
   authorizeUserAndExistMiddleware,
   searchLimiter,
   sanitizeRequestMiddleware,
-  validateUser,
+  validateLocaleParam,
   updateUserLocale
 );
 

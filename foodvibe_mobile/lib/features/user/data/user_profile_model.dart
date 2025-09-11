@@ -1,14 +1,14 @@
 import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 
 class UserProfileState {
-  final AppUser? user;
+  final AppUser user;
   final bool isLoading;
   final bool isLoadingMore;
   final String? error;
   final String? nextCursor;
 
   UserProfileState({
-    this.user,
+    required this.user,
     this.isLoading = false,
     this.isLoadingMore = false,
     this.error,

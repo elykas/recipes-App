@@ -369,6 +369,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post created successfully'**
   String get createPostSuccess;
+
+  /// Edit profile button text
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// Error message for failed profile update
+  ///
+  /// In en, this message translates to:
+  /// **'Profile update failed. Please try again.'**
+  String get editProfileFailed;
+
+  /// Success message for successful profile update
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get editProfileSuccess;
+
+  /// Save button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveButton;
+
+  /// Language label
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get languageLabel;
+
+  /// Contact label
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contactLabel;
+
+  /// About label
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get aboutLabel;
+
+  /// Terms label
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get termsLabel;
+
+  /// Privacy label
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get privacyLabel;
+
+  /// Accessibility label
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility'**
+  String get accessibilityLabel;
+
+  /// Logout label
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutLabel;
+
+  /// Select language label
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguageLabel;
+
+  /// Bio label
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get bioLabel;
 }
 
 class _AppLocalizationsDelegate

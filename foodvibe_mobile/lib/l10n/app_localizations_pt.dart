@@ -151,4 +151,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get createPostSuccess => 'Post criado com sucesso';
+
+  @override
+  String get editProfile => 'Editar Perfil';
+
+  @override
+  String get editProfileFailed => 'Falha ao editar perfil. Tente novamente.';
+
+  @override
+  String get editProfileSuccess => 'Perfil editado com sucesso.';
+
+  @override
+  String get saveButton => 'Salvar';
+
+  @override
+  String get languageLabel => 'Idioma';
+
+  @override
+  String get contactLabel => 'Contato';
+
+  @override
+  String get aboutLabel => 'Sobre';
+
+  @override
+  String get termsLabel => 'Termos';
+
+  @override
+  String get privacyLabel => 'Privacidade';
+
+  @override
+  String get accessibilityLabel => 'Acessibilidade';
+
+  @override
+  String get logoutLabel => 'Sair';
+
+  @override
+  String get selectLanguageLabel => 'Selecione um idioma';
+
+  @override
+  String get bioLabel => 'Biografia';
 }

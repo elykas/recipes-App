@@ -90,6 +90,32 @@
   "createPostSuccess": "Post creado con exito",
 
   "contentLabel": "Contenido",
+
+  "editProfile": "Editar perfil",
+  
+  "editProfileFailed": "La actualización del perfil ha fallado. Inténtalo de nuevo.",
+  
+  "editProfileSuccess": "Perfil actualizado con exito",
+
+  "saveButton": "Guardar",
+
+  "languageLabel": "Idioma",
+
+  "contactLabel": "Contacto",
+
+  "aboutLabel": "Acerca de",
+
+  "termsLabel": "Términos",
+
+  "privacyLabel": "Privacidad",
+
+  "accessibilityLabel": "Accibilidad",
+
+  "logoutLabel": "Cerrar sesión",
+
+  "selectLanguageLabel": "Seleccione un idioma",
+
+  "bioLabel": "Biografía",
   
   "@appTitle": {
     "description": "El título de la aplicación"
@@ -228,5 +254,45 @@
   },
   "@contentLabel": {
     "description": "Etiqueta para el campo de contenido"
+  },
+  "@editProfile": {
+    "description": "Texto del botón de editar perfil"
+  },
+  "@editProfileFailed": {
+    "description": "Mensaje de error para falla de edición de perfil"
+  },
+  "@editProfileSuccess": {
+    "description": "Mensaje de exito para edición de perfil"
+  },
+  "@saveButton": {
+    "description": "Texto del botón de guardar"
+  },
+   "@languageLabel": {
+    "description": "Language label"
+  },
+  "@contactLabel": {
+    "description": "Contact label"
+  },
+  "@aboutLabel": {
+    "description": "About label"
+  },
+  "@termsLabel": {
+    "description": "Terms label"
+  },
+  "@privacyLabel": {
+    "description": "Privacy label"
+  },
+  "@accessibilityLabel": {
+    "description": "Accessibility label"
+  },
+  "@logoutLabel": {
+    "description": "Logout label"
+  },
+  "@selectLanguageLabel": {
+    "description": "Select language label"
+  },
+  "@bioLabel": {
+    "description": "Bio label"
   }
 }
+  

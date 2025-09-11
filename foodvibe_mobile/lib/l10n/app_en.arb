@@ -91,6 +91,34 @@
 
   "createPostSuccess": "Post created successfully",
 
+  "editProfile": "Edit Profile",
+
+  "editProfileFailed": "Profile update failed. Please try again.",
+
+  "editProfileSuccess": "Profile updated successfully",
+
+  "saveButton": "Save",
+
+  "languageLabel": "Language",
+
+  "contactLabel": "Contact",
+
+  "aboutLabel": "About",
+
+  "termsLabel": "Terms",
+
+  "privacyLabel": "Privacy",
+
+  "accessibilityLabel": "Accessibility",
+
+  "logoutLabel": "Logout",
+
+  "selectLanguageLabel": "Select Language",
+
+  "bioLabel" : "Bio",
+
+
+
   "@appTitle": {
     "description": "The title of the application"
   },
@@ -228,5 +256,44 @@
   },
   "@contentLabel": {
     "description": "Post content label"
+  },
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "@editProfileFailed": {
+    "description": "Error message for failed profile update"
+  },
+  "@editProfileSuccess": {
+    "description": "Success message for successful profile update"
+  },
+  "@saveButton": {
+    "description": "Save button text"
+  },
+  "@languageLabel": {
+    "description": "Language label"
+  },
+  "@contactLabel": {
+    "description": "Contact label"
+  },
+  "@aboutLabel": {
+    "description": "About label"
+  },
+  "@termsLabel": {
+    "description": "Terms label"
+  },
+  "@privacyLabel": {
+    "description": "Privacy label"
+  },
+  "@accessibilityLabel": {
+    "description": "Accessibility label"
+  },
+  "@logoutLabel": {
+    "description": "Logout label"
+  },
+  "@selectLanguageLabel": {
+    "description": "Select language label"
+  },
+  "@bioLabel": {
+    "description": "Bio label"
   }
 }

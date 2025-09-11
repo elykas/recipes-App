@@ -141,6 +141,6 @@ class UserRepository {
   Future<dynamic> updateUserLocale(String locale) async {
     final path = '/user/loc/$locale';
     final response = await _dio.put(path);
-    return UpdateLocaleUserResponse.fromJson(response.data);
+    return UpdateLocaleUserResponse.fromJson(response.data['data']);
   }
 }
