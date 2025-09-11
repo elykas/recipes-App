@@ -47,7 +47,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
         onRefresh: () async {
           await ref
               .read(userProfileControllerProvider.notifier)
-              .loadUserProfile(publicId: widget.publicId, isRefresh: true);
+              .loadUserProfile(Id: widget.publicId, isRefresh: true);
         },
         child: SingleChildScrollView(
           physics:
@@ -135,7 +135,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
                     onLoadMore: () async {
                       await ref
                           .read(userProfileControllerProvider.notifier)
-                          .loadUserProfile(publicId: widget.publicId);
+                          .loadUserProfile(Id: widget.publicId);
                       setState(() {});
                     },
                   );

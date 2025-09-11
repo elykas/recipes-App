@@ -137,4 +137,10 @@ class UserRepository {
       AppConstants.sevenDays,
     );
   }
+
+  Future<dynamic> updateUserLocale(String locale) async {
+    final path = '/user/loc/$locale';
+    final response = await _dio.put(path);
+    return UpdateLocaleUserResponse.fromJson(response.data);
+  }
 }

@@ -15,7 +15,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       routerConfig: appRouter,
-      title: 'FoodVibe',
+      title: 'foodVibe',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,

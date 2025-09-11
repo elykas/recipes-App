@@ -77,7 +77,7 @@ router.put(
   removeUserImage
 );
 router.put(
-  "/locale/:locale",
+  "/loc/:locale",
   authenticateTokenMiddleware,
   authorizeUserAndExistMiddleware,
   searchLimiter,

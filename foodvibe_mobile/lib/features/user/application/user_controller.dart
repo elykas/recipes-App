@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foodvibe_mobile/features/auth/application/auth_controller.dart';
 import 'package:foodvibe_mobile/features/user/data/user_model.dart';
 import 'package:foodvibe_mobile/features/user/data/user_profile_model.dart';
 import 'package:foodvibe_mobile/features/user/data/user_repository.dart';
 import 'package:foodvibe_mobile/providers/dio_provider.dart';
+import 'package:foodvibe_mobile/providers/locale_provider.dart';
 
 final userProfileControllerProvider =
     StateNotifierProvider<UserProfileController, UserProfileState>((ref) {
@@ -25,11 +27,8 @@ class UserProfileController extends StateNotifier<UserProfileState> {
   UserProfileController(this._repository, this._ref)
     : super(UserProfileState());
 
-  Future<void> loadUserProfile({
-    String? publicId,
-    bool isRefresh = false,
-  }) async {
-    if (publicId == null) {
+  Future<void> loadUserProfile({String? Id, bool isRefresh = false}) async {
+    if (Id == null) {
       return;
     }
 
@@ -44,7 +43,7 @@ class UserProfileController extends StateNotifier<UserProfileState> {
 
     try {
       final AppUserWithCursor? userWithCursor = await _repository
-          .getUserProfile(publicId, limit: limit, cursor: cursor);
+          .getUserProfile(Id, limit: limit, cursor: cursor);
       if (userWithCursor == null) {
         state = state.copyWith(isLoading: false, isLoadingMore: false);
         return;
@@ -70,12 +69,9 @@ class UserProfileController extends StateNotifier<UserProfileState> {
             nextCursor: userWithCursor.nextCursor,
           );
 
-      final currentUserPublicId = _ref
-          .read(authControllerProvider)
-          .user
-          ?.publicId;
+      final currentUserId = _ref.read(authControllerProvider).user?.Id;
 
-      if (currentUserPublicId != null && currentUserPublicId == publicId) {
+      if (currentUserId != null && currentUserId == Id) {
         _ref.read(authControllerProvider.notifier).updateUserState(mergedUser);
       }
     } catch (e) {
@@ -136,6 +132,24 @@ class UserProfileController extends StateNotifier<UserProfileState> {
       if (current != null) {
         final merged = current.copyWith(imagePath: null);
         state = state.copyWith(user: merged, isLoading: false);
+      }
+    } catch (e) {
+      state = state.copyWith(error: e.toString(), isLoading: false);
+    }
+  }
+
+  Future<void> updateUserLocale(String locale) async {
+    state = state.copyWith(isLoading: true);
+    try {
+      final response = await _repository.updateUserLocale(locale);
+      final current = state.user;
+      if (current != null) {
+        final merged = current.copyWith(locale: response.locale);
+        state = state.copyWith(user: merged, isLoading: false);
+
+        _ref.read(authControllerProvider.notifier).updateUserState(merged);
+
+        _ref.read(localeProvider.notifier).setLocale(Locale(response.locale));
       }
     } catch (e) {
       state = state.copyWith(error: e.toString(), isLoading: false);

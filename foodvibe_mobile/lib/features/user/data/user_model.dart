@@ -3,7 +3,7 @@ import 'package:foodvibe_mobile/features/feed/data/feed_model.dart';
 import 'package:foodvibe_mobile/services/supabase_service.dart';
 
 class AppUser {
-  final String publicId;
+  final String Id;
   final String username;
   final String? fullName;
   final String? imagePath;
@@ -15,7 +15,7 @@ class AppUser {
   final List<FeedPost>? posts;
 
   AppUser({
-    required this.publicId,
+    required this.Id,
     required this.username,
     this.fullName,
     this.imagePath,
@@ -33,7 +33,7 @@ class AppUser {
         .toList();
 
     return AppUser(
-      publicId: json['publicId'],
+      Id: json['publicId'],
       username: json['username'],
       fullName: json['fullName'],
       imagePath: json['imageUrl'],
@@ -87,17 +87,13 @@ class AppUser {
 
 extension AppUserToJson on AppUser {
   Map<String, dynamic> toJson() {
-  return {
-    'fullName': fullName,
-    'bio': bio,
-    'headLine': headLine,
-  };
-}
+    return {'fullName': fullName, 'bio': bio, 'headLine': headLine};
+  }
 }
 
 extension AppUserCopy on AppUser {
   AppUser copyWith({
-    String? publicId,
+    String? Id,
     String? username,
     String? fullName,
     String? imagePath,
@@ -109,7 +105,7 @@ extension AppUserCopy on AppUser {
     List<FeedPost>? posts,
   }) {
     return AppUser(
-      publicId: publicId ?? this.publicId,
+      Id: Id ?? this.Id,
       username: username ?? this.username,
       fullName: fullName ?? this.fullName,
       imagePath: imagePath ?? this.imagePath,
@@ -137,15 +133,14 @@ class AppUserWithCursor {
   }
 }
 
-
 class UpdateUserResponse {
-  final String publicId;
+  final String Id;
   final String? fullName;
   final String? headLine;
   final String? bio;
 
   UpdateUserResponse({
-    required this.publicId,
+    required this.Id,
     this.fullName,
     this.headLine,
     this.bio,
@@ -153,7 +148,7 @@ class UpdateUserResponse {
 
   factory UpdateUserResponse.fromJson(Map<String, dynamic> json) {
     return UpdateUserResponse(
-      publicId: json['publicId'],
+      Id: json['publicId'],
       fullName: json['fullName'],
       headLine: json['headLine'],
       bio: json['bio'],
@@ -161,37 +156,49 @@ class UpdateUserResponse {
   }
 }
 
-
 class UpdateImageUserResponse {
-  final String publicId;
+  final String Id;
   final String? imageUrl;
- 
 
-  UpdateImageUserResponse({
-    required this.publicId,
-    this.imageUrl,
-  });
+  UpdateImageUserResponse({required this.Id, this.imageUrl});
 
   factory UpdateImageUserResponse.fromJson(Map<String, dynamic> json) {
     return UpdateImageUserResponse(
-      publicId: json['publicId'],
+      Id: json['publicId'],
       imageUrl: json['imageUrl'],
     );
   }
 
   static Future<UpdateImageUserResponse> fromJsonWithSignedUrl(
-      Map<String, dynamic> json, String bucket, int expirationDays) async {
+    Map<String, dynamic> json,
+    String bucket,
+    int expirationDays,
+  ) async {
     final raw = UpdateImageUserResponse.fromJson(json);
 
     if (raw.imageUrl != null) {
-      final signedUrl = await SupabaseManager()
-          .getSignedImageUrl(bucket, raw.imageUrl!, expirationDays);
-      return UpdateImageUserResponse(
-        publicId: raw.publicId,
-        imageUrl: signedUrl,
+      final signedUrl = await SupabaseManager().getSignedImageUrl(
+        bucket,
+        raw.imageUrl!,
+        expirationDays,
       );
+      return UpdateImageUserResponse(Id: raw.Id, imageUrl: signedUrl);
     }
 
     return raw;
+  }
+}
+
+class UpdateLocaleUserResponse {
+  final String Id;
+  final String locale;
+
+  UpdateLocaleUserResponse({required this.Id, required this.locale});
+
+  factory UpdateLocaleUserResponse.fromJson(Map<String, dynamic> json) {
+    return UpdateLocaleUserResponse(
+      Id: json['publicId'],
+      locale: json['locale'],
+    );
   }
 }
