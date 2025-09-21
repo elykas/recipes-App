@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foodvibe_mobile/features/auth/presentation/login_page.dart';
 import 'package:foodvibe_mobile/features/user/presentation/profile_header_widget.dart';
 import 'package:foodvibe_mobile/features/user/widgets/grid_widget.dart';
 import 'package:foodvibe_mobile/features/user/widgets/hamburger_menu_widget.dart';
@@ -37,14 +36,15 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen> {
 
     if (user == null) {
       context.go(AppRoutes.login);
+      return const SizedBox.shrink();
     }
 
     final isCurrentUser = widget.publicId == null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(user?.username ?? ''),
-        actions: [if (isCurrentUser) HamburgerMenu(user: user)],
+        title: Text(user.username),
+        actions: [if (isCurrentUser ) HamburgerMenu(user: user)],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
