@@ -70,16 +70,16 @@ model Recipe {
   posts          Post[]
   author         User              @relation("UserRecipes", fields: [authorId], references: [id], onDelete: Cascade)
   likes          RecipeLike[]
-  likeCount      Int               @default(0) 
+  likeCount      Int               @default(0)
   tags           RecipeTag[]
   reports        Report[]          @relation("ReportedRecipes")
   steps          Step[]
   categories     Category[]        @relation("CategoryToRecipe")
-  groupRecipes GroupRecipe[]
+  groupRecipes   GroupRecipe[]
 
-  @@index([title])
   @@unique([createdAt, publicId])
   @@unique([likeCount, publicId])
+  @@index([title])
 }
 
 model Ingredient {
@@ -111,16 +111,16 @@ model Step {
 }
 
 model Group {
-  id          Int           @id @default(autoincrement())
-  publicId    String        @unique @default(uuid())
-  name        String
-  description String?
-  imageUrl    String?
-  creatorId   Int?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  creator     User?         @relation("UserCreatedGroups", fields: [creatorId], references: [id])
-  members     GroupMember[]
+  id           Int           @id @default(autoincrement())
+  publicId     String        @unique @default(uuid())
+  name         String
+  description  String?
+  imageUrl     String?
+  creatorId    Int?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  creator      User?         @relation("UserCreatedGroups", fields: [creatorId], references: [id])
+  members      GroupMember[]
   groupRecipes GroupRecipe[]
 }
 
@@ -137,17 +137,19 @@ model GroupMember {
 }
 
 model GroupRecipe {
-  id         Int      @id @default(autoincrement())
-  groupId    Int
-  recipeId   Int
-  addedById  Int?
-  addedAt    DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  recipeId  Int
+  addedById Int?
+  addedAt   DateTime @default(now())
 
-  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  addedBy    User?    @relation("UserAddedRecipes", fields: [addedById], references: [id], onDelete: SetNull)
+  group   Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  recipe  Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  addedBy User?  @relation("UserAddedRecipes", fields: [addedById], references: [id], onDelete: SetNull)
+
   @@unique([groupId, recipeId])
 }
+
 model FavoriteRecipes {
   id        Int      @id @default(autoincrement())
   userId    Int
@@ -396,11 +398,11 @@ enum ReportStatus {
 }
 
 model Policy {
-  id        Int     @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   type      PolicyType
   version   String
-  language  String     
-  content   String     
+  language  String
+  content   String
   createdAt DateTime   @default(now())
 }
 
@@ -409,3 +411,278 @@ enum PolicyType {
   PrivacyPolicy
   CookiePolicy
 }
+
+//SQL FOR THE TABLES FOODVIBE
+
+// -- WARNING: This schema is for context only and is not meant to be run.
+// -- Table order and constraints may not be valid for execution.
+
+// CREATE TABLE public.Category (
+//   id integer NOT NULL DEFAULT nextval('"Category_id_seq"'::regclass),
+//   name text NOT NULL,
+//   type USER-DEFINED NOT NULL,
+//   CONSTRAINT Category_pkey PRIMARY KEY (id)
+// );
+// CREATE TABLE public.Comment (
+//   id integer NOT NULL DEFAULT nextval('"Comment_id_seq"'::regclass),
+//   content text NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   authorId integer NOT NULL,
+//   recipeId integer,
+//   postId integer,
+//   parentId integer,
+//   CONSTRAINT Comment_pkey PRIMARY KEY (id),
+//   CONSTRAINT Comment_authorId_fkey FOREIGN KEY (authorId) REFERENCES public.User(id),
+//   CONSTRAINT Comment_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id),
+//   CONSTRAINT Comment_postId_fkey FOREIGN KEY (postId) REFERENCES public.Post(id),
+//   CONSTRAINT Comment_parentId_fkey FOREIGN KEY (parentId) REFERENCES public.Comment(id)
+// );
+// CREATE TABLE public.FavoriteRecipes (
+//   id integer NOT NULL DEFAULT nextval('"FavoriteRecipes_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   recipeId integer NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT FavoriteRecipes_pkey PRIMARY KEY (id),
+//   CONSTRAINT FavoriteRecipes_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id),
+//   CONSTRAINT FavoriteRecipes_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.Feedback (
+//   id integer NOT NULL DEFAULT nextval('"Feedback_id_seq"'::regclass),
+//   userId integer,
+//   content text NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT Feedback_pkey PRIMARY KEY (id),
+//   CONSTRAINT Feedback_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.Follow (
+//   id integer NOT NULL DEFAULT nextval('"Follow_id_seq"'::regclass),
+//   followerId integer NOT NULL,
+//   followingId integer NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT Follow_pkey PRIMARY KEY (id),
+//   CONSTRAINT Follow_followerId_fkey FOREIGN KEY (followerId) REFERENCES public.User(id),
+//   CONSTRAINT Follow_followingId_fkey FOREIGN KEY (followingId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.Group (
+//   id integer NOT NULL DEFAULT nextval('"Group_id_seq"'::regclass),
+//   publicId text NOT NULL,
+//   name text NOT NULL,
+//   description text,
+//   imageUrl text,
+//   creatorId integer,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   CONSTRAINT Group_pkey PRIMARY KEY (id),
+//   CONSTRAINT Group_creatorId_fkey FOREIGN KEY (creatorId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.GroupMember (
+//   id integer NOT NULL DEFAULT nextval('"GroupMember_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   groupId integer NOT NULL,
+//   admin boolean NOT NULL DEFAULT false,
+//   joinedAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT GroupMember_pkey PRIMARY KEY (id),
+//   CONSTRAINT GroupMember_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id),
+//   CONSTRAINT GroupMember_groupId_fkey FOREIGN KEY (groupId) REFERENCES public.Group(id)
+// );
+// CREATE TABLE public.GroupRecipe (
+//   id integer NOT NULL DEFAULT nextval('"GroupRecipe_id_seq"'::regclass),
+//   groupId integer NOT NULL,
+//   recipeId integer NOT NULL,
+//   addedById integer,
+//   addedAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT GroupRecipe_pkey PRIMARY KEY (id),
+//   CONSTRAINT GroupRecipe_groupId_fkey FOREIGN KEY (groupId) REFERENCES public.Group(id),
+//   CONSTRAINT GroupRecipe_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id),
+//   CONSTRAINT GroupRecipe_addedById_fkey FOREIGN KEY (addedById) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.Ingredient (
+//   id integer NOT NULL DEFAULT nextval('"Ingredient_id_seq"'::regclass),
+//   name text NOT NULL,
+//   quantity text,
+//   unit text,
+//   recipeId integer NOT NULL,
+//   imageUrl text,
+//   CONSTRAINT Ingredient_pkey PRIMARY KEY (id),
+//   CONSTRAINT Ingredient_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.Notification (
+//   id integer NOT NULL DEFAULT nextval('"Notification_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   type USER-DEFINED NOT NULL,
+//   message text NOT NULL,
+//   isRead boolean NOT NULL DEFAULT false,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT Notification_pkey PRIMARY KEY (id),
+//   CONSTRAINT Notification_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.Policy (
+//   id integer NOT NULL DEFAULT nextval('"Policy_id_seq"'::regclass),
+//   type USER-DEFINED NOT NULL,
+//   version text NOT NULL,
+//   language text NOT NULL,
+//   content text NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT Policy_pkey PRIMARY KEY (id)
+// );
+// CREATE TABLE public.Post (
+//   id integer NOT NULL DEFAULT nextval('"Post_id_seq"'::regclass),
+//   publicId text NOT NULL,
+//   content text,
+//   imageUrl text NOT NULL,
+//   score double precision DEFAULT 0,
+//   type USER-DEFINED NOT NULL DEFAULT 'Image'::"PostType",
+//   authorId integer NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   scoreUpdatedAt timestamp without time zone,
+//   recipeId integer,
+//   likeCount integer NOT NULL DEFAULT 0,
+//   CONSTRAINT Post_pkey PRIMARY KEY (id),
+//   CONSTRAINT Post_authorId_fkey FOREIGN KEY (authorId) REFERENCES public.User(id),
+//   CONSTRAINT Post_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.PostLike (
+//   id integer NOT NULL DEFAULT nextval('"PostLike_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   postId integer NOT NULL,
+//   type USER-DEFINED NOT NULL DEFAULT 'Like'::"LikeType",
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT PostLike_pkey PRIMARY KEY (id),
+//   CONSTRAINT PostLike_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id),
+//   CONSTRAINT PostLike_postId_fkey FOREIGN KEY (postId) REFERENCES public.Post(id)
+// );
+// CREATE TABLE public.PostTag (
+//   id integer NOT NULL DEFAULT nextval('"PostTag_id_seq"'::regclass),
+//   postId integer NOT NULL,
+//   tagId integer NOT NULL,
+//   CONSTRAINT PostTag_pkey PRIMARY KEY (id),
+//   CONSTRAINT PostTag_postId_fkey FOREIGN KEY (postId) REFERENCES public.Post(id),
+//   CONSTRAINT PostTag_tagId_fkey FOREIGN KEY (tagId) REFERENCES public.Tag(id)
+// );
+// CREATE TABLE public.Recipe (
+//   id integer NOT NULL DEFAULT nextval('"Recipe_id_seq"'::regclass),
+//   publicId text NOT NULL,
+//   title text NOT NULL,
+//   prepTime integer DEFAULT 30,
+//   difficulty USER-DEFINED NOT NULL DEFAULT 'Easy'::"DifficultyLevel",
+//   isPublic boolean NOT NULL DEFAULT false,
+//   imageUrl text,
+//   description text,
+//   tip ARRAY,
+//   score double precision DEFAULT 0,
+//   scoreUpdatedAt timestamp without time zone,
+//   authorId integer NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   likeCount integer NOT NULL DEFAULT 0,
+//   CONSTRAINT Recipe_pkey PRIMARY KEY (id),
+//   CONSTRAINT Recipe_authorId_fkey FOREIGN KEY (authorId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public.RecipeLike (
+//   id integer NOT NULL DEFAULT nextval('"RecipeLike_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   recipeId integer NOT NULL,
+//   type USER-DEFINED NOT NULL DEFAULT 'Like'::"LikeType",
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT RecipeLike_pkey PRIMARY KEY (id),
+//   CONSTRAINT RecipeLike_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id),
+//   CONSTRAINT RecipeLike_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.RecipeTag (
+//   id integer NOT NULL DEFAULT nextval('"RecipeTag_id_seq"'::regclass),
+//   recipeId integer NOT NULL,
+//   tagId integer NOT NULL,
+//   CONSTRAINT RecipeTag_pkey PRIMARY KEY (id),
+//   CONSTRAINT RecipeTag_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id),
+//   CONSTRAINT RecipeTag_tagId_fkey FOREIGN KEY (tagId) REFERENCES public.Tag(id)
+// );
+// CREATE TABLE public.Report (
+//   id integer NOT NULL DEFAULT nextval('"Report_id_seq"'::regclass),
+//   reporterId integer NOT NULL,
+//   reporterUserId integer NOT NULL,
+//   type USER-DEFINED NOT NULL,
+//   reason text,
+//   status USER-DEFINED NOT NULL DEFAULT 'Pending'::"ReportStatus",
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   postId integer,
+//   commentId integer,
+//   recipeId integer,
+//   CONSTRAINT Report_pkey PRIMARY KEY (id),
+//   CONSTRAINT Report_reporterId_fkey FOREIGN KEY (reporterId) REFERENCES public.User(id),
+//   CONSTRAINT Report_reporterUserId_fkey FOREIGN KEY (reporterUserId) REFERENCES public.User(id),
+//   CONSTRAINT Report_postId_fkey FOREIGN KEY (postId) REFERENCES public.Post(id),
+//   CONSTRAINT Report_commentId_fkey FOREIGN KEY (commentId) REFERENCES public.Comment(id),
+//   CONSTRAINT Report_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.Step (
+//   id integer NOT NULL DEFAULT nextval('"Step_id_seq"'::regclass),
+//   title text,
+//   description text NOT NULL,
+//   imageUrl text,
+//   duration integer,
+//   recipeId integer NOT NULL,
+//   order integer NOT NULL,
+//   CONSTRAINT Step_pkey PRIMARY KEY (id),
+//   CONSTRAINT Step_recipeId_fkey FOREIGN KEY (recipeId) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public.Tag (
+//   id integer NOT NULL DEFAULT nextval('"Tag_id_seq"'::regclass),
+//   publicId text NOT NULL,
+//   name text NOT NULL,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   CONSTRAINT Tag_pkey PRIMARY KEY (id)
+// );
+// CREATE TABLE public.User (
+//   id integer NOT NULL DEFAULT nextval('"User_id_seq"'::regclass),
+//   publicId text NOT NULL,
+//   email text,
+//   username text NOT NULL,
+//   fullName text,
+//   phone text,
+//   imageUrl text,
+//   bio text,
+//   headLine text,
+//   isAdmin boolean NOT NULL DEFAULT false,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   updatedAt timestamp without time zone NOT NULL,
+//   lastLogin timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+//   agreedToPolicy boolean NOT NULL DEFAULT false,
+//   agreedToPolicyDate timestamp without time zone NOT NULL,
+//   agreedToPolicyVersion text NOT NULL,
+//   locale text NOT NULL DEFAULT 'en'::text,
+//   score double precision DEFAULT 0,
+//   scoreUpdatedAt timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+//   siteLink text,
+//   birthDate timestamp without time zone,
+//   CONSTRAINT User_pkey PRIMARY KEY (id)
+// );
+// CREATE TABLE public.UserEvent (
+//   id integer NOT NULL DEFAULT nextval('"UserEvent_id_seq"'::regclass),
+//   userId integer NOT NULL,
+//   eventType USER-DEFINED NOT NULL,
+//   metadata jsonb,
+//   createdAt timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+//   CONSTRAINT UserEvent_pkey PRIMARY KEY (id),
+//   CONSTRAINT UserEvent_userId_fkey FOREIGN KEY (userId) REFERENCES public.User(id)
+// );
+// CREATE TABLE public._CategoryToRecipe (
+//   A integer NOT NULL,
+//   B integer NOT NULL,
+//   CONSTRAINT _CategoryToRecipe_pkey PRIMARY KEY (A, B),
+//   CONSTRAINT _CategoryToRecipe_A_fkey FOREIGN KEY (A) REFERENCES public.Category(id),
+//   CONSTRAINT _CategoryToRecipe_B_fkey FOREIGN KEY (B) REFERENCES public.Recipe(id)
+// );
+// CREATE TABLE public._prisma_migrations (
+//   id character varying NOT NULL,
+//   checksum character varying NOT NULL,
+//   finished_at timestamp with time zone,
+//   migration_name character varying NOT NULL,
+//   logs text,
+//   rolled_back_at timestamp with time zone,
+//   started_at timestamp with time zone NOT NULL DEFAULT now(),
+//   applied_steps_count integer NOT NULL DEFAULT 0,
+//   CONSTRAINT _prisma_migrations_pkey PRIMARY KEY (id)
+// );
